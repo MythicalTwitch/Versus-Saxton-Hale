@@ -21,6 +21,10 @@ public OnHookedEvent(Handle:hEvent, const String:strEventName[], bool:bHidden)
 	SetRJFlag(GetClientOfUserId(GetEventInt(hEvent, "userid")), StrEqual(strEventName, "rocket_jump", false));
 }
 
+// event_round_start  event_round_start  event_round_start  event_round_start  event_round_start  event_round_start
+// event_round_start  event_round_start  event_round_start  event_round_start  event_round_start  event_round_start
+// event_round_start  event_round_start  event_round_start  event_round_start  event_round_start  event_round_start
+
 public Action:event_round_start(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (!GetConVarBool(cvarEnabled))
@@ -234,6 +238,10 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	return Plugin_Continue;
 }
 
+// event_round_end  event_round_end  event_round_end  event_round_end  event_round_end  event_round_end
+// event_round_end  event_round_end  event_round_end  event_round_end  event_round_end  event_round_end
+// event_round_end  event_round_end  event_round_end  event_round_end  event_round_end  event_round_end
+
 public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new String:s[265];
@@ -403,6 +411,10 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 	return Plugin_Continue;
 }
 
+// event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass
+// event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass
+// event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass  event_changeclass
+
 public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (!Enabled)
@@ -429,6 +441,10 @@ public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroa
 	}
 	return Plugin_Continue;
 }
+
+// event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn
+// event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn
+// event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn  event_player_spawn
 
 public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -466,6 +482,10 @@ public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBro
 	VSHFlags[client] &= ~VSHFLAG_CLASSHELPED;
 	return Plugin_Continue;
 }
+
+// event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
+// event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
+// event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
 
 public Action:event_player_death(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -698,6 +718,10 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	return Plugin_Continue;
 }
 
+// event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed
+// event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed
+// event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed
+
 public Action:event_uberdeployed(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (!Enabled)
@@ -727,6 +751,10 @@ public Action:event_uberdeployed(Handle:event, const String:name[], bool:dontBro
 	}
 	return Plugin_Continue;
 }
+
+// event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt
+// event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt
+// event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt  event_hurt
 
 public Action:event_hurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -790,6 +818,10 @@ public Action:event_hurt(Handle:event, const String:name[], bool:dontBroadcast)
 	return Plugin_Continue;
 }
 
+// event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
+// event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
+// event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
+
 public Action:event_destroy(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (Enabled)
@@ -814,6 +846,10 @@ public Action:event_destroy(Handle:event, const String:name[], bool:dontBroadcas
 	return Plugin_Continue;
 }
 
+// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
+// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
+// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
+
 public Action:event_deflect(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (!Enabled) return Plugin_Continue;
@@ -833,6 +869,10 @@ public Action:event_deflect(Handle:event, const String:name[], bool:dontBroadcas
 	SetAmmo(deflector, 0, newammo <= 0 ? 0 : newammo);
 	return Plugin_Continue;
 }
+
+// event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate
+// event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate
+// event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate
 
 public Action:event_jarate(UserMsg:msg_id, Handle:bf, const players[], playersNum, bool:reliable, bool:init)
 {
