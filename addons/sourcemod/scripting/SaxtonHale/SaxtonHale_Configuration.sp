@@ -59,7 +59,6 @@ public OnConfigsExecuted()
 	haleCrits = GetConVarBool(cvarCrits);
 	bDemoShieldCrits = GetConVarBool(cvarDemoShieldCrits);
 	bAlwaysShowHealth = GetConVarBool(cvarDisplayHaleHP);
-	bShowHealthBar = GetConVarBool(cvarDisplayHaleHPbar);
 	newRageSentry = GetConVarBool(cvarRageSentry);
 	//circuitStun = GetConVarFloat(cvarCircuitStun);
 	if (IsSaxtonHaleMap() && GetConVarBool(cvarEnabled))
