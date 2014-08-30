@@ -18,7 +18,8 @@ enum
 	VSHSpecial_Vagineer,
 	VSHSpecial_HHH,
 	VSHSpecial_CBS,
-	VSHSpecial_Bunny //ohgodwhy
+	VSHSpecial_Bunny, //ohgodwhy
+	VSHSpecial_Miku
 }
 new Damage[MAXPLAYERS + 1];
 new AirDamage[MAXPLAYERS + 1]; // Air Strike
