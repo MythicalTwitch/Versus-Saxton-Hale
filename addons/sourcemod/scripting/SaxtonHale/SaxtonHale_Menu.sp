@@ -29,6 +29,8 @@ public Action:HintPanel(client)
 			Format(s, 512, "%t", "vsh_help_cbs");
 		case VSHSpecial_Bunny:
 			Format(s, 512, "%t", "vsh_help_bunny");
+		case VSHSpecial_Miku:
+			Format(s, 512, "%t", "vsh_help_miku");
 	}
 	DrawPanelText(panel, s);
 	Format(s, 512, "%t", "vsh_menu_exit");

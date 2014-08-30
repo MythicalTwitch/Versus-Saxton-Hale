@@ -66,7 +66,10 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 		{
 			CreateTimer(0.25, Timer_CheckBuffRage, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}
-		if (damage <= 160.0 && !(Special == VSHSpecial_CBS && inflictor != attacker) && (Special != VSHSpecial_Bunny || weapon == -1 || weapon == GetPlayerWeaponSlot(Hale, TFWeaponSlot_Melee)))
+		if (damage <= 160.0
+		&& !(Special == VSHSpecial_CBS && inflictor != attacker)
+		&& (Special != VSHSpecial_Bunny || weapon == -1 || weapon == GetPlayerWeaponSlot(Hale, TFWeaponSlot_Melee))
+		&& (Special != VSHSpecial_Miku))
 		{
 			damage *= 3;
 			return Plugin_Changed;

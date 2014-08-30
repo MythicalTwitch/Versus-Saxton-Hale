@@ -6,6 +6,14 @@ public EquipSaxton(client)
 	HaleCharge = 0;
 	switch (Special)
 	{
+#if defined MIKU_ON
+		case VSHSpecial_Miku:
+		{
+			// The Saxy
+			SaxtonWeapon = SpawnWeapon(client, "tf_weapon_fists", 423, 100, 5, "68 ; 2.0 ; 2 ; 3.0 ; 259 ; 1.0 ; 326 ; 1.3 ; 252 ; 0.6");
+			SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", SaxtonWeapon);
+		}
+#endif
 		case VSHSpecial_Bunny:
 		{
 			SaxtonWeapon = SpawnWeapon(client, "tf_weapon_bottle", 1, 100, 5, "68 ; 2.0 ; 2 ; 3.0 ; 259 ; 1.0 ; 326 ; 1.3 ; 252 ; 0.6");

@@ -267,6 +267,13 @@ public Action:Command_MakeNextSpecial(client, args)
 		name = "the Easter Bunny";
 	}
 #endif
+#if defined MIKU_ON
+	else if (StrContains(arg, "mik", false) != -1 || StrContains(arg, "miku", false) != -1)
+	{
+		Incoming = VSHSpecial_Miku;
+		name = "the Hatsunemiku";
+	}
+#endif
 	else
 	{
 		ReplyToCommand(client, "[VSH] Usage: hale_special <hale, vagineer, hhh, christian>");
@@ -307,7 +314,7 @@ public Action:cdVoiceMenu(iClient, const String:sCommand[], iArgc)
 		}
 	}
 
-	return (iClient == Hale && Special != VSHSpecial_CBS && Special != VSHSpecial_Bunny) ? Plugin_Handled : Plugin_Continue;
+	return (iClient == Hale && Special != VSHSpecial_CBS && Special != VSHSpecial_Bunny && Special != VSHSpecial_Miku) ? Plugin_Handled : Plugin_Continue;
 }
 
 public Action:DoTaunt(client, const String:command[], argc)
@@ -334,7 +341,7 @@ public Action:DoTaunt(client, const String:command[], argc)
 		{
 			case VSHSpecial_Vagineer: dist = RageDist/(1.5);
 			case VSHSpecial_Bunny: dist = RageDist/(1.5);
-			case VSHSpecial_Miku: dist = RageDist*2.5;
+			case VSHSpecial_Miku: dist = RageDist*1.5;
 			case VSHSpecial_CBS: dist = RageDist/(2.5);
 			default: dist = RageDist;
 		}
@@ -470,6 +477,8 @@ public Action:Command_GetHP(client)
 	{
 		switch (Special)
 		{
+			case VSHSpecial_Miku:
+				PrintCenterTextAll("%t", "vsh_miku_show_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Bunny:
 				PrintCenterTextAll("%t", "vsh_bunny_show_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Vagineer:
@@ -489,6 +498,11 @@ public Action:Command_GetHP(client)
 		healthcheckused++;
 		switch (Special)
 		{
+			case VSHSpecial_Miku:
+			{
+				PrintCenterTextAll("%t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
+				CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
+			}
 			case VSHSpecial_Bunny:
 			{
 				PrintCenterTextAll("%t", "vsh_bunny_hp", HaleHealth, HaleHealthMax);

@@ -86,6 +86,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+#if defined MIKU_ON
 stock Float:moveForward(Float:vel[3],Float:MaxSpeed){
 	//move forward. buttons |=IN_FORWARD does nothing.
 	vel[0] = MaxSpeed;
@@ -136,7 +137,6 @@ stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=fal
 	}
 	return false;
 }
-
 stock Directory_AddFileToDownloadsTable(String:custom_path[])
 {
 	//decl String:path2[PLATFORM_MAX_PATH];
@@ -171,6 +171,7 @@ stock Directory_AddFileToDownloadsTable(String:custom_path[])
 
 	CloseHandle(dir);
 }
+#endif
 
 stock bool:IsSaxtonHaleMap(bool:forceRecalc = false)
 {

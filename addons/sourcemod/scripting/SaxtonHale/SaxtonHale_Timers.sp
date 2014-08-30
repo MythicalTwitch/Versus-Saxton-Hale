@@ -1371,6 +1371,8 @@ public Action:HaleTimer(Handle:hTimer)
 	{
 		switch (Special)
 		{
+			case VSHSpecial_Miku:
+				PrintCenterTextAll("%t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Bunny:
 				PrintCenterTextAll("%t", "vsh_bunny_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Vagineer:
