@@ -578,6 +578,7 @@ public Action:MessageTimer(Handle:hTimer, any:client)
 	decl String:translation[32];
 	switch (Special)
 	{
+		case VSHSpecial_Miku: strcopy(translation, sizeof(translation), "vsh_start_miku");
 		case VSHSpecial_Bunny: strcopy(translation, sizeof(translation), "vsh_start_bunny");
 		case VSHSpecial_Vagineer: strcopy(translation, sizeof(translation), "vsh_start_vagineer");
 		case VSHSpecial_HHH: strcopy(translation, sizeof(translation), "vsh_start_hhh");
@@ -602,6 +603,10 @@ public Action:MakeModelTimer(Handle:hTimer)
 	new body = 0;
 	switch (Special)
 	{
+		case VSHSpecial_Miku:
+		{
+			SetVariantString(MikuModel);
+		}
 		case VSHSpecial_Bunny:
 		{
 			SetVariantString(BunnyModel);
@@ -639,6 +644,8 @@ public Action:MakeHale(Handle:hTimer)
 
 	switch (Special)
 	{
+		case VSHSpecial_Miku:
+			TF2_SetPlayerClass(Hale, TFClass_Scout, _, false);
 		case VSHSpecial_Hale:
 			TF2_SetPlayerClass(Hale, TFClass_Soldier, _, false);
 		case VSHSpecial_Vagineer:
@@ -711,9 +718,7 @@ public Action:MakeHale(Handle:hTimer)
 	{
 		HintPanel(Hale);
 
-		Call_StartForward(OnHaleCreated);
-		Call_PushCellRef(Hale);
-		Call_Finish();
+		DoForward_VSHOnHaleCreated();
 	}
 
 	return Plugin_Continue;
