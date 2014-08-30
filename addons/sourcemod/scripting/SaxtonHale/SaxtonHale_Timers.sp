@@ -710,6 +710,10 @@ public Action:MakeHale(Handle:hTimer)
 	if (VSHRoundState >= 0 && GetClientClasshelpinfoCookie(Hale))
 	{
 		HintPanel(Hale);
+
+		Call_StartForward(OnHaleCreated);
+		Call_PushCellRef(Hale);
+		Call_Finish();
 	}
 
 	return Plugin_Continue;
@@ -1003,16 +1007,8 @@ public Action:ClientTimer(Handle:hTimer)
 
 			if (bAlwaysShowHealth)
 			{
-				if(bShowHealthBar)
-				{
-					//UpdateBossHealth(client);
-					UpdateBossHealth();
-				}
-				else
-				{
-					SetHudTextParams(-1.0, bHudAdjust?0.78:0.83, 0.35, 255, 255, 255, 255);
-					if (!(GetClientButtons(client) & IN_SCORE)) ShowSyncHudText(client, healthHUD, "%t", "vsh_health", HaleHealth, HaleHealthMax);
-				}
+				SetHudTextParams(-1.0, bHudAdjust?0.78:0.83, 0.35, 255, 255, 255, 255);
+				if (!(GetClientButtons(client) & IN_SCORE)) ShowSyncHudText(client, healthHUD, "%t", "vsh_health", HaleHealth, HaleHealthMax);
 			}
 
 //          else if (AirBlastReload[client]>0)
@@ -1158,14 +1154,7 @@ public Action:HaleTimer(Handle:hTimer)
 	SetHaleHealthFix(Hale, HaleHealth, HaleHealthMax);
 	SetHudTextParams(-1.0, 0.77, 0.35, 255, 255, 255, 255);
 	SetGlobalTransTarget(Hale);
-	if(bShowHealthBar)
-	{
-		UpdateBossHealth();
-	}
-	else
-	{
-		if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, healthHUD, "%t", "vsh_health", HaleHealth, HaleHealthMax);
-	}
+	if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, healthHUD, "%t", "vsh_health", HaleHealth, HaleHealthMax);
 	if (HaleRage/RageDMG >= 1)
 	{
 		if (IsFakeClient(Hale) && !(VSHFlags[Hale] & VSHFLAG_BOTRAGE))
