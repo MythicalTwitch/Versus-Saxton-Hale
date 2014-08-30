@@ -274,7 +274,6 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 							if (newhealth > max+25) newhealth = max+25;
 							SetEntProp(attacker, Prop_Data, "m_iHealth", newhealth);
 							//SetEntProp(attacker, Prop_Send, "m_iHealth", newhealth);
-							UpdateBossHealth();
 						}
 						if (TF2_IsPlayerInCondition(attacker, TFCond_OnFire)) TF2_RemoveCondition(attacker, TFCond_OnFire);
 					}
