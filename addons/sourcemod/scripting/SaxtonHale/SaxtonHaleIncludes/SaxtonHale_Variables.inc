@@ -1,6 +1,3 @@
-new bool:bShowHealthBar=true;
-new g_healthBar = -1;
-
 #if defined _steamtools_included
 new bool:steamtools = false;
 #endif
@@ -108,6 +105,8 @@ new defaulttakedamagetype;
 
 new bool:g_bClientRJFlag[MAXPLAYERS+1] = { false, ... };
 
+// HANDLES FOR FOWARDS:
+new Handle:OnHaleCreated;
 new Handle:OnHaleJump;
 new Handle:OnHaleRage;
 new Handle:OnHaleWeighdown;
@@ -130,3 +129,4 @@ new Handle:OnGetRoundState;*/
 //new bool:ACH_Enabled;
 
 new numHaleKills = 0;    //See if the Hale was boosting his buddies or afk
+
