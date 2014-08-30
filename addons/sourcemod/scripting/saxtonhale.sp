@@ -447,6 +447,24 @@ public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PAT
 			}
 			return Plugin_Continue;
 		}
+		if (Special == VSHSpecial_Miku)
+		{
+			//if (StrContains(sample, "scout", false) == -1 && !GetRandomInt(0, 2))
+			if (StrContains(sample, "scout", false) > -1)
+			{
+				//if(!GetRandomInt(0, 2))
+				//{
+				//Do sound things
+				strcopy(sample, PLATFORM_MAX_PATH, MikuRandomVoice[GetRandomInt(0, sizeof(MikuRandomVoice)-1)]);
+				return Plugin_Changed;
+				//}
+				//else
+				//{
+					//return Plugin_Handled;
+				//}
+			}
+			return Plugin_Continue;
+		}
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;

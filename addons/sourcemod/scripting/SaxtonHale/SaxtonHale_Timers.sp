@@ -1341,6 +1341,8 @@ public Action:HaleTimer(Handle:hTimer)
 						strcopy(s, PLATFORM_MAX_PATH, CBSJump1);
 					case VSHSpecial_Bunny:
 						strcopy(s, PLATFORM_MAX_PATH, BunnyJump[GetRandomInt(0, sizeof(BunnyJump)-1)]);
+					case VSHSpecial_Miku:
+						strcopy(s, PLATFORM_MAX_PATH, MikuJump[GetRandomInt(0, sizeof(MikuJump)-1)]);
 					case VSHSpecial_Hale:
 					{
 						Format(s, PLATFORM_MAX_PATH, "%s%i.wav", GetRandomInt(0, 1) ? HaleJump : HaleJump132, GetRandomInt(1, 2));
@@ -1586,8 +1588,13 @@ public Action:CheckAlivePlayers(Handle:hTimer)
 			}
 			else if (Special == VSHSpecial_Bunny)
 				strcopy(s, PLATFORM_MAX_PATH, BunnyLast[GetRandomInt(0, sizeof(BunnyLast)-1)]);
+
+			else if (Special == VSHSpecial_Miku)
+				strcopy(s, PLATFORM_MAX_PATH, MikuLast[GetRandomInt(0, sizeof(MikuLast)-1)]);
+
 			else if (Special == VSHSpecial_Vagineer)
 				strcopy(s, PLATFORM_MAX_PATH, VagineerLastA);
+
 			else
 			{
 				new see = GetRandomInt(0, 5);
@@ -1629,6 +1636,10 @@ public Action:StartResponceTimer(Handle:hTimer)
 		case VSHSpecial_Bunny:
 		{
 			strcopy(s, PLATFORM_MAX_PATH, BunnyStart[GetRandomInt(0, sizeof(BunnyStart)-1)]);
+		}
+		case VSHSpecial_Miku:
+		{
+			strcopy(s, PLATFORM_MAX_PATH, MikuStart[GetRandomInt(0, sizeof(MikuStart)-1)]);
 		}
 		case VSHSpecial_Vagineer:
 		{

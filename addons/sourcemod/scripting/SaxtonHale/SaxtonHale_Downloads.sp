@@ -318,6 +318,62 @@ public AddToDownload()
 	{
 		PrecacheSound(BunnyStart[i], true);
 	}
+#endif
+#if defined MIKU_ON
+	for (i = 0; i < sizeof(MikuWin); i++)
+	{
+		PrecacheSound(MikuWin[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuWin[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuJump); i++)
+	{
+		PrecacheSound(MikuJump[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuJump[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuRage); i++)
+	{
+		PrecacheSound(MikuRage[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuRage[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuFail); i++)
+	{
+		PrecacheSound(MikuFail[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuFail[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuKill); i++)
+	{
+		PrecacheSound(MikuKill[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuKill[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuSpree); i++)
+	{
+		PrecacheSound(MikuSpree[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuSpree[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuLast); i++)
+	{
+		PrecacheSound(MikuLast[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuLast[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuPain); i++)
+	{
+		PrecacheSound(MikuPain[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuPain[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuStart); i++)
+	{
+		PrecacheSound(MikuStart[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuStart[i]);
+		AddFileToDownloadsTable(s);
+	}
 
 #endif
 }

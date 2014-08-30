@@ -378,6 +378,21 @@ public Action:DoTaunt(client, const String:command[], argc)
 				//add charging?
 				CreateTimer(0.6, UseRage, dist);
 			}
+			case VSHSpecial_Miku:
+			{
+				strcopy(s, PLATFORM_MAX_PATH, MikuRage[GetRandomInt(1, sizeof(MikuRage)-1)]);
+				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
+				//TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
+				//new weapon = SpawnWeapon(client, "tf_weapon_grenadelauncher", 19, 100, 5, "1 ; 0.6 ; 6 ; 0.1 ; 411 ; 150.0 ; 413 ; 1.0 ; 37 ; 0.0 ; 280 ; 17 ; 477 ; 1.0 ; 467 ; 1.0 ; 181 ; 2.0 ; 252 ; 0.7");
+				//SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", weapon);
+				//SetEntProp(weapon, Prop_Send, "m_iClip1", 50);
+//              new vm = CreateVM(client, ReloadEggModel);
+//              SetEntPropEnt(vm, Prop_Send, "m_hWeaponAssociatedWith", weapon);
+//              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
+				//SetAmmo(client, TFWeaponSlot_Primary, 0);
+				//add charging?
+				CreateTimer(0.6, UseRage, dist);
+			}
 			case VSHSpecial_CBS:
 			{
 				if (GetRandomInt(0, 1))
