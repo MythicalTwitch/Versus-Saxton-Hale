@@ -191,7 +191,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 		Hale = tHale;
 	}
 
-	SDKHook(Hale, SDKHook_GetMaxHealth, OnGetMaxHealth);
+	//SDKHook(Hale, SDKHook_GetMaxHealth, OnGetMaxHealth);
 
 	bTenSecStart[0] = true;
 	bTenSecStart[1] = true;
