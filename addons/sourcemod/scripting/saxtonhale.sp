@@ -22,7 +22,7 @@ New plugin thread on AlliedMods: https://forums.alliedmods.net/showthread.php?p=
 #include "SaxtonHale/SaxtonHale_SDKHooks.sp"
 #include "SaxtonHale/SaxtonHale_Menu.sp"
 #include "SaxtonHale/SaxtonHale_OnConnect_OnDisconnect_etc.sp"
-#include "SaxtonHale/SaxtonHale_Health_Bar.sp"
+#include "SaxtonHale/SaxtonHale_Health.sp"
 #include "SaxtonHale/SaxtonHale_Equipment.sp"
 
 public Plugin:myinfo = {
@@ -451,11 +451,6 @@ public OnEntityCreated(entity, const String:classname[])
 {
 	if (Enabled && VSHRoundState == 1 && strcmp(classname, "tf_projectile_pipe", false) == 0)
 		SDKHook(entity, SDKHook_SpawnPost, OnEggBombSpawned);
-
-	if (StrEqual(classname, HEALTHBAR_CLASS))
-	{
-		g_healthBar = entity;
-	}
 }
 
 // OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned
