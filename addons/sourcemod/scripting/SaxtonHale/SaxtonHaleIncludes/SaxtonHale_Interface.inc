@@ -86,6 +86,40 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+stock Directory_AddFileToDownloadsTable(String:custom_path[])
+{
+	//decl String:path2[PLATFORM_MAX_PATH];
+
+	new String:path[1024];
+	new FileType:type;
+
+	new Handle:dir = OpenDirectory(custom_path);
+	if (dir == INVALID_HANDLE)
+	{
+		return;
+	}
+	new String:ThePath[1024];
+
+	while (ReadDirEntry(dir, path, sizeof(path), type))
+	{
+		if (type == FileType_File)
+		{
+			Format(ThePath, sizeof(ThePath), "%s%s",custom_path,path);
+
+			if(StrContains(path,".mdl") != -1)
+			{
+				//LogDownloads("PrecacheModel:");
+				PrecacheModel(ThePath,true);
+			}
+
+			AddFileToDownloadsTable(ThePath);
+			//PrintToServer("[STORE-SKINS] Downloads table: %s",ThePath);
+			//LogDownloads(ThePath);
+		}
+	}
+
+	CloseHandle(dir);
+}
 
 stock bool:IsSaxtonHaleMap(bool:forceRecalc = false)
 {
@@ -260,6 +294,9 @@ stock bool:CheckNextSpecial()
 				case 3: Incoming = VSHSpecial_CBS;
 #if defined EASTER_BUNNY_ON
 				case 4: Incoming = VSHSpecial_Bunny;
+#endif
+#if defined MIKU_ON
+				case 5: Incoming = VSHSpecial_Miku;
 #endif
 				default: Incoming = VSHSpecial_Hale;
 			}
