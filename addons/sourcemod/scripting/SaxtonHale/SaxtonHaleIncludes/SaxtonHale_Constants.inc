@@ -21,10 +21,6 @@
 #define ReloadEggModel "models/player/saxton_hale/c_easter_cannonball.mdl"
 #define ReloadEggModelPrefix "models/player/saxton_hale/c_easter_cannonball"
 
-#define HEALTHBAR_CLASS "monster_resource"
-#define HEALTHBAR_PROPERTY "m_iBossHealthPercentageByte"
-#define HEALTHBAR_MAX 255
-
 stock const String:BunnyWin[][] = {
 	"vo/demoman_gibberish01.wav",
 	"vo/demoman_gibberish12.wav",
