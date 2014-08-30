@@ -1,6 +1,5 @@
 public OnMapStart()
 {
-	FindHealthBar();
 	HPTime = 0.0;
 	KSpreeTimer = 0.0;
 	MusicTimer = INVALID_HANDLE;
