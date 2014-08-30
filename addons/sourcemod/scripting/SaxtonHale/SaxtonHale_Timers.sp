@@ -1341,8 +1341,10 @@ public Action:HaleTimer(Handle:hTimer)
 						strcopy(s, PLATFORM_MAX_PATH, CBSJump1);
 					case VSHSpecial_Bunny:
 						strcopy(s, PLATFORM_MAX_PATH, BunnyJump[GetRandomInt(0, sizeof(BunnyJump)-1)]);
+#if defined MIKU_ON
 					case VSHSpecial_Miku:
 						strcopy(s, PLATFORM_MAX_PATH, MikuJump[GetRandomInt(0, sizeof(MikuJump)-1)]);
+#endif
 					case VSHSpecial_Hale:
 					{
 						Format(s, PLATFORM_MAX_PATH, "%s%i.wav", GetRandomInt(0, 1) ? HaleJump : HaleJump132, GetRandomInt(1, 2));
@@ -1428,7 +1430,12 @@ public Action:HHHTeleTimer(Handle:timer)
 	SetEntProp(Hale, Prop_Send, "m_CollisionGroup", 5); //Fix HHH's clipping.
 	hHHHTeleTimer = INVALID_HANDLE;
 }
-
+#if defined MIKU_ON
+public Action:EndMikuRage(Handle:hTimer)
+{
+	VSHSpecial_Miku_Rage=false;
+}
+#endif
 public Action:UseRage(Handle:hTimer, any:dist)
 {
 	decl Float:pos[3];
@@ -1588,10 +1595,10 @@ public Action:CheckAlivePlayers(Handle:hTimer)
 			}
 			else if (Special == VSHSpecial_Bunny)
 				strcopy(s, PLATFORM_MAX_PATH, BunnyLast[GetRandomInt(0, sizeof(BunnyLast)-1)]);
-
+#if defined MIKU_ON
 			else if (Special == VSHSpecial_Miku)
 				strcopy(s, PLATFORM_MAX_PATH, MikuLast[GetRandomInt(0, sizeof(MikuLast)-1)]);
-
+#endif
 			else if (Special == VSHSpecial_Vagineer)
 				strcopy(s, PLATFORM_MAX_PATH, VagineerLastA);
 
@@ -1637,10 +1644,12 @@ public Action:StartResponceTimer(Handle:hTimer)
 		{
 			strcopy(s, PLATFORM_MAX_PATH, BunnyStart[GetRandomInt(0, sizeof(BunnyStart)-1)]);
 		}
+#if defined MIKU_ON
 		case VSHSpecial_Miku:
 		{
 			strcopy(s, PLATFORM_MAX_PATH, MikuStart[GetRandomInt(0, sizeof(MikuStart)-1)]);
 		}
+#endif
 		case VSHSpecial_Vagineer:
 		{
 			if (!GetRandomInt(0, 1))

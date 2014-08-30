@@ -374,6 +374,5 @@ public AddToDownload()
 		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuStart[i]);
 		AddFileToDownloadsTable(s);
 	}
-
 #endif
 }

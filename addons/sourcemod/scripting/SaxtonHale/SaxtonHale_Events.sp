@@ -300,12 +300,14 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 				EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, _, NULL_VECTOR, false, 0.0);
 				EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, _, NULL_VECTOR, false, 0.0);
 			}
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 			{
 				strcopy(s, PLATFORM_MAX_PATH, MikuWin[GetRandomInt(0, sizeof(MikuWin)-1)]);
 				EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, _, NULL_VECTOR, false, 0.0);
 				EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, _, NULL_VECTOR, false, 0.0);
 			}
+#endif
 		}
 	}
 	for (new i = 1 ; i <= MaxClients; i++)
@@ -547,6 +549,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 //              CreateTimer(0.1, Timer_ChangeRagdoll, any:GetEventInt(event, "userid"));
 				SpawnManyAmmoPacks(client, EggModel, 1);
 			}
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 			{
 				strcopy(s, PLATFORM_MAX_PATH, MikuFail[GetRandomInt(0, sizeof(MikuFail)-1)]);
@@ -555,6 +558,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 //              CreateTimer(0.1, Timer_ChangeRagdoll, any:GetEventInt(event, "userid"));
 				//SpawnManyAmmoPacks(client, EggModel, 1);
 			}
+#endif
 		}
 		if (HaleHealth < 0)
 			HaleHealth = 0;
@@ -626,12 +630,14 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 				EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 				EmitSoundToAll(s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 			}
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 			{
 				strcopy(s, PLATFORM_MAX_PATH, MikuKill[GetRandomInt(0, sizeof(MikuKill)-1)]);
 				EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 				EmitSoundToAll(s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 			}
+#endif
 			case VSHSpecial_CBS:
 			{
 				if (!GetRandomInt(0, 3) && RedAlivePlayers != 1)
@@ -707,10 +713,12 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 				{
 					strcopy(s, PLATFORM_MAX_PATH, BunnySpree[GetRandomInt(0, sizeof(BunnySpree)-1)]);
 				}
+#if defined MIKU_ON
 				case VSHSpecial_Miku:
 				{
 					strcopy(s, PLATFORM_MAX_PATH, MikuSpree[GetRandomInt(0, sizeof(MikuSpree)-1)]);
 				}
+#endif
 			}
 			EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 			EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);

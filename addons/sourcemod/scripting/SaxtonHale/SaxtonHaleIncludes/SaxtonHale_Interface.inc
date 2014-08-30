@@ -86,6 +86,57 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+stock Float:moveForward(Float:vel[3],Float:MaxSpeed){
+	//move forward. buttons |=IN_FORWARD does nothing.
+	vel[0] = MaxSpeed;
+	return vel;
+}
+stock Float:moveBackwards(Float:vel[3],Float:MaxSpeed){
+	//move forward. buttons |=IN_FORWARD does nothing.
+	vel[0] = -MaxSpeed;
+	return vel;
+}
+public bool:LOSFilter(entity,mask)
+{
+	return !(entity==ignoreClient || (ValidPlayer(entity,true)&&entity!=los_target));
+}
+stock LOS(client,target)
+{
+	los_target=target;
+	if(ValidPlayer(client,true)&&ValidPlayer(target,true))
+	{
+		new Float:PlayerEyePos[3];
+		new Float:OtherPlayerPos[3];
+		GetClientEyePosition(client,PlayerEyePos); //GetClientEyePosition(
+		GetClientEyePosition(target,OtherPlayerPos); //GetClientAbsPosition
+		//ignoreClient=client;
+		TR_TraceRayFilter(PlayerEyePos,OtherPlayerPos,MASK_ALL,RayType_EndPoint,LOSFilter);
+		if(TR_DidHit())
+		{
+			new entity=TR_GetEntityIndex();
+			if(entity==target)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
+	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
+	{
+		if(check_alive && !IsPlayerAlive(client))
+		{
+			return false;
+		}
+		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
 stock Directory_AddFileToDownloadsTable(String:custom_path[])
 {
 	//decl String:path2[PLATFORM_MAX_PATH];

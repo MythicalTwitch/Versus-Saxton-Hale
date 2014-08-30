@@ -24,39 +24,40 @@
 // Working on Adding Miku as a new boss..
 
 #define MIKU_ON
-#define MikuModel "models/custom/player/miku/miku.mdl"
 
+#if defined MIKU_ON
+#define MikuModel "models/custom/player/miku/miku.mdl"
 //VSHSpecial_Miku
 stock const String:MikuWin[][] = {
 	"saxton_hale/miku/miku_yay.mp3",
 	"saxton_hale/miku/miku_yay2.mp3",
 	"saxton_hale/miku/miku_yay3.mp3"
-}
+};
 stock const String:MikuJump[][] = {
 	"saxton_hale/miku/miku_huh.mp3",
 	"saxton_hale/miku/miku_huh2.mp3"
-}
+};
 stock const String:MikuRage[][] = {
 	"saxton_hale/miku/miku_excuse_me.mp3",
 	"saxton_hale/miku/miku_no.mp3"
-}
+};
 stock const String:MikuFail[][] = {
 	"saxton_hale/miku/miku_go_away.mp3",
 	"saxton_hale/miku/miku_see_you_next_time.mp3"
-}
+};
 stock const String:MikuKill[][] = {
 	"saxton_hale/miku/miku_goodnight.mp3",
 	"saxton_hale/miku/miku_goodnight2.mp3",
 	"saxton_hale/miku/miku_goodbye.mp3"
-}
+};
 stock const String:MikuSpree[][] = {
 	"saxton_hale/miku/miku_no_way.mp3",
 	"saxton_hale/miku/miku_i_like_this.mp3"
-}
+};
 stock const String:MikuLast[][] = {
 	"saxton_hale/miku_awesome.mp3",
 	"saxton_hale/miku_come_here.mp3"
-}
+};
 stock const String:MikuPain[][] = {
 	"saxton_hale/miku/miku_help1.mp3",
 	"saxton_hale/miku/miku_help2.mp3",
@@ -64,22 +65,20 @@ stock const String:MikuPain[][] = {
 	"saxton_hale/miku/miku_stop_bothering_me.mp3",
 	"saxton_hale/miku/miku_leave_me_alone.mp3",
 	"saxton_hale/miku/miku_stop.mp3"
-}
+};
 stock const String:MikuStart[][] = {
 	"saxton_hale/miku/miku_go.mp3",
 	"saxton_hale/miku_good_morning.mp3",
 	"saxton_hale/miku_cute.mp3"
-}
+};
 stock const String:MikuRandomVoice[][] = {
 	"saxton_hale/miku/miku_what.mp3",
 	"saxton_hale/miku/miku_what2.mp3",
 	"saxton_hale/miku/miku_what3.mp3",
 	"saxton_hale/miku/miku_what4.mp3",
 	"saxton_hale/miku/miku_what_is_this.mp3"
-}
-
-// copying EASTER_BUNNY_ON sounds..
-// follow VSHSpecial_Bunny and copy pattern
+};
+#endif
 
 stock const String:BunnyWin[][] = {
 	"vo/demoman_gibberish01.wav",

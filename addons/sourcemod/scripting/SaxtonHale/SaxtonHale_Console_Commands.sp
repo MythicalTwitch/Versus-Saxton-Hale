@@ -334,6 +334,7 @@ public Action:DoTaunt(client, const String:command[], argc)
 		{
 			case VSHSpecial_Vagineer: dist = RageDist/(1.5);
 			case VSHSpecial_Bunny: dist = RageDist/(1.5);
+			case VSHSpecial_Miku: dist = RageDist*2.5;
 			case VSHSpecial_CBS: dist = RageDist/(2.5);
 			default: dist = RageDist;
 		}
@@ -378,6 +379,7 @@ public Action:DoTaunt(client, const String:command[], argc)
 				//add charging?
 				CreateTimer(0.6, UseRage, dist);
 			}
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 			{
 				strcopy(s, PLATFORM_MAX_PATH, MikuRage[GetRandomInt(1, sizeof(MikuRage)-1)]);
@@ -391,8 +393,11 @@ public Action:DoTaunt(client, const String:command[], argc)
 //              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
 				//SetAmmo(client, TFWeaponSlot_Primary, 0);
 				//add charging?
+				VSHSpecial_Miku_Rage=true;
+				CreateTimer(10.0, EndMikuRage);
 				CreateTimer(0.6, UseRage, dist);
 			}
+#endif
 			case VSHSpecial_CBS:
 			{
 				if (GetRandomInt(0, 1))

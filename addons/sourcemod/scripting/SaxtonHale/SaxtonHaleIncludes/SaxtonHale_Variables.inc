@@ -21,6 +21,14 @@ enum
 	VSHSpecial_Bunny, //ohgodwhy
 	VSHSpecial_Miku
 }
+
+#if defined MIKU_ON
+new bool:VSHSpecial_Miku_Rage=false;
+new Float:angleOffset[MAXPLAYERS+1];
+new los_target;
+new ignoreClient;
+#endif
+
 new Damage[MAXPLAYERS + 1];
 new AirDamage[MAXPLAYERS + 1]; // Air Strike
 new curHelp[MAXPLAYERS + 1];
