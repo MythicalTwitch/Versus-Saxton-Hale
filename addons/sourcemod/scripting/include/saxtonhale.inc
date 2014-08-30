@@ -75,6 +75,14 @@ native VSH_GetClientDamage(client);
 native VSH_GetRoundState();
 
 /**
+ * When Hale is created.
+ *
+ * @param iHale 	integer index of Hale.
+ * @return		    Returning does nothing.
+ */
+forward Action:VSH_OnHaleCreated(iHale);
+
+/**
  * When Hale attempts to superjump/teleport.
  *
  * @param bSuperDuper 	Boolean for whether the jump is a superjump.
@@ -110,7 +118,7 @@ forward Action:VSH_OnDoWeighdown();
  */
 forward Action:VSH_OnMusic(String:sound[], &Float:time);
 
-public SharedPlugin:__pl_SaxtonHale = 
+public SharedPlugin:__pl_SaxtonHale =
 {
 	name = "saxtonhale",
 	file = "saxtonhale.smx",
