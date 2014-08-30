@@ -448,11 +448,6 @@ public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroa
 
 public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(g_healthBar == -1)
-	{
-		g_healthBar = CreateEntityByName(HEALTHBAR_CLASS);
-	}
-
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (!IsValidClient(client, false)) return Plugin_Continue;
 	if (!Enabled) return Plugin_Continue;
