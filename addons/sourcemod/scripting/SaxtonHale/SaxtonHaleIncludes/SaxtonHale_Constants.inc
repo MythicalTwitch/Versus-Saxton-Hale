@@ -21,6 +21,15 @@
 #define ReloadEggModel "models/player/saxton_hale/c_easter_cannonball.mdl"
 #define ReloadEggModelPrefix "models/player/saxton_hale/c_easter_cannonball"
 
+// Working on Adding Miku as a new boss..
+
+#define MIKU_ON
+#define MikuModel "models/custom/player/miku/miku.mdl"
+
+//VSHSpecial_Miku
+// copying EASTER_BUNNY_ON sounds..
+// follow VSHSpecial_Bunny and copy pattern
+
 stock const String:BunnyWin[][] = {
 	"vo/demoman_gibberish01.wav",
 	"vo/demoman_gibberish12.wav",
@@ -91,6 +100,9 @@ stock const String:BunnyRandomVoice[][] = {
 	"vo/burp06.wav",
 	"vo/burp07.wav"
 };
+
+// MIKU
+#define MIKUTheme "saxton_hale/miku_song.mp3"
 
 #define HaleModel "models/player/saxton_hale/saxton_hale.mdl"
 #define HaleModelPrefix "models/player/saxton_hale/saxton_hale"

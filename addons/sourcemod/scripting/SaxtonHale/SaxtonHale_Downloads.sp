@@ -51,6 +51,11 @@ public AddToDownload()
 		AddFileToDownloadsTable("materials/models/props_easteregg/c_easteregg_gold.vmt");
 		AddFileToDownloadsTable("materials/models/player/easter_demo/eyeball_r.vmt");
 #endif
+
+#if defined MIKU_ON
+		Directory_AddFileToDownloadsTable("models/custom/player/miku/");
+		Directory_AddFileToDownloadsTable("materials/models/custom/player/hatsunemiku/");
+#endif
 	}
 	for (i = 0; i < sizeof(extensionsb); i++)
 	{
