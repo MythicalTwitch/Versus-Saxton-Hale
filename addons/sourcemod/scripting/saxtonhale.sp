@@ -169,6 +169,15 @@ public OnLibraryRemoved(const String:name[])
 //      ACH_Enabled = false;
 }
 
+public DoForward_VSHOnHaleCreated()
+{
+	SDKHook(Hale, SDKHook_GetMaxHealth, OnGetMaxHealth);
+
+	Call_StartForward(OnHaleCreated);
+	Call_PushCellRef(Hale);
+	Call_Finish();
+}
+
 // OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
 // OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
 // OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
