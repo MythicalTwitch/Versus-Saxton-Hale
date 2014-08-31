@@ -360,6 +360,11 @@ public Action:Timer_MusicPlay(Handle:timer)
 				strcopy(sound, sizeof(sound), HHHTheme);
 				time = 87.0;
 			}
+			case VSHSpecial_Miku:
+			{
+				strcopy(sound, sizeof(sound), MIKUTheme);
+				time = 210.0;
+			}
 		}
 	}
 	new Action:act = Plugin_Continue;
@@ -1371,8 +1376,10 @@ public Action:HaleTimer(Handle:hTimer)
 	{
 		switch (Special)
 		{
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 				PrintCenterTextAll("%t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
+#endif
 			case VSHSpecial_Bunny:
 				PrintCenterTextAll("%t", "vsh_bunny_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Vagineer:

@@ -477,8 +477,10 @@ public Action:Command_GetHP(client)
 	{
 		switch (Special)
 		{
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 				PrintCenterTextAll("%t", "vsh_miku_show_hp", HaleHealth, HaleHealthMax);
+#endif
 			case VSHSpecial_Bunny:
 				PrintCenterTextAll("%t", "vsh_bunny_show_hp", HaleHealth, HaleHealthMax);
 			case VSHSpecial_Vagineer:
@@ -498,11 +500,13 @@ public Action:Command_GetHP(client)
 		healthcheckused++;
 		switch (Special)
 		{
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 			{
 				PrintCenterTextAll("%t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
 				CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
 			}
+#endif
 			case VSHSpecial_Bunny:
 			{
 				PrintCenterTextAll("%t", "vsh_bunny_hp", HaleHealth, HaleHealthMax);

@@ -744,6 +744,7 @@ stock StopHaleMusic(client)
 //  StopSound(client, SNDCHAN_AUTO, HaleTempTheme);
 	StopSound(client, SNDCHAN_AUTO, HHHTheme);
 	StopSound(client, SNDCHAN_AUTO, CBSTheme);
+	StopSound(client, SNDCHAN_AUTO, MIKUTheme);
 }
 
 stock SetControlPoint(bool:enable)

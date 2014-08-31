@@ -99,6 +99,9 @@ public OnPluginStart()
 #if defined EASTER_BUNNY_ON
 	LoadTranslations("saxtonhale_bunny.phrases");
 #endif
+#if defined MIKU_ON
+	LoadTranslations("saxtonhale_miku.phrases");
+#endif
 	LoadTranslations("common.phrases");
 	for (new client = 0; client <= MaxClients; client++)
 	{
@@ -226,7 +229,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 #if defined MIKU_ON
-		else if (Special == VSHSpecial_Miku && VSHSpecial_Miku_Rage)
+		else if (Special == VSHSpecial_Miku && VSHSpecial_Miku_Rage && client != Hale)
 		{
 			if(ValidPlayer(client,true) && Hale>0){
 				new Float:slaveVecs[3];

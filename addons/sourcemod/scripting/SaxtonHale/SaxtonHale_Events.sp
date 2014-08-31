@@ -330,7 +330,9 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 			decl String:translation[32];
 			switch (Special)
 			{
+#if defined MIKU_ON
 				case VSHSpecial_Miku:       strcopy(translation, sizeof(translation), "vsh_miku_is_alive");
+#endif
 				case VSHSpecial_Bunny:      strcopy(translation, sizeof(translation), "vsh_bunny_is_alive");
 				case VSHSpecial_Vagineer:   strcopy(translation, sizeof(translation), "vsh_vagineer_is_alive");
 				case VSHSpecial_HHH:        strcopy(translation, sizeof(translation), "vsh_hhh_is_alive");
@@ -442,9 +444,11 @@ public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroa
 			case VSHSpecial_HHH, VSHSpecial_Bunny:
 				if (TF2_GetPlayerClass(client) != TFClass_DemoMan)
 					TF2_SetPlayerClass(client, TFClass_DemoMan, _, false);
+#if defined MIKU_ON
 			case VSHSpecial_Miku:
 				if (TF2_GetPlayerClass(client) != TFClass_Scout)
 					TF2_SetPlayerClass(client, TFClass_Scout, _, false);
+#endif
 			case VSHSpecial_CBS:
 				if (TF2_GetPlayerClass(client) != TFClass_Sniper)
 					TF2_SetPlayerClass(client, TFClass_Sniper, _, false);
@@ -506,7 +510,9 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	new deathflags = GetEventInt(event, "death_flags");
 	new customkill = GetEventInt(event, "customkill");
 	if (attacker == Hale && Special == VSHSpecial_Bunny && VSHRoundState == 1)  SpawnManyAmmoPacks(client, EggModel, 1, 5, 120.0);
+#if defined MIKU_ON
 	if (attacker == Hale && Special == VSHSpecial_Miku) VSHSpecial_Miku_Rage = false;
+#endif
 	if (attacker == Hale && VSHRoundState == 1 && (deathflags & TF_DEATHFLAG_DEADRINGER))
 	{
 		numHaleKills++;

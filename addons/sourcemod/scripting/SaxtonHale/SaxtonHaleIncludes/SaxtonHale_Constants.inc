@@ -55,8 +55,8 @@ stock const String:MikuSpree[][] = {
 	"saxton_hale/miku/miku_i_like_this.mp3"
 };
 stock const String:MikuLast[][] = {
-	"saxton_hale/miku_awesome.mp3",
-	"saxton_hale/miku_come_here.mp3"
+	"saxton_hale/miku/miku_awesome.mp3",
+	"saxton_hale/miku/miku_come_here.mp3"
 };
 stock const String:MikuPain[][] = {
 	"saxton_hale/miku/miku_help1.mp3",
@@ -68,8 +68,8 @@ stock const String:MikuPain[][] = {
 };
 stock const String:MikuStart[][] = {
 	"saxton_hale/miku/miku_go.mp3",
-	"saxton_hale/miku_good_morning.mp3",
-	"saxton_hale/miku_cute.mp3"
+	"saxton_hale/miku/miku_good_morning.mp3",
+	"saxton_hale/miku/miku_cute.mp3"
 };
 stock const String:MikuRandomVoice[][] = {
 	"saxton_hale/miku/miku_what.mp3",
@@ -152,7 +152,7 @@ stock const String:BunnyRandomVoice[][] = {
 };
 
 // MIKU
-#define MIKUTheme "saxton_hale/miku_song.mp3"
+#define MIKUTheme "saxton_hale/miku/miku_song.mp3"
 
 #define HaleModel "models/player/saxton_hale/saxton_hale.mdl"
 #define HaleModelPrefix "models/player/saxton_hale/saxton_hale"

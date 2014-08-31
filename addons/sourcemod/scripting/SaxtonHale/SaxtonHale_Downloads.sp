@@ -320,6 +320,9 @@ public AddToDownload()
 	}
 #endif
 #if defined MIKU_ON
+	PrecacheSound(MIKUTheme, true);
+	AddFileToDownloadsTable("sound/saxton_hale/miku/miku_song.mp3");
+
 	for (i = 0; i < sizeof(MikuWin); i++)
 	{
 		PrecacheSound(MikuWin[i], true);
@@ -372,6 +375,12 @@ public AddToDownload()
 	{
 		PrecacheSound(MikuStart[i], true);
 		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuStart[i]);
+		AddFileToDownloadsTable(s);
+	}
+	for (i = 0; i < sizeof(MikuRandomVoice); i++)
+	{
+		PrecacheSound(MikuRandomVoice[i], true);
+		Format(s, PLATFORM_MAX_PATH, "sound/%s", MikuRandomVoice[i]);
 		AddFileToDownloadsTable(s);
 	}
 #endif
