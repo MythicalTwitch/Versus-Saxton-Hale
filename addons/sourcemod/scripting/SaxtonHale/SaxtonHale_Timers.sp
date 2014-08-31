@@ -474,6 +474,7 @@ public Action:StartRound(Handle:hTimer)
 				CreateTimer(0.05, Timer_ReEquipSaxton, _, TIMER_FLAG_NO_MAPCHANGE);
 			//EquipSaxton(Hale);
 		}
+		DoForward_VSHOnHaleCreated();
 	}
 	CreateTimer(10.0, Timer_SkipHalePanel);
 	return Plugin_Continue;
@@ -529,6 +530,7 @@ public Action:StartHaleTimer(Handle:hTimer)
 	{
 		CreateTimer(2.0, Timer_MusicPlay, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
+
 	return Plugin_Continue;
 }
 
@@ -722,8 +724,6 @@ public Action:MakeHale(Handle:hTimer)
 	if (VSHRoundState >= ROUNDSTATE_EVENT_ROUND_START && GetClientClasshelpinfoCookie(Hale))
 	{
 		HintPanel(Hale);
-
-		DoForward_VSHOnHaleCreated();
 	}
 
 	return Plugin_Continue;

@@ -177,7 +177,7 @@ public DoForward_VSHOnHaleCreated()
 	SDKHook(Hale, SDKHook_GetMaxHealth, OnGetMaxHealth);
 
 	Call_StartForward(OnHaleCreated);
-	Call_PushCellRef(Hale);
+	Call_PushCell(Hale);
 	Call_Finish();
 }
 
