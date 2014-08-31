@@ -13,7 +13,6 @@ public Load_ConVars()
 	cvarCrits = CreateConVar("hale_crits", "0", "Can Hale get crits?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	cvarDemoShieldCrits = CreateConVar("hale_shield_crits", "0", "Does Demoman's shield grant crits (1) or minicrits (0)?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	cvarDisplayHaleHP = CreateConVar("hale_hp_display", "1", "Display Hale Health at all times.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	cvarDisplayHaleHPbar = CreateConVar("hale_hp_display_bar", "1", "Display Hale Health as a Health Bar.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	cvarRageSentry = CreateConVar("hale_ragesentrydamagemode", "1", "If 0, to repair a sentry that has been damaged by rage, the Engineer must pick it up and put it back down.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	cvarFirstRound = CreateConVar("hale_first_round", "0", "Disable(0) or Enable(1) VSH in 1st round.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	//cvarCircuitStun = CreateConVar("hale_circuit_stun", "0", "0 to disable Short Circuit stun, >0 to make it stun Hale for x seconds", FCVAR_PLUGIN, true, 0.0);
@@ -36,7 +35,6 @@ public Load_ConVarChange()
 	HookConVarChange(cvarCrits, CvarChange);
 	HookConVarChange(cvarDemoShieldCrits, CvarChange);
 	HookConVarChange(cvarDisplayHaleHP, CvarChange);
-	HookConVarChange(cvarDisplayHaleHPbar, CvarChange);
 	HookConVarChange(cvarRageSentry, CvarChange);
 	//HookConVarChange(cvarCircuitStun, CvarChange);
 }

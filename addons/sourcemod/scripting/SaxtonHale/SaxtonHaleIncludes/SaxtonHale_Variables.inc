@@ -60,7 +60,6 @@ new Handle:cvarRageSentry;
 new Handle:cvarFirstRound;
 new Handle:cvarDemoShieldCrits;
 new Handle:cvarDisplayHaleHP;
-new Handle:cvarDisplayHaleHPbar;
 //new Handle:cvarCircuitStun;
 new Handle:cvarForceSpecToHale;
 new Handle:cvarEnableEurekaEffect;
