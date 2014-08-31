@@ -115,7 +115,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	{
 		CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_needmoreplayers");
 		Enabled = false;
-		VSHRoundState = -1;
+		VSHRoundState = ROUNDSTATE_INVALID;
 		SetControlPoint(true);
 		return Plugin_Continue;
 	}
@@ -127,7 +127,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	{
 		CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_first_round");
 		Enabled = false;
-		VSHRoundState = -1;
+		VSHRoundState = ROUNDSTATE_INVALID;
 		SetArenaCapEnableTime(60.0);
 		SearchForItemPacks();
 		SetConVarInt(FindConVar("mp_teams_unbalance_limit"), 1);
@@ -177,7 +177,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	{
 		CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_needmoreplayers");
 		Enabled = false;
-		VSHRoundState = -1;
+		VSHRoundState = ROUNDSTATE_INVALID;
 		SetControlPoint(true);
 		return Plugin_Continue;
 	}
@@ -233,7 +233,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	CreateTimer(0.3, MakeHale);
 
 	healthcheckused = 0;
-	VSHRoundState = 0;
+	VSHRoundState = ROUNDSTATE_EVENT_ROUND_START;
 
 	return Plugin_Continue;
 }
@@ -276,7 +276,7 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 	{
 		return Plugin_Continue;
 	}
-	VSHRoundState = 2;
+	VSHRoundState = ROUNDSTATE_ROUND_END;
 	TeamRoundCounter++;
 	if (GetEventInt(event, "team") == HaleTeam)
 	{
@@ -469,9 +469,9 @@ public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBro
 	if (!Enabled) return Plugin_Continue;
 	SetVariantString("");
 	AcceptEntityInput(client, "SetCustomModel");
-	if (client == Hale && VSHRoundState < 2 && VSHRoundState != -1) CreateTimer(0.1, MakeHale);
+	if (client == Hale && VSHRoundState < ROUNDSTATE_ROUND_END && VSHRoundState != ROUNDSTATE_INVALID) CreateTimer(0.1, MakeHale);
 
-	if (VSHRoundState != -1)
+	if (VSHRoundState != ROUNDSTATE_INVALID)
 	{
 		CreateTimer(0.2, MakeNoHale, GetClientUserId(client));
 		if (!(VSHFlags[client] & VSHFLAG_HASONGIVED))
@@ -509,11 +509,11 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	new deathflags = GetEventInt(event, "death_flags");
 	new customkill = GetEventInt(event, "customkill");
-	if (attacker == Hale && Special == VSHSpecial_Bunny && VSHRoundState == 1)  SpawnManyAmmoPacks(client, EggModel, 1, 5, 120.0);
+	if (attacker == Hale && Special == VSHSpecial_Bunny && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)  SpawnManyAmmoPacks(client, EggModel, 1, 5, 120.0);
 #if defined MIKU_ON
 	if (attacker == Hale && Special == VSHSpecial_Miku) VSHSpecial_Miku_Rage = false;
 #endif
-	if (attacker == Hale && VSHRoundState == 1 && (deathflags & TF_DEATHFLAG_DEADRINGER))
+	if (attacker == Hale && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER && (deathflags & TF_DEATHFLAG_DEADRINGER))
 	{
 		numHaleKills++;
 		if (customkill != TF_CUSTOM_BOOTS_STOMP)
@@ -525,9 +525,9 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	if (GetClientHealth(client) > 0)
 		return Plugin_Continue;
 	CreateTimer(0.1, CheckAlivePlayers);
-	if (client != Hale && VSHRoundState == 1)
+	if (client != Hale && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 		CreateTimer(1.0, Timer_Damage, GetClientUserId(client));
-	if (client == Hale && VSHRoundState == 1)
+	if (client == Hale && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 	{
 		switch (Special)
 		{
@@ -576,7 +576,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 		ForceTeamWin(OtherTeam);
 		return Plugin_Continue;
 	}
-	if (attacker == Hale && VSHRoundState == 1)
+	if (attacker == Hale && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 	{
 		numHaleKills++;
 		switch (Special)

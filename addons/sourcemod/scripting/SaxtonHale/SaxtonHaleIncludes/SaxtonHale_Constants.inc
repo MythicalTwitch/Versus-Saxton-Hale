@@ -379,3 +379,13 @@ stock const String:haleversiondates[][] =
 };
 stock const maxversion = (sizeof(haleversiontitles) - 1);
 
+enum
+{
+	VSHSpecial_None = -1,
+	VSHSpecial_Hale,
+	VSHSpecial_Vagineer,
+	VSHSpecial_HHH,
+	VSHSpecial_CBS,
+	VSHSpecial_Bunny, //ohgodwhy
+	VSHSpecial_Miku
+}

@@ -22,7 +22,7 @@ public OnClientDisconnect(client)
 	{
 		if (client == Hale)
 		{
-			if (VSHRoundState == 1 || VSHRoundState == 2)
+			if (VSHRoundState == ROUNDSTATE_START_ROUND_TIMER || VSHRoundState == ROUNDSTATE_ROUND_END)
 			{
 				decl String:authid[32];
 				GetClientAuthString(client, authid, sizeof(authid));
@@ -47,11 +47,11 @@ public OnClientDisconnect(client)
 					}
 				}
 			}
-			if (VSHRoundState == 1)
+			if (VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 			{
 				ForceTeamWin(OtherTeam);
 			}
-			if (VSHRoundState == 0)
+			if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START)
 			{
 				new bool:see[MAXPLAYERS + 1];
 				see[Hale] = true;

@@ -33,7 +33,7 @@ public Action:Timer_Announce(Handle:hTimer)
 
 public Action:Timer_EnableCap(Handle:timer)
 {
-	if (VSHRoundState == -1)
+	if (VSHRoundState == ROUNDSTATE_INVALID)
 	{
 		SetControlPoint(true);
 		if (checkdoors)
@@ -57,7 +57,7 @@ public Action:Timer_CheckDoors(Handle:hTimer)
 		return Plugin_Stop;
 	}
 
-	if ((!Enabled && VSHRoundState != -1) || (Enabled && VSHRoundState != 1)) return Plugin_Continue;
+	if ((!Enabled && VSHRoundState != ROUNDSTATE_INVALID) || (Enabled && VSHRoundState != ROUNDSTATE_START_ROUND_TIMER)) return Plugin_Continue;
 	new ent = -1;
 	while ((ent = FindEntityByClassname2(ent, "func_door")) != -1)
 	{
@@ -84,7 +84,7 @@ public Action:Timer_MusicTheme(Handle:timer, any:pack)
 	ResetPack(pack);
 	ReadPackString(pack, sound, sizeof(sound));
 	new Float:time = ReadPackFloat(pack);
-	if (Enabled && VSHRoundState == 1)
+	if (Enabled && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 	{
 /*      new String:sound[PLATFORM_MAX_PATH] = "";
 		switch (Special)
@@ -196,7 +196,7 @@ public Action:Timer_NoHonorBound(Handle:timer, any:userid)
 public Action:Timer_Lazor(Handle:hTimer, any:medigunid)
 {
 	new medigun = EntRefToEntIndex(medigunid);
-	if (medigun && IsValidEntity(medigun) && VSHRoundState == 1)
+	if (medigun && IsValidEntity(medigun) && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 	{
 		new client = GetEntPropEnt(medigun, Prop_Send, "m_hOwnerEntity");
 		new Float:charge = GetEntPropFloat(medigun, Prop_Send, "m_flChargeLevel");
@@ -328,7 +328,7 @@ public Action:Timer_SetEggBomb(Handle:timer, any:ref)
 
 public Action:Timer_MusicPlay(Handle:timer)
 {
-	if (VSHRoundState != 1) return Plugin_Stop;
+	if (VSHRoundState != ROUNDSTATE_START_ROUND_TIMER) return Plugin_Stop;
 	new String:sound[PLATFORM_MAX_PATH] = "";
 	new Float:time = -1.0;
 	if (MusicTimer != INVALID_HANDLE)
@@ -449,7 +449,7 @@ public Action:GottamTimer(Handle:hTimer)
 }
 public Action:StartRound(Handle:hTimer)
 {
-	VSHRoundState = 1;
+	VSHRoundState = ROUNDSTATE_START_ROUND_TIMER;
 	if (IsValidClient(Hale))
 	{
 		if (!IsPlayerAlive(Hale) && TFTeam:GetClientTeam(Hale) != TFTeam_Spectator && TFTeam:GetClientTeam(Hale) != TFTeam_Unassigned)
@@ -488,7 +488,7 @@ public Action:StartHaleTimer(Handle:hTimer)
 	CreateTimer(0.1, GottamTimer);
 	if (!IsValidClient(Hale))
 	{
-		VSHRoundState = 2;
+		VSHRoundState = ROUNDSTATE_ROUND_END;
 		return Plugin_Continue;
 	}
 	if (!IsPlayerAlive(Hale))
@@ -525,7 +525,7 @@ public Action:StartHaleTimer(Handle:hTimer)
 	{
 		SetControlPoint(false);
 	}
-	if (VSHRoundState == 0)
+	if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START)
 	{
 		CreateTimer(2.0, Timer_MusicPlay, _, TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -535,7 +535,7 @@ public Action:StartHaleTimer(Handle:hTimer)
 public Action:EnableSG(Handle:hTimer, any:iid)
 {
 	new i = EntRefToEntIndex(iid);
-	if (VSHRoundState == 1 && IsValidEdict(i) && i > MaxClients)
+	if (VSHRoundState == ROUNDSTATE_START_ROUND_TIMER && IsValidEdict(i) && i > MaxClients)
 	{
 		decl String:s[64];
 		GetEdictClassname(i, s, 64);
@@ -601,7 +601,7 @@ public Action:MessageTimer(Handle:hTimer, any:client)
 }
 public Action:MakeModelTimer(Handle:hTimer)
 {
-	if (!IsValidClient(Hale) || !IsPlayerAlive(Hale) || VSHRoundState == 2)
+	if (!IsValidClient(Hale) || !IsPlayerAlive(Hale) || VSHRoundState == ROUNDSTATE_ROUND_END)
 	{
 		return Plugin_Stop;
 	}
@@ -669,11 +669,11 @@ public Action:MakeHale(Handle:hTimer)
 		SetEntProp(Hale, Prop_Send, "m_lifeState", 0);
 		TF2_RespawnPlayer(Hale);
 	}
-	if (VSHRoundState < 0)
+	if (VSHRoundState < ROUNDSTATE_EVENT_ROUND_START)
 		return Plugin_Continue;
 	if (!IsPlayerAlive(Hale))
 	{
-		if (VSHRoundState == 0) TF2_RespawnPlayer(Hale);
+		if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START) TF2_RespawnPlayer(Hale);
 		else return Plugin_Continue;
 	}
 	new iFlags = GetCommandFlags("r_screenoverlay");
@@ -719,7 +719,7 @@ public Action:MakeHale(Handle:hTimer)
 	}
 	EquipSaxton(Hale);
 
-	if (VSHRoundState >= 0 && GetClientClasshelpinfoCookie(Hale))
+	if (VSHRoundState >= ROUNDSTATE_EVENT_ROUND_START && GetClientClasshelpinfoCookie(Hale))
 	{
 		HintPanel(Hale);
 
@@ -733,7 +733,7 @@ public Action:MakeHale(Handle:hTimer)
 public Action:MakeNoHale(Handle:hTimer, any:clientid)
 {
 	new client = GetClientOfUserId(clientid);
-	if (!IsValidClient(client) || !IsPlayerAlive(client) || VSHRoundState == 2 || client == Hale)
+	if (!IsValidClient(client) || !IsPlayerAlive(client) || VSHRoundState == ROUNDSTATE_ROUND_END || client == Hale)
 		return Plugin_Continue;
 //  SetVariantString("");
 //  AcceptEntityInput(client, "SetCustomModel");
@@ -889,7 +889,7 @@ public Action:MakeNoHale(Handle:hTimer, any:clientid)
 
 public Action:ClientTimer(Handle:hTimer)
 {
-	if (VSHRoundState > 1 || VSHRoundState == -1)
+	if (VSHRoundState > ROUNDSTATE_START_ROUND_TIMER || VSHRoundState == ROUNDSTATE_INVALID)
 	{
 		return Plugin_Stop;
 	}
@@ -1141,7 +1141,7 @@ public Action:ClientTimer(Handle:hTimer)
 
 public Action:HaleTimer(Handle:hTimer)
 {
-	if (VSHRoundState == 2)
+	if (VSHRoundState == ROUNDSTATE_ROUND_END)
 	{
 		if (IsValidClient(Hale, false) && IsPlayerAlive(Hale)) TF2_AddCondition(Hale, TFCond_SpeedBuffAlly, 14.0);
 		return Plugin_Stop;
@@ -1472,7 +1472,7 @@ public Action:UseRage(Handle:hTimer, any:dist)
 					flags |= TF_STUNFLAG_NOSOUNDOREFFECT;
 					CreateTimer(5.0, RemoveEnt, EntIndexToEntRef(AttachParticle(i, "yikes_fx", 75.0)));
 				}
-				if (VSHRoundState != 0) TF2_StunPlayer(i, 5.0, _, flags, (Special == VSHSpecial_HHH ? 0 : Hale));
+				if (VSHRoundState != ROUNDSTATE_EVENT_ROUND_START) TF2_StunPlayer(i, 5.0, _, flags, (Special == VSHSpecial_HHH ? 0 : Hale));
 			}
 		}
 	}
@@ -1572,7 +1572,7 @@ public Action:UseBowRage(Handle:hTimer)
 
 public Action:CheckAlivePlayers(Handle:hTimer)
 {
-	if (VSHRoundState != 1) //(VSHRoundState == 2 || VSHRoundState == -1)
+	if (VSHRoundState != ROUNDSTATE_START_ROUND_TIMER) //(VSHRoundState == ROUNDSTATE_ROUND_END || VSHRoundState == ROUNDSTATE_INVALID)
 	{
 		return Plugin_Continue;
 	}
@@ -1585,7 +1585,7 @@ public Action:CheckAlivePlayers(Handle:hTimer)
 	if (Special == VSHSpecial_CBS && GetAmmo(Hale, 0) > RedAlivePlayers && RedAlivePlayers != 0) SetAmmo(Hale, 0, RedAlivePlayers);
 	if (RedAlivePlayers == 0)
 		ForceTeamWin(HaleTeam);
-	else if (RedAlivePlayers == 1 && IsValidClient(Hale) && VSHRoundState == 1)
+	else if (RedAlivePlayers == 1 && IsValidClient(Hale) && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)
 	{
 		decl Float:pos[3];
 		decl String:s[PLATFORM_MAX_PATH];

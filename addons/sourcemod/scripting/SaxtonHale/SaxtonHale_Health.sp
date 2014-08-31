@@ -6,7 +6,11 @@
 */
 public Action:OnGetMaxHealth(client, &maxhealth)
 {
-	if (client==Hale)
+	if(VSHRoundState != ROUNDSTATE_START_ROUND_TIMER)
+	{
+		return Plugin_Continue;
+	}
+	if (ValidPlayer(client,true) && client==Hale)
 	{
 		new HP = GetEntProp(client, Prop_Data, "m_iHealth");
 		if(HP>HaleHealthMax)

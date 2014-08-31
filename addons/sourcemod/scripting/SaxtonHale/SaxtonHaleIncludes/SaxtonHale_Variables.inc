@@ -3,24 +3,13 @@ new bool:steamtools = false;
 #endif
 new OtherTeam = 2;
 new HaleTeam = 3;
-new VSHRoundState = -1;
+new VSHRoundState = ROUNDSTATE_INVALID;
 new playing;
 new healthcheckused;
 new RedAlivePlayers;
 new RoundCount;
 new Special;
 new Incoming;
-
-enum
-{
-	VSHSpecial_None = -1,
-	VSHSpecial_Hale,
-	VSHSpecial_Vagineer,
-	VSHSpecial_HHH,
-	VSHSpecial_CBS,
-	VSHSpecial_Bunny, //ohgodwhy
-	VSHSpecial_Miku
-}
 
 #if defined MIKU_ON
 new bool:VSHSpecial_Miku_Rage=false;

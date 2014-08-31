@@ -2,7 +2,7 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 {
 	if (!Enabled || !IsValidEdict(attacker) || ((attacker <= 0) && (client == Hale)) || TF2_IsPlayerInCondition(client, TFCond_Ubercharged))
 		return Plugin_Continue;
-	if (VSHRoundState == 0 && (client == Hale || (client != attacker && attacker != Hale)))
+	if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START && (client == Hale || (client != attacker && attacker != Hale)))
 	{
 		damage *= 0.0;
 		return Plugin_Changed;
@@ -174,7 +174,7 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 						{
 							case 14, 201, 664, 792, 801, 851, 881, 890, 899, 908, 957, 966:
 							{
-								if (VSHRoundState != 2)
+								if (VSHRoundState != ROUNDSTATE_ROUND_END)
 								{
 									new Float:chargelevel = (IsValidEntity(weapon) && weapon > MaxClients ? GetEntPropFloat(weapon, Prop_Send, "m_flChargedDamage") : 0.0);
 									new Float:time = (GlowTimer > 10 ? 1.0 : 2.0);
@@ -185,7 +185,7 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 								}
 							}
 						}
-						if (wepindex == 752 && VSHRoundState != 2)
+						if (wepindex == 752 && VSHRoundState != ROUNDSTATE_ROUND_END)
 						{
 							new Float:chargelevel = (IsValidEntity(weapon) && weapon > MaxClients ? GetEntPropFloat(weapon, Prop_Send, "m_flChargedDamage") : 0.0);
 							new Float:add = 10 + (chargelevel / 10);

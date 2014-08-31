@@ -86,7 +86,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
-#if defined MIKU_ON
 stock Float:moveForward(Float:vel[3],Float:MaxSpeed){
 	//move forward. buttons |=IN_FORWARD does nothing.
 	vel[0] = MaxSpeed;
@@ -120,20 +119,6 @@ stock LOS(client,target)
 				return true;
 			}
 		}
-	}
-	return false;
-}
-stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
-	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
-	{
-		if(check_alive && !IsPlayerAlive(client))
-		{
-			return false;
-		}
-		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
-			return false;
-		}
-		return true;
 	}
 	return false;
 }
@@ -171,7 +156,21 @@ stock Directory_AddFileToDownloadsTable(String:custom_path[])
 
 	CloseHandle(dir);
 }
-#endif
+
+stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
+	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
+	{
+		if(check_alive && !IsPlayerAlive(client))
+		{
+			return false;
+		}
+		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
 
 stock bool:IsSaxtonHaleMap(bool:forceRecalc = false)
 {

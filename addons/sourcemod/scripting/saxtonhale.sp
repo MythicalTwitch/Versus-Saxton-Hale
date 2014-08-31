@@ -229,7 +229,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 #if defined MIKU_ON
-		else if (Special == VSHSpecial_Miku && VSHSpecial_Miku_Rage && client != Hale)
+		else if (Special == VSHSpecial_Miku && VSHSpecial_Miku_Rage && client!= Hale)
 		{
 			if(ValidPlayer(client,true) && Hale>0){
 				new Float:slaveVecs[3];
@@ -403,7 +403,7 @@ public Action:TF2_CalcIsAttackCritical(client, weapon, String:weaponname[], &boo
 	if (!IsValidClient(client, false) || !Enabled) return Plugin_Continue;
 
 	// HHH can climb walls
-	if (IsValidEntity(weapon) && Special == VSHSpecial_HHH && client == Hale && HHHClimbCount <= 9 && VSHRoundState > 0)
+	if (IsValidEntity(weapon) && Special == VSHSpecial_HHH && client == Hale && HHHClimbCount <= 9 && VSHRoundState > ROUNDSTATE_EVENT_ROUND_START)
 	{
 		new index = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
 
@@ -417,7 +417,7 @@ public Action:TF2_CalcIsAttackCritical(client, weapon, String:weaponname[], &boo
 
 	if (client == Hale)
 	{
-		if (VSHRoundState != 1) return Plugin_Continue;
+		if (VSHRoundState != ROUNDSTATE_START_ROUND_TIMER) return Plugin_Continue;
 		if (TF2_IsPlayerCritBuffed(client)) return Plugin_Continue;
 		if (!haleCrits)
 		{
@@ -566,7 +566,7 @@ public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PAT
 
 public OnEntityCreated(entity, const String:classname[])
 {
-	if (Enabled && VSHRoundState == 1 && strcmp(classname, "tf_projectile_pipe", false) == 0)
+	if (Enabled && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER && strcmp(classname, "tf_projectile_pipe", false) == 0)
 		SDKHook(entity, SDKHook_SpawnPost, OnEggBombSpawned);
 }
 

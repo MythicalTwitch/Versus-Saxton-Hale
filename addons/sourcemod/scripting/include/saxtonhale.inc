@@ -3,6 +3,12 @@
 #endif
 #define _VSH_included
 
+// VSHRoundState
+#define ROUNDSTATE_INVALID						-1		/**< Invalid RoundState */
+#define ROUNDSTATE_EVENT_ROUND_START			0		/**< set on a StartRound Timer and On event start round*/
+#define ROUNDSTATE_START_ROUND_TIMER			1		/**< Start of a timer for roundstart */
+#define ROUNDSTATE_ROUND_END					2		/**< Found in SaxtonHale_Timers "StartHaleTimer" */ //%50
+
 /**
  * Will VSH be played on the current map?
  * Use this check in OnMapStart() or OnPluginStart(),

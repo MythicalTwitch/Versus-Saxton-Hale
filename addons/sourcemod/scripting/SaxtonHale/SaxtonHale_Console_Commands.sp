@@ -446,14 +446,14 @@ public Action:DoTaunt(client, const String:command[], argc)
 
 public Action:DoSuicide(client, const String:command[], argc)
 {
-	if (Enabled && (VSHRoundState == 0 || VSHRoundState == 1))
+	if (Enabled && (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START || VSHRoundState == ROUNDSTATE_START_ROUND_TIMER))
 	{
 		if (client == Hale && bTenSecStart[0])
 		{
 			CPrintToChat(client, "Do not suicide as Hale. Use !resetq instead.");
 			return Plugin_Handled;
 			//KickClient(client, "Next time, please remember to !hale_resetq");
-			//if (VSHRoundState == 0) return Plugin_Handled;
+			//if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START) return Plugin_Handled;
 		}
 	}
 	return Plugin_Continue;
@@ -471,7 +471,7 @@ public Action:DoSuicide2(client, const String:command[], argc)
 
 public Action:Command_GetHP(client)
 {
-	if (!Enabled || VSHRoundState != 1)
+	if (!Enabled || VSHRoundState != ROUNDSTATE_START_ROUND_TIMER)
 		return Plugin_Continue;
 	if (client == Hale)
 	{
