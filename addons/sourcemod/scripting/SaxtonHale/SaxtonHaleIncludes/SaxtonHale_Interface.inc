@@ -78,6 +78,10 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 #if defined _steamtools_included
 	MarkNativeAsOptional("Steam_SetGameDescription");
 #endif
+	if(late)
+	{
+		OnLateLoad();
+	}
 	return APLRes_Success;
 }
 
@@ -87,6 +91,98 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
+	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
+	{
+		if(check_alive && !IsPlayerAlive(client))
+		{
+			return false;
+		}
+		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Prints a message in the chat area with [War3Evo] pre-appended.
+ * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
+ *
+ * @param client      Client index, pass 0 for message to all.
+ * @param szMessage   Message (formatting rules).
+ * @return            No return
+ */
+stock VSH_ChatMessage(client, const String:szMessage[], any:...)
+{
+	if (client == 0)
+	{
+		decl String:szBuffer[250];
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i) && !IsFakeClient(i))
+			{
+				SetGlobalTransTarget(i);
+				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
+				Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
+				CPrintToChat(i, szBuffer);
+			}
+		}
+	}
+	else
+	{
+		decl String:szBuffer[250];
+		SetGlobalTransTarget(client);
+		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
+		Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
+		if(ValidPlayer(client))
+		{
+			CPrintToChat(client, szBuffer);
+		}
+	}
+}
+
+
+/*
+ * End's the current round, allows specifying the winning
+ * team and more.
+ * This function currently works in TF2 only (it uses the game_round_win entity).
+ *
+ * @param team			The winning Team, pass 0 for Sudden Death mode (no winning team)
+ * @param forceMapReset If to force the map to reset during the force respawn after the round is over.
+ * @param switchTeams	If to switch the teams when the game is going to be reset.
+ * @return				True on success, false otherwise
+ */
+stock bool:Game_EndRound(team=0, bool:forceMapReset=false, bool:switchTeams=false)
+{
+	new game_round_win = FindEntityByClassname(-1, "game_round_win");
+
+	if (game_round_win == -1) {
+		game_round_win = CreateEntityByName("game_end");
+
+		if (game_round_win == -1) {
+			ThrowError("Unable to find or create entity \"game_round_win\"");
+		}
+	}
+
+	DispatchKeyValue(game_round_win, "TeamNum"			, (team			? "true" : "false"));
+	DispatchKeyValue(game_round_win, "force_map_reset"	, (forceMapReset? "true" : "false"));
+	DispatchKeyValue(game_round_win, "switch_teams"		, (switchTeams	? "true" : "false"));
+
+	return AcceptEntityInput(game_round_win, "RoundWin");
+}
+stock OnLateLoad()
+{
+	if(VSHRoundState>ROUNDSTATE_INVALID && ROUNDSTATE_INVALID<ROUNDSTATE_ROUND_END)
+	{
+		if(GetConVarBool(cvarEndRoundOnReload)==true)
+		{
+			VSH_ChatMessage(0,"{olive}Saxton Hale has been reloaded during a round, Round Reset.");
+			Game_EndRound(0,true,false);
+		}
+	}
+}
 stock Float:moveForward(Float:vel[3],Float:MaxSpeed){
 	//move forward. buttons |=IN_FORWARD does nothing.
 	vel[0] = MaxSpeed;
@@ -156,21 +252,6 @@ stock Directory_AddFileToDownloadsTable(String:custom_path[])
 	}
 
 	CloseHandle(dir);
-}
-
-stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
-	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
-	{
-		if(check_alive && !IsPlayerAlive(client))
-		{
-			return false;
-		}
-		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
-			return false;
-		}
-		return true;
-	}
-	return false;
 }
 
 stock bool:IsSaxtonHaleMap(bool:forceRecalc = false)

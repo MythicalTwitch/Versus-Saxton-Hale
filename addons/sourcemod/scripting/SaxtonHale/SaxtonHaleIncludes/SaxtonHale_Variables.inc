@@ -45,6 +45,10 @@ new bool:bSpawnTeleOnTriggerHurt = false;
 new Handle:hHHHTeleTimer = INVALID_HANDLE;
 new HHHClimbCount;
 new bool:bNoTaunt = false;
+
+// ========================================================================
+// SaxtonHale_Configuration.sp
+// ========================================================================
 new Handle:cvarVersion;
 new Handle:cvarHaleSpeed;
 new Handle:cvarPointDelay;
@@ -64,6 +68,8 @@ new Handle:cvarDisplayHaleHP;
 new Handle:cvarForceSpecToHale;
 new Handle:cvarEnableEurekaEffect;
 new Handle:cvarForceHaleTeam;
+new Handle:cvarEndRoundOnReload;
+
 new Handle:PointCookie;
 new Handle:MusicCookie;
 new Handle:VoiceCookie;

@@ -3,7 +3,7 @@
 #endif
 #define _VSH_included
 
-enum VSHSpecials
+enum
 {
 	VSHSpecial_None = -1,
 	VSHSpecial_Hale,
