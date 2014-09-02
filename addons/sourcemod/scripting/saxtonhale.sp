@@ -756,3 +756,10 @@ public Native_GetDamage(Handle:plugin, numParams)
 		return 0;
 	return Damage[client];
 }
+public Native_GetNextSaxtonHaleUserId(Handle:plugin, numParams)
+{
+	new client = FindNextHaleEx();
+	if (ValidPlayer(client))
+		return GetClientUserId(client);
+	return -1;
+}

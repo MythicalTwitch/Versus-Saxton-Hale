@@ -68,6 +68,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
 	CreateNative("VSH_GetClientDamage", Native_GetDamage);
 	CreateNative("VSH_GetRoundState", Native_GetRoundState);
+	CreateNative("VSH_GetNextSaxtonHaleUserId", Native_GetNextSaxtonHaleUserId);
 	OnSpecialSelection = CreateGlobalForward("VSH_OnSpecialSelection", ET_Hook, Param_CellByRef);
 	OnHaleCreated = CreateGlobalForward("VSH_OnHaleCreated", ET_Ignore, Param_Cell);
 	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
@@ -107,7 +108,7 @@ stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=fal
 }
 
 /**
- * Prints a message in the chat area with [War3Evo] pre-appended.
+ * Prints a message in the chat area with [VSH] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
  *
  * @param client      Client index, pass 0 for message to all.

@@ -22,7 +22,7 @@ public Load_ConVars()
 	cvarEnableEurekaEffect = CreateConVar("hale_enable_eureka", "0", "1- allow Eureka Effect, else disallow", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	cvarForceHaleTeam = CreateConVar("hale_force_team", "0", "0- Use plugin logic, 1- random team, 2- red, 3- blue", FCVAR_PLUGIN, true, 0.0, true, 3.0);
 
-	cvarEndRoundOnReload = CreateConVar("hale_endround_on_reload", "0", "0- disabled 1- enabled", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	cvarEndRoundOnReload = CreateConVar("hale_endround_on_reload", "1", "0- disabled 1- enabled", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 }
 
 public Load_ConVarChange()

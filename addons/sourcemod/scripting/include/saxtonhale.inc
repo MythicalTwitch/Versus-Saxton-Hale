@@ -23,6 +23,12 @@ enum
 // ========================================================================
 // NATIVE
 // ========================================================================
+/**
+ * Returns the next Saxton Hale userid.
+ *
+ * @return		    	Userid of current Hale/boss (-1 if invalid/doesn't exist).
+ */
+native VSH_GetNextSaxtonHaleUserId();
 
 /**
  * Will VSH be played on the current map?
