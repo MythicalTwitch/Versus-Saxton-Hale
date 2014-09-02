@@ -103,6 +103,7 @@ new defaulttakedamagetype;
 new bool:g_bClientRJFlag[MAXPLAYERS+1] = { false, ... };
 
 // HANDLES FOR FOWARDS:
+new Handle:OnSpecialSelection;
 new Handle:OnHaleCreated;
 new Handle:OnHaleJump;
 new Handle:OnHaleRage;

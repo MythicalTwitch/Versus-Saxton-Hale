@@ -68,6 +68,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
 	CreateNative("VSH_GetClientDamage", Native_GetDamage);
 	CreateNative("VSH_GetRoundState", Native_GetRoundState);
+	OnSpecialSelection = CreateGlobalForward("VSH_OnSpecialSelection", ET_Hook, Param_CellByRef);
 	OnHaleCreated = CreateGlobalForward("VSH_OnHaleCreated", ET_Ignore, Param_Cell);
 	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
 	OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);

@@ -3,11 +3,26 @@
 #endif
 #define _VSH_included
 
+enum VSHSpecials
+{
+	VSHSpecial_None = -1,
+	VSHSpecial_Hale,
+	VSHSpecial_Vagineer,
+	VSHSpecial_HHH,
+	VSHSpecial_CBS,
+	VSHSpecial_Bunny, //ohgodwhy
+	VSHSpecial_Miku
+}
+
 // VSHRoundState
-#define ROUNDSTATE_INVALID						-1		/**< Invalid RoundState */
-#define ROUNDSTATE_EVENT_ROUND_START			0		/**< set on a StartRound Timer and On event start round*/
-#define ROUNDSTATE_START_ROUND_TIMER			1		/**< Start of a timer for roundstart */
-#define ROUNDSTATE_ROUND_END					2		/**< Found in SaxtonHale_Timers "StartHaleTimer" */ //%50
+#define ROUNDSTATE_INVALID						-1		/**< Invalid RoundState (VSH is disabled)*/
+#define ROUNDSTATE_EVENT_ROUND_START			0		/**< set on a StartRound Timer and On event start round (preround freeze)*/
+#define ROUNDSTATE_START_ROUND_TIMER			1		/**< Start of a timer for roundstart (during round) */
+#define ROUNDSTATE_ROUND_END					2		/**< Found in SaxtonHale_Timers "StartHaleTimer" (after round end) */ //%50
+
+// ========================================================================
+// NATIVE
+// ========================================================================
 
 /**
  * Will VSH be played on the current map?
@@ -80,13 +95,25 @@ native VSH_GetClientDamage(client);
  */
 native VSH_GetRoundState();
 
+// ========================================================================
+// FORWARD
+// ========================================================================
+
+/**
+ * Before Hale is created.
+ *
+ * @param iSpecial 	integer index of the Special.
+ * @return		    Change iSpecial and return Plugin_Changed to change it. Plugin_Continue to keep the current Special.
+ */
+forward Action:VSH_OnSpecialSelection(&iSpecial);
+
 /**
  * When Hale is created.
  *
  * @param iHale 	integer index of Hale.
  * @return		    Returning does nothing.
  */
-forward Action:VSH_OnHaleCreated(iHale);
+forward VSH_OnHaleCreated(iHale);
 
 /**
  * When Hale attempts to superjump/teleport.

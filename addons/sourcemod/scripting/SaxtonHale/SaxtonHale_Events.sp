@@ -40,6 +40,15 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 	Enabled = Enabled2;
 	if (CheckNextSpecial() && !Enabled) //QueuePanelH(Handle:0, MenuAction:0, 9001, 0) is HaleEnabled
 		return Plugin_Continue;
+
+	// VSH_OnSpecialSelection
+	new Action:act = Plugin_Continue;
+	new NewSpecial = Special;
+	Call_StartForward(OnSpecialSelection);
+	Call_PushCellRef(NewSpecial);
+	Call_Finish(act);
+	if (act == Plugin_Changed) Special = NewSpecial;
+
 	if (FileExists("bNextMapToHale"))
 		DeleteFile("bNextMapToHale");
 	if (MusicTimer != INVALID_HANDLE)
