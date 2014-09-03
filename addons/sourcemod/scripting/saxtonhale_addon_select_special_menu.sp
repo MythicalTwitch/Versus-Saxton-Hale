@@ -20,7 +20,7 @@ new VSHSpecials_id:SpecialChoice[MAXPLAYERS + 1]={VSHSpecial_None,...};
 
 public OnPluginStart()
 {
-	RegConsoleCmd("sm_hspecial", hale_speical);
+	RegConsoleCmd("sm_pickhale", hale_speical);
 
 	HookEvent("player_spawn", event_player_spawn);
 }
@@ -38,13 +38,20 @@ public OnClientDisconnect(client)
 public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new userid = GetEventInt(event, "userid");
+	CreateTimer(15.0, Pick_Hale_Message_Timer,userid);
+	return Plugin_Continue;
+}
+
+public Action:Pick_Hale_Message_Timer(Handle:timer, any:userid)
+{
 	new client = GetClientOfUserId(userid);
 	if (!ValidPlayer(client,true)) return Plugin_Continue;
 	if(VSH_GetNextSaxtonHaleUserId()==userid)
 	{
-		CPrintToChat(client, "{olive}[VSH]{default} {yellow}You will be hale next, type !hspecial to choose a special you'd like to be.");
+		CPrintToChat(client, "{olive}[VSH]{default} {yellow}You will be hale next, type !pickhale to choose a special you'd like to be.");
 	}
-	return Plugin_Continue;
+
+	return Plugin_Stop;
 }
 
 public Action:hale_speical(client, args)
