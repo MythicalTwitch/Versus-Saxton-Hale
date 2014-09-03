@@ -120,8 +120,10 @@ public Action:VSH_OnSpecialSelection(&VSHSpecials_id:iSpecial)
 			if(SpecialChoice[client]!=VSHSpecial_None)
 			{
 				iSpecial=SpecialChoice[client];
+				return Plugin_Changed;
 			}
 		}
 	}
+	return Plugin_Continue;
 }
 
