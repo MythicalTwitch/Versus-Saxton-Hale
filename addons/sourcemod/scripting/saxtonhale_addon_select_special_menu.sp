@@ -25,6 +25,16 @@ public OnPluginStart()
 	HookEvent("player_spawn", event_player_spawn);
 }
 
+public OnClientPutInServer(client)
+{
+	SpecialChoice[client]=VSHSpecial_None;
+}
+
+public OnClientDisconnect(client)
+{
+	SpecialChoice[client]=VSHSpecial_None;
+}
+
 public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new userid = GetEventInt(event, "userid");
@@ -42,7 +52,7 @@ public Action:hale_speical(client, args)
 	if (!ValidPlayer(client))
 		return Plugin_Continue;
 
-	CPrintToChat(client, "{olive}[VSH]{default} MENU");
+	//CPrintToChat(client, "{olive}[VSH]{default} MENU");
 
 	Show_Hale_Special_Menu(client);
 
@@ -53,7 +63,7 @@ Show_Hale_Special_Menu(client)
 {
 	new Handle:hMenu=CreateMenu(SpecialSelected);
 	SetMenuExitButton(hMenu,true);
-	SetMenuTitle(hMenu,"[VSH] Select a Special");
+	SetMenuTitle(hMenu,"[VSH] Select a Hale / Special");
 
 	new String:numstr[4];
 
@@ -97,7 +107,7 @@ public Action:VSH_OnSpecialSelection(&VSHSpecials_id:iSpecial)
 
 	if(userid>-1)
 	{
-		new client = GetClientUserId(VSH_GetNextSaxtonHaleUserId());
+		new client = GetClientOfUserId(VSH_GetNextSaxtonHaleUserId());
 		if(ValidPlayer(client))
 		{
 			if(SpecialChoice[client]!=VSHSpecial_None)
