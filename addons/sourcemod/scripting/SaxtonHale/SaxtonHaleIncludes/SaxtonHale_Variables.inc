@@ -8,8 +8,10 @@ new playing;
 new healthcheckused;
 new RedAlivePlayers;
 new RoundCount;
-new Special;
-new Incoming;
+new VSHSpecials_id:Special;
+new VSHSpecials_id:Incoming;
+
+new bool:Special_Enabled[VSHSpecials_id]={false,...};
 
 #if defined MIKU_ON
 new bool:VSHSpecial_Miku_Rage=false;
@@ -17,6 +19,8 @@ new Float:angleOffset[MAXPLAYERS+1];
 new los_target;
 new ignoreClient;
 #endif
+
+
 
 new Damage[MAXPLAYERS + 1];
 new AirDamage[MAXPLAYERS + 1]; // Air Strike

@@ -69,6 +69,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("VSH_GetClientDamage", Native_GetDamage);
 	CreateNative("VSH_GetRoundState", Native_GetRoundState);
 	CreateNative("VSH_GetNextSaxtonHaleUserId", Native_GetNextSaxtonHaleUserId);
+	CreateNative("VSH_IsSpecialEnabled", Native_IsSpecialEnabled);
 	OnSpecialSelection = CreateGlobalForward("VSH_OnSpecialSelection", ET_Hook, Param_CellByRef);
 	OnHaleCreated = CreateGlobalForward("VSH_OnHaleCreated", ET_Ignore, Param_Cell);
 	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
@@ -92,20 +93,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
-stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
-	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
-	{
-		if(check_alive && !IsPlayerAlive(client))
-		{
-			return false;
-		}
-		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
-			return false;
-		}
-		return true;
-	}
-	return false;
-}
 
 /**
  * Prints a message in the chat area with [VSH] pre-appended.
@@ -417,7 +404,7 @@ stock bool:CheckNextSpecial()
 	}
 	while (Incoming == VSHSpecial_None || (Special && Special == Incoming))
 	{
-		Incoming = GetRandomInt(0, 8);
+		Incoming = VSHSpecials_id:GetRandomInt(0, 8);
 		if (Special != VSHSpecial_Hale && !GetRandomInt(0, 5)) Incoming = VSHSpecial_Hale;
 		else
 		{

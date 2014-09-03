@@ -735,7 +735,7 @@ public Native_GetTeam(Handle:plugin, numParams)
 }
 public Native_GetSpecial(Handle:plugin, numParams)
 {
-	return Special;
+	return _:Special;
 }
 public Native_GetHealth(Handle:plugin, numParams)
 {
@@ -762,4 +762,9 @@ public Native_GetNextSaxtonHaleUserId(Handle:plugin, numParams)
 	if (ValidPlayer(client))
 		return GetClientUserId(client);
 	return -1;
+}
+public Native_IsSpecialEnabled(Handle:plugin, numParams)
+{
+	new VSHSpecials_id:Special_id = VSHSpecials_id:GetNativeCell(1);
+	return Special_Enabled[Special_id];
 }
