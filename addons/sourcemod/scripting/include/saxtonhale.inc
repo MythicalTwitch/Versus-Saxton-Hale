@@ -3,6 +3,70 @@
 #endif
 #define _VSH_included
 
+enum VSHSpecials_id
+{
+	VSHSpecial_None = -1,
+	VSHSpecial_Hale,
+	VSHSpecial_Vagineer,
+	VSHSpecial_HHH,
+	VSHSpecial_CBS,
+	VSHSpecial_Bunny, //ohgodwhy
+	VSHSpecial_Miku
+}
+
+stock const String:SpecialNames[][] = {
+	"Hale",
+	"The Vagineer",
+	"The Horseless Headless Horsemann Jr.",
+	"The Christian Brutal Sniper",
+	"The Easter Bunny",
+	"Hatsunemiku"
+};
+
+
+// VSHRoundState
+#define ROUNDSTATE_INVALID						-1		/**< Invalid RoundState (VSH is disabled)*/
+#define ROUNDSTATE_EVENT_ROUND_START			0		/**< set on a StartRound Timer and On event start round (preround freeze)*/
+#define ROUNDSTATE_START_ROUND_TIMER			1		/**< Start of a timer for roundstart (during round) */
+#define ROUNDSTATE_ROUND_END					2		/**< Found in SaxtonHale_Timers "StartHaleTimer" (after round end) */ //%50
+
+// ========================================================================
+// STOCK
+// ========================================================================
+
+stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
+	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
+	{
+		if(check_alive && !IsPlayerAlive(client))
+		{
+			return false;
+		}
+		if(alivecheckbyhealth&&GetClientHealth(client)<1) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+// ========================================================================
+// NATIVE
+// ========================================================================
+
+/**
+ * If special is enabled
+ *
+ * @return		true if enabled - false if disabled
+ */
+native bool:VSH_IsSpecialEnabled(VSHSpecials_id:idSpecial);
+
+/**
+ * Returns the next Saxton Hale userid.
+ *
+ * @return		    	Userid of current Hale/boss (-1 if invalid/doesn't exist).
+ */
+native VSH_GetNextSaxtonHaleUserId();
+
 /**
  * Will VSH be played on the current map?
  * Use this check in OnMapStart() or OnPluginStart(),
@@ -74,6 +138,26 @@ native VSH_GetClientDamage(client);
  */
 native VSH_GetRoundState();
 
+// ========================================================================
+// FORWARD
+// ========================================================================
+
+/**
+ * Before Hale is created.
+ *
+ * @param iSpecial 	integer index of the Special.
+ * @return		    Change iSpecial and return Plugin_Changed to change it. Plugin_Continue to keep the current Special.
+ */
+forward Action:VSH_OnSpecialSelection(&VSHSpecials_id:iSpecial);
+
+/**
+ * When Hale is created.
+ *
+ * @param iHale 	integer index of Hale.
+ * @return		    Returning does nothing.
+ */
+forward VSH_OnHaleCreated(iHale);
+
 /**
  * When Hale attempts to superjump/teleport.
  *
@@ -110,7 +194,7 @@ forward Action:VSH_OnDoWeighdown();
  */
 forward Action:VSH_OnMusic(String:sound[], &Float:time);
 
-public SharedPlugin:__pl_SaxtonHale = 
+public SharedPlugin:__pl_SaxtonHale =
 {
 	name = "saxtonhale",
 	file = "saxtonhale.smx",
