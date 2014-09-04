@@ -48,7 +48,7 @@ public Action:Pick_Hale_Message_Timer(Handle:timer, any:userid)
 	if (!ValidPlayer(client,true)) return Plugin_Continue;
 	if(VSH_GetNextSaxtonHaleUserId()==userid)
 	{
-		CPrintToChat(client, "{olive}[VSH]{default} {yellow}You will be hale next, type !pickhale to choose a special you'd like to be.");
+		CPrintToChat(client, "{olive}[VSH]{default} You will be hale next, type {olive}!pickhale{default} to choose a special you'd like to be.");
 	}
 
 	return Plugin_Stop;
@@ -100,7 +100,7 @@ public SpecialSelected(Handle:menu,MenuAction:action,client,selection)
 		GetMenuItem(menu,selection,SelectionInfo,sizeof(SelectionInfo),SelectionStyle, SelectionDispText,sizeof(SelectionDispText));
 		new VSHSpecials_id:itemnum=VSHSpecials_id:StringToInt(SelectionInfo);
 		SpecialChoice[client]=itemnum;
-		CPrintToChat(client, "{olive}[VSH]{default} You Selected %s",SpecialNames[SpecialChoice[client]]);
+		CPrintToChat(client, "{olive}[VSH]{default} You Selected {olive}%s{default}.",SpecialNames[SpecialChoice[client]]);
 	}
 	if(action==MenuAction_End)
 	{
