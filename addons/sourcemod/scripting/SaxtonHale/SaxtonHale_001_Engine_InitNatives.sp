@@ -25,7 +25,7 @@ public bool:SaxtonHale_InitNatives()
 
 	Return_InitNatives = SaxtonHale_GlobalVars_InitNatives();
 
-	//Return_InitNatives =
+	Return_InitNatives = SaxtonHale_Register_Hale_InitNatives();
 
 	//Return_InitNatives =
 
