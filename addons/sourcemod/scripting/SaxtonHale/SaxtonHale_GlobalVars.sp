@@ -17,10 +17,9 @@ enum VSHVar
 
 public bool:SaxtonHale_GlobalVars_InitNatives()
 {
-	new bool:Return_InitNatives=false;
-
 	CreateNative("VSHGetVar",NVSHGetVar);
 	CreateNative("VSHSetVar",NVSHSetVar);
+	return true;
 }
 
 

@@ -46,7 +46,7 @@ public OnPluginStart()
 		uberTarget[client] = -1;
 		if (IsValidClient(client, false))
 		{
-			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+			SDKHook(client, SDKHook_OnTakeDamage, SDK_Forwarded_OnTakeDamage);
 			SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
 
 #if defined _tf2attributes_included
@@ -68,16 +68,15 @@ public OnPluginStart()
 	// Events for all games
 	if(!HookEventEx("player_spawn",VSH_PlayerSpawnEvent,EventHookMode_Pre)) //,EventHookMode_Pre
 	{
-		PrintToServer("[VSH] Could not hook the player_spawn event.");
-		return false;
+		LogError("[VSH] Could not hook the player_spawn event.");
 	}
 	if(!HookEventEx("player_death",VSH_PlayerDeathEvent,EventHookMode_Pre))
 	{
-		PrintToServer("[VSH] Could not hook the player_death event.");
-		return false;
+		LogError("[VSH] Could not hook the player_death event.");
 	}
 
 	SaxtonHale_DamageSystem_OnPluginStart();
 	SaxtonHale_PlayerClass_OnPluginStart();
+	SaxtonHale_Register_Hale_OnPluginStart();
 }
 

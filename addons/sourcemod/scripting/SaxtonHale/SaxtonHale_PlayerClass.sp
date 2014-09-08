@@ -14,7 +14,7 @@ public SaxtonHale_PlayerClass_OnPluginStart()
 	HookEvent("player_team", Event_PlayerTeam);
 }
 
-public bool:SaxtonHale_InitNatives()
+public bool:SaxtonHale_PlayerClass_InitNatives()
 {
 	CreateNative("VSH_SetPlayerProp",Native_VSH_SetPlayerProp);
 	CreateNative("VSH_GetPlayerProp",Native_VSH_GetPlayerProp);

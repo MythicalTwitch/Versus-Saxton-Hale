@@ -10,10 +10,10 @@ public HintPanelH(Handle:menu, MenuAction:action, param1, param2)
 	return;
 }
 
-public Action:HintPanel(client)
+stock HintPanel(client)
 {
 	if (IsVoteInProgress())
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	decl String:s[512];
 	SetGlobalTransTarget(client);
@@ -39,7 +39,7 @@ public Action:HintPanel(client)
 	DrawPanelItem(panel, s);
 	SendPanelToClient(panel, client, HintPanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 public QueuePanelH(Handle:menu, MenuAction:action, param1, param2)
 {
@@ -47,16 +47,11 @@ public QueuePanelH(Handle:menu, MenuAction:action, param1, param2)
 		TurnToZeroPanel(param1);
 	return false;
 }
-public Action:QueuePanelCmd(client, Args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	QueuePanel(client);
-	return Plugin_Handled;
-}
-public Action:QueuePanel(client)
+
+stock QueuePanel(client)
 {
 	if (!Enabled2)
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	decl String:s[512];
 	Format(s, 512, "%T", "vsh_thequeue", client);
@@ -111,7 +106,7 @@ public Action:QueuePanel(client)
 	DrawPanelItem(panel, s);
 	SendPanelToClient(panel, client, QueuePanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 
 public TurnToZeroPanelH(Handle:menu, MenuAction:action, param1, param2)
@@ -183,10 +178,10 @@ public HalePanelH(Handle:menu, MenuAction:action, param1, param2)
 	}
 }
 
-public Action:HalePanel(client, args)
+stock HalePanel(client)
 {
 	if (!Enabled2 || !IsValidClient(client, false))
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	new size = 256;
 	decl String:s[size];
@@ -220,7 +215,7 @@ public Action:HalePanel(client, args)
 	DrawPanelItem(panel, s);
 	SendPanelToClient(panel, client, HalePanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Handled;
+	return;
 }
 public NewPanelH(Handle:menu, MenuAction:action, param1, param2)
 {
@@ -255,10 +250,10 @@ public HelpPanelH(Handle:menu, MenuAction:action, param1, param2)
 	}
 }
 
-public Action:HelpPanel(client)
+stock HelpPanel(client)
 {
 	if (!Enabled2 || IsVoteInProgress())
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	decl String:s[512];
 	SetGlobalTransTarget(client);
@@ -268,13 +263,13 @@ public Action:HelpPanel(client)
 	DrawPanelItem(panel, s);
 	SendPanelToClient(panel, client, HelpPanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 
-public Action:HelpPanel2(client)
+stock HelpPanel2(client)
 {
 	if (!Enabled2 || IsVoteInProgress())
-		return Plugin_Continue;
+		return;
 	decl String:s[512];
 	new TFClassType:class = TF2_GetPlayerClass(client);
 	SetGlobalTransTarget(client);
@@ -308,20 +303,20 @@ public Action:HelpPanel2(client)
 	DrawPanelItem(panel, "Exit");
 	SendPanelToClient(panel, client, HintPanelH, 12);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 
-public Action:ClasshelpinfoSetting(client)
+stock ClasshelpinfoSetting(client)
 {
 	if (!Enabled2)
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	SetPanelTitle(panel, "Turn the VS Saxton Hale class info...");
 	DrawPanelItem(panel, "On");
 	DrawPanelItem(panel, "Off");
 	SendPanelToClient(panel, client, ClasshelpinfoTogglePanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Handled;
+	return;
 }
 
 public ClasshelpinfoTogglePanelH(Handle:menu, MenuAction:action, param1, param2)
@@ -361,17 +356,17 @@ public Action:HelpPanel1(client, Args)
 	return Plugin_Continue;
 }*/
 
-public Action:MusicTogglePanel(client)
+stock MusicTogglePanel(client)
 {
 	if (!Enabled2 || !IsValidClient(client))
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	SetPanelTitle(panel, "Turn the VS Saxton Hale music...");
 	DrawPanelItem(panel, "On");
 	DrawPanelItem(panel, "Off");
 	SendPanelToClient(panel, client, MusicTogglePanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 public MusicTogglePanelH(Handle:menu, MenuAction:action, param1, param2)
 {
@@ -391,17 +386,17 @@ public MusicTogglePanelH(Handle:menu, MenuAction:action, param1, param2)
 	}
 }
 
-public Action:VoiceTogglePanel(client)
+stock VoiceTogglePanel(client)
 {
 	if (!Enabled2 || !IsValidClient(client))
-		return Plugin_Continue;
+		return;
 	new Handle:panel = CreatePanel();
 	SetPanelTitle(panel, "Turn the VS Saxton Hale voices...");
 	DrawPanelItem(panel, "On");
 	DrawPanelItem(panel, "Off");
 	SendPanelToClient(panel, client, VoiceTogglePanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 public VoiceTogglePanelH(Handle:menu, MenuAction:action, param1, param2)
 {
@@ -419,10 +414,10 @@ public VoiceTogglePanelH(Handle:menu, MenuAction:action, param1, param2)
 	}
 }
 
-public Action:NewPanel(client, versionindex)
+stock NewPanel(client, versionindex)
 {
 	if (!Enabled2)
-		return Plugin_Continue;
+		return;
 	curHelp[client] = versionindex;
 	new Handle:panel = CreatePanel();
 	decl String:s[90];
@@ -472,7 +467,7 @@ public Action:NewPanel(client, versionindex)
 
 	SendPanelToClient(panel, client, NewPanelH, 9001);
 	CloseHandle(panel);
-	return Plugin_Continue;
+	return;
 }
 
 

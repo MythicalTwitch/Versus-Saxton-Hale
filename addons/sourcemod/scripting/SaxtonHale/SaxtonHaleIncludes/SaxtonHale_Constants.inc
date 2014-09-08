@@ -1,3 +1,5 @@
+#define MENUID_EXTRA_NUM 1000
+
 #define ME 2048
 
 #define EF_BONEMERGE            (1 << 0)

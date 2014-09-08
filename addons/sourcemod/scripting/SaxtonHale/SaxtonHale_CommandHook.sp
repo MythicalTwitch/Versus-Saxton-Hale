@@ -41,10 +41,10 @@ stock bool:SaxtonHale_SayAllCommand(client,String:WholeMsg[256],String:ChatMsg[2
 
 	// remove color tags that a player could type in to
 	// add color to your chat (bug fixed)
-	//CRemoveTag2(arg1, sizeof(arg1));
+	//CRemoveTags(arg1, sizeof(arg1));
 
 	new Action:returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayAllCommandCheckPre);
+	Call_StartForward(g_hOnVSHSayAllCommandCheckPre);
 	Call_PushCell(client);
 	// copyback allows changing of client text on pre
 	Call_PushStringEx(WholeMsg,sizeof(WholeMsg),SM_PARAM_STRING_COPY,SM_PARAM_COPYBACK);
@@ -56,10 +56,10 @@ stock bool:SaxtonHale_SayAllCommand(client,String:WholeMsg[256],String:ChatMsg[2
 	}
 
 	returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayAllCommandCheckPost);
+	Call_StartForward(g_hOnVSHSayAllCommandCheckPost);
 	Call_PushCell(client);
 	Call_PushString(WholeMsg);
-	Call_PushString(ChatMsg)
+	Call_PushString(ChatMsg);
 	// May want to copy back in the future?
 	// for now, no need
 	//Call_PushArrayEx(arg1,sizeof(arg1),SM_PARAM_COPYBACK);
@@ -85,10 +85,10 @@ public Action:SaxtonHale_TeamSayCommand(client,args)
 
 	// remove color tags that a player could type in to
 	// add color to your chat (bug fixed)
-	CRemoveTag2(arg1, sizeof(arg1));
+	CRemoveTags(arg1, sizeof(arg1));
 
 	new Action:returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayTeamCommandCheckPre);
+	Call_StartForward(g_hOnVSHTeamCommandCheckPre);
 	Call_PushCell(client);
 	// copyback allows changing of client text on pre
 	Call_PushStringEx(msg,sizeof(msg),SM_PARAM_STRING_COPY,SM_PARAM_COPYBACK);
@@ -100,7 +100,7 @@ public Action:SaxtonHale_TeamSayCommand(client,args)
 	}
 
 	returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayTeamCommandCheckPost);
+	Call_StartForward(g_hOnVSHTeamCommandCheckPost);
 	Call_PushCell(client);
 	Call_PushString(msg);
 	Call_PushString(arg1);
@@ -133,10 +133,10 @@ public Action:SaxtonHale_SayCommand(client,args)
 
 	// remove color tags that a player could type in to
 	// add color to your chat (bug fixed)
-	CRemoveTag2(arg1, sizeof(arg1));
+	CRemoveTags(arg1, sizeof(arg1));
 
 	new Action:returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayCommandCheckPre);
+	Call_StartForward(g_hOnVSHSayCommandCheckPre);
 	Call_PushCell(client);
 	// copyback allows changing of client text on pre
 	Call_PushStringEx(msg,sizeof(msg),SM_PARAM_STRING_COPY,SM_PARAM_COPYBACK);
@@ -148,7 +148,7 @@ public Action:SaxtonHale_SayCommand(client,args)
 	}
 
 	returnVal = Plugin_Continue;
-	Call_StartForward(g_hOnTF2JailSayCommandCheckPost);
+	Call_StartForward(g_hOnVSHSayCommandCheckPost);
 	Call_PushCell(client);
 	Call_PushString(msg);
 	Call_PushString(arg1);

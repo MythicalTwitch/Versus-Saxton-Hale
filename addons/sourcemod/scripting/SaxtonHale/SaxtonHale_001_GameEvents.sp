@@ -4,7 +4,7 @@ public Internal_OnVSHEventSpawn(client)
 {
 }
 
-public Internal_OnVSHEventDeath(victim,attacker,deathrace,distance,attacker_hpleft)
+public Internal_OnVSHEventDeath(victim,attacker,distance,attacker_hpleft)
 {
 }
 
@@ -141,7 +141,7 @@ public Action:VSH_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBro
 
 	if(victimIndex&&!deadringereath) //forward to all other plugins last
 	{
-		new Handle:oldevent=W3GetVar(SmEvent);
+		new Handle:oldevent=VSHGetVar(SmEvent);
 		//	DP("new event %d",event);
 		VSHSetVar(SmEvent,event); //stacking on stack
 

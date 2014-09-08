@@ -20,8 +20,8 @@ new bool:Special_Enabled[VSHSpecials_id]={false,...};
 #if defined MIKU_ON
 new bool:VSHSpecial_Miku_Rage=false;
 new Float:angleOffset[MAXPLAYERS+1];
-new los_target;
-new ignoreClient;
+//new los_target;
+//new ignoreClient;
 #endif
 
 new VSHVarArr[VSHVar];

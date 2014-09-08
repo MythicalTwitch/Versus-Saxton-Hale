@@ -105,7 +105,12 @@ stock SetPlayerProp(client,VSH_PlayerProp:property,any:value)
 	}
 }
 
+/* is a normal engine cvar empty (zero length, "") ? */
+stock bool:CvarEmpty(Handle:sourcemod_convar) {
+	static String:zzstr[32];
+	return (GetConVarString(sourcemod_convar, zzstr, sizeof(zzstr))&&strlen(zzstr)<1);
 
+}
 /*
  * End's the current round, allows specifying the winning
  * team and more.

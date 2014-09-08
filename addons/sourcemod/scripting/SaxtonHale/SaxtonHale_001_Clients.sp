@@ -112,7 +112,7 @@ public OnClientPostAdminCheck(client)
 	VSHFlags[client] = 0;
 //  MusicDisabled[client] = false;
 //  VoiceDisabled[client] = false;
-	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+	SDKHook(client, SDKHook_OnTakeDamage, SDK_Forwarded_OnTakeDamage);
 	SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
 	//bSkipNextHale[client] = false;
 	Damage[client] = 0;

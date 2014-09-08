@@ -1,25 +1,25 @@
 public Load_RegConsoleCmd()
 {
-	RegConsoleCmd("sm_hale", HalePanel);
-	RegConsoleCmd("sm_hale_hp", Command_GetHPCmd);
-	RegConsoleCmd("sm_halehp", Command_GetHPCmd);
-	RegConsoleCmd("sm_hale_next", QueuePanelCmd);
-	RegConsoleCmd("sm_halenext", QueuePanelCmd);
-	RegConsoleCmd("sm_hale_help", HelpPanelCmd);
-	RegConsoleCmd("sm_halehelp", HelpPanelCmd);
-	RegConsoleCmd("sm_hale_class", HelpPanel2Cmd);
-	RegConsoleCmd("sm_haleclass", HelpPanel2Cmd);
-	RegConsoleCmd("sm_hale_classinfotoggle", ClasshelpinfoCmd);
-	RegConsoleCmd("sm_haleclassinfotoggle", ClasshelpinfoCmd);
-	RegConsoleCmd("sm_infotoggle", ClasshelpinfoCmd);
-	RegConsoleCmd("sm_hale_new", NewPanelCmd);
-	RegConsoleCmd("sm_halenew", NewPanelCmd);
+	//RegConsoleCmd("sm_hale", HalePanel);
+	//RegConsoleCmd("sm_hale_hp", Command_GetHPCmd);
+	//RegConsoleCmd("sm_halehp", Command_GetHPCmd);
+	//RegConsoleCmd("sm_hale_next", QueuePanelCmd);
+	//RegConsoleCmd("sm_halenext", QueuePanelCmd);
+	//RegConsoleCmd("sm_hale_help", HelpPanelCmd);
+	//RegConsoleCmd("sm_halehelp", HelpPanelCmd);
+	//RegConsoleCmd("sm_hale_class", HelpPanel2Cmd);
+	//RegConsoleCmd("sm_haleclass", HelpPanel2Cmd);
+	//RegConsoleCmd("sm_hale_classinfotoggle", ClasshelpinfoCmd);
+	//RegConsoleCmd("sm_haleclassinfotoggle", ClasshelpinfoCmd);
+	//RegConsoleCmd("sm_infotoggle", ClasshelpinfoCmd);
+	//RegConsoleCmd("sm_hale_new", NewPanelCmd);
+	//RegConsoleCmd("sm_halenew", NewPanelCmd);
 //  RegConsoleCmd("hale_me", SkipHalePanelCmd);
 //  RegConsoleCmd("haleme", SkipHalePanelCmd);
-	RegConsoleCmd("sm_halemusic", MusicTogglePanelCmd);
-	RegConsoleCmd("sm_hale_music", MusicTogglePanelCmd);
-	RegConsoleCmd("sm_halevoice", VoiceTogglePanelCmd);
-	RegConsoleCmd("sm_hale_voice", VoiceTogglePanelCmd);
+	//RegConsoleCmd("sm_halemusic", MusicTogglePanelCmd);
+	//RegConsoleCmd("sm_hale_music", MusicTogglePanelCmd);
+	//RegConsoleCmd("sm_halevoice", VoiceTogglePanelCmd);
+	//RegConsoleCmd("sm_hale_voice", VoiceTogglePanelCmd);
 
 	// see: SaxtonHale_CommandHook.sp
 	RegConsoleCmd("say",SaxtonHale_SayCommand);
@@ -63,67 +63,6 @@ public Action:ResetQueuePointsCmd(client, args)
 		TurnToZeroPanel(client);
 	else
 		TurnToZeroPanelH(INVALID_HANDLE, MenuAction_Select, client, 1);
-	return Plugin_Handled;
-}
-
-public Action:NewPanelCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	NewPanel(client, maxversion);
-	return Plugin_Handled;
-}
-
-public Action:HelpPanelCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	HelpPanel(client);
-	return Plugin_Handled;
-}
-
-public Action:HelpPanel2Cmd(client, args)
-{
-	if (!IsValidClient(client))
-	{
-		return Plugin_Continue;
-	}
-
-	if (client == Hale)
-	{
-		HintPanel(Hale);
-	}
-	else
-	{
-		HelpPanel2(client);
-	}
-
-	return Plugin_Handled;
-}
-
-public Action:ClasshelpinfoCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	ClasshelpinfoSetting(client);
-	return Plugin_Handled;
-}
-
-public Action:MusicTogglePanelCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	MusicTogglePanel(client);
-	return Plugin_Handled;
-}
-
-public Action:VoiceTogglePanelCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	VoiceTogglePanel(client);
-	return Plugin_Handled;
-}
-
-public Action:Command_GetHPCmd(client, args)
-{
-	if (!IsValidClient(client)) return Plugin_Continue;
-	Command_GetHP(client);
 	return Plugin_Handled;
 }
 
@@ -473,10 +412,10 @@ public Action:DoSuicide2(client, const String:command[], argc)
 	return Plugin_Continue;
 }
 
-public Action:Command_GetHP(client)
+public Command_GetHP(client)
 {
 	if (!Enabled || VSHRoundState != ROUNDSTATE_START_ROUND_TIMER)
-		return Plugin_Continue;
+		return;
 	if (client == Hale)
 	{
 		switch (Special)
@@ -497,7 +436,7 @@ public Action:Command_GetHP(client)
 				PrintCenterTextAll("%t", "vsh_hale_show_hp", HaleHealth, HaleHealthMax);
 		}
 		HaleHealthLast = HaleHealth;
-		return Plugin_Continue;
+		return;
 	}
 	if (GetGameTime() >= HPTime)
 	{
@@ -544,7 +483,7 @@ public Action:Command_GetHP(client)
 		CPrintToChat(client, "{olive}[VSH]{default} %t", "vsh_already_see");
 	else
 		CPrintToChat(client, "{olive}[VSH]{default} %t", "vsh_wait_hp", RoundFloat(HPTime-GetGameTime()), HaleHealthLast);
-	return Plugin_Continue;
+	return;
 }
 
 public Action:Destroy(client, const String:command[], argc)

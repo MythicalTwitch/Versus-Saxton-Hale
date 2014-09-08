@@ -3,6 +3,44 @@
 #endif
 #define _VSH_included
 
+new ignoreClient;
+new los_target;
+
+enum VSHVar
+{
+	EventArg1, //generic war3event arguments
+	EventArg2,
+	EventArg3,
+	EventArg4,
+
+	TransClient,//who to translate
+
+	SmEvent, ///usual game events from sm hooked events
+}
+
+/* BEGIN GLOBAL VARS */
+//retrieves specified values from the main vsh plugin, see VSHVar enum, only those values are allowed
+//this mostly used for accessing a variable without creating a special native just for it
+//this returns any:, you should tag it if return value is not suppose to be normal integer. like Float:VSHGetVar( or Handle:VSHGetVar(
+//most are temporary variables and this function should be called immidiately in the right functions
+//Do not get/set vars arbitrarily unless you know what you are doing
+native any:VSHGetVar(VSHVar:variabletoretrieve);
+native any:VSHSetVar(VSHVar:variabletoretrieve,any:value);
+
+enum VSH_PlayerProp
+{
+	bool:bPutInServer,
+	iMaxHP,
+	iAdditionalMaxHealth,
+	bIsDucking,
+
+	bool:SpawnedOnce, //if player has spawned once
+	Float:sqlStartLoadXPTime,
+
+	Float:LastChangeTeamTime,
+	bool:bStatefulSpawn, //set true if spawn is a non repeated spawn. set to true on join and death, set false after spawn forward is finished.
+}
+
 enum VSHSpecials_id
 {
 	VSHSpecial_None = -1,
@@ -23,7 +61,7 @@ stock const String:SpecialNames[][] = {
 	"Hatsunemiku"
 };
 
-enum VSHChatBlock {
+enum VSHChat {
 	VSHChatFalse=0,
 	VSHChatTrue,
 	VSHChatBlock,
@@ -39,6 +77,18 @@ enum VSHChatBlock {
 // ========================================================================
 // STOCK
 // ========================================================================
+stock bool:VSH_IsUbered(client)
+{
+	new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
+	new cond = GetEntData(client, m_nPlayerCond);
+	if(cond & 32)
+	{
+		return true;
+	}
+	return false;
+}
+
+
 stock Directory_AddFileToDownloadsTable(String:custom_path[])
 {
 	//decl String:path2[PLATFORM_MAX_PATH];
@@ -159,7 +209,7 @@ stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=fal
 //say \foo
 //say !foo
 //returns TRUE if found
-stock VSHChatBlock:CommandCheck(String:compare[],String:commandwanted[])
+stock VSHChat:CommandCheck(String:compare[],String:commandwanted[])
 {
 	new String:commandwanted2[70];
 	new String:commandwanted3[70];
@@ -184,6 +234,40 @@ stock VSHChatBlock:CommandCheck(String:compare[],String:commandwanted[])
 // ========================================================================
 // NATIVE
 // ========================================================================
+functag RegisterHaleCallback HaleCallback:public(client);
+
+/**
+ * Get's a Registered Hale's name.
+ *
+ * @param HaleIndex			Index of Hale.
+ * @param retstr			Hale's registered name
+ * @param maxlen			sizeof(retstr)
+ * @return					none
+ */
+native VSH_GetHaleName(HaleIndex,String:retstr[],maxlen);
+
+/**
+ * Register's a Hale Boss.
+ *
+ * @param name			Name of the Hale Boss.
+ * @param func			Callback for menu items.
+ * @param denyreason	if exists, will display disabled menu with reason if denied access.  Leave "" to disable this feature.
+ * @return				true is created new menu item, false if changed menu item.
+ */
+native bool:VSH_RegisterHale(const String:name[], RegisterHaleCallback:callback);
+
+/**
+ * Unregister a Hale Boss.
+ *
+ * @param name			Name of the Hale Boss.
+ * @return				true if item found and removed, false if item does not exist
+ */
+native VSH_UnregisterHale(String:name[]);
+
+
+
+native VSH_SetPlayerProp(client,VSH_PlayerProp:property,any:value);
+native any:VSH_GetPlayerProp(client,VSH_PlayerProp:property);
 
 //=============================================================================
 // Chance Modifier
@@ -444,6 +528,13 @@ forward Action:VSH_OnDoWeighdown();
  */
 forward Action:VSH_OnMusic(String:sound[], &Float:time);
 
+//when player spawns
+forward VSH_OnEventSpawn(client);
+
+// when player dies
+// does not include deadringer death!
+forward VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft);
+
 //=============================================================================
 // Fowards - DAMAGE
 //=============================================================================
@@ -466,7 +557,7 @@ forward Action:VSH_OnMusic(String:sound[], &Float:time);
 //becareful when using this, u should only use this to reduce incoming damage. if you want to return damge, only use on bullet (first trigger damage)(below) or check IsBullet
 //you may set damage mod percent HERE
 //you may NOT DAMAGE IN HERE
-forward OnVSH_TakeDmgAllPre(victim,attacker,Float:damage,damagecustom);
+forward OnVSH_TakeDmgAllPre(victim,attacker,&Float:damage,damagecustom);
 
 //you may NOT set damage mod percent HERE
 //you may DAMAGE in here, however damage will be engine theoretical damage, not actual damage dealt

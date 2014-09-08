@@ -4,7 +4,7 @@ new Handle:g_hMenuCallerName = INVALID_HANDLE;
 new Handle:g_hMenuMenuTitle = INVALID_HANDLE;
 new Handle:g_hMenuFwd = INVALID_HANDLE;
 
-public OnPluginStart()
+public SaxtonHale_Register_Hale_OnPluginStart()
 {
 	g_hMenuCallerName = CreateArray();
 	g_hMenuMenuTitle = CreateArray(256);
@@ -63,7 +63,7 @@ public Native_VSH_RegisterHale(Handle:hPlugin, iNumParams)
 			SetArrayCell(g_hMenuFwd,i,hFwd);
 
 			//DoForwardOnRegisterMenuItem(szMenuTitle);
-			//new MenuID = i + MENUID_EXTRA_NUM;
+			new MenuID = i + MENUID_EXTRA_NUM;
 			return MenuID;
 		}
 	}
