@@ -20,6 +20,10 @@ public Load_RegConsoleCmd()
 	RegConsoleCmd("sm_hale_music", MusicTogglePanelCmd);
 	RegConsoleCmd("sm_halevoice", VoiceTogglePanelCmd);
 	RegConsoleCmd("sm_hale_voice", VoiceTogglePanelCmd);
+
+	// see: SaxtonHale_CommandHook.sp
+	RegConsoleCmd("say",SaxtonHale_SayCommand);
+	RegConsoleCmd("say_team",SaxtonHale_TeamSayCommand);
 }
 
 public Load_RegAdminCmd()

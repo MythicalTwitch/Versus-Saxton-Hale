@@ -68,68 +68,6 @@ InitGamedata()
 {
 	SpawnManyAmmoPacks(client, EggModel, 1);
 }*/
-public OnPluginStart()
-{
-	InitGamedata();
-//  RegAdminCmd("hale_eggs", Command_Eggs, ADMFLAG_ROOT);   //WILL CRASH.
-	//ACH_Enabled=LibraryExists("hale_achievements");
-	LogMessage("===Versus Saxton Hale Initializing - v%s===", haleversiontitles[maxversion]);
-
-	Load_ConVars();
-
-	Load_Events();
-
-	Load_ConVarChange();
-
-	Load_RegConsoleCmd();
-
-	Load_RegAdminCmd();
-
-	Load_AddCommandListener();
-
-	AutoExecConfig(true, "SaxtonHale");
-
-	Load_Cookies();
-
-	jumpHUD = CreateHudSynchronizer();
-	rageHUD = CreateHudSynchronizer();
-	healthHUD = CreateHudSynchronizer();
-
-	LoadTranslations("saxtonhale.phrases");
-#if defined EASTER_BUNNY_ON
-	LoadTranslations("saxtonhale_bunny.phrases");
-#endif
-#if defined MIKU_ON
-	LoadTranslations("saxtonhale_miku.phrases");
-#endif
-	LoadTranslations("common.phrases");
-	for (new client = 0; client <= MaxClients; client++)
-	{
-		VSHFlags[client] = 0;
-		Damage[client] = 0;
-		AirDamage[client] = 0;
-		uberTarget[client] = -1;
-		if (IsValidClient(client, false))
-		{
-			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-			SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
-
-#if defined _tf2attributes_included
-			if (IsPlayerAlive(client))
-			{
-				TF2Attrib_RemoveByName(client, "damage force reduction");
-			}
-#endif
-		}
-	}
-
-	AddNormalSoundHook(HookSound);
-#if defined _steamtools_included
-	steamtools = LibraryExists("SteamTools");
-#endif
-	AddMultiTargetFilter("@hale", HaleTargetFilter, "the current Boss", false);
-	AddMultiTargetFilter("@!hale", HaleTargetFilter, "all non-Boss players", false);
-}
 public bool:HaleTargetFilter(const String:pattern[], Handle:clients)
 {
 	new bool:non = StrContains(pattern, "!", false) != -1;
@@ -181,15 +119,6 @@ public DoForward_VSHOnHaleCreated()
 	Call_Finish();
 }
 
-// OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
-// OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
-// OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd OnPluginEnd
-
-public OnPluginEnd()
-{
-	OnMapEnd();
-}
-
 /*public Action:OnGetGameDescription(String:gameDesc[64])
 {
 	if (Enabled2)
@@ -199,123 +128,6 @@ public OnPluginEnd()
 	}
 	return Plugin_Continue;
 }*/
-
-// OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd
-// OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd
-// OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd OnPlayerRunCmd
-
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
-{
-	if (Enabled && client == Hale)
-	{
-		if (Special == VSHSpecial_HHH)
-		{
-			if (VSHFlags[client] & VSHFLAG_NEEDSTODUCK)
-			{
-				buttons |= IN_DUCK;
-			}
-			if (HaleCharge >= 47 && (buttons & IN_ATTACK))
-			{
-				buttons &= ~IN_ATTACK;
-				return Plugin_Changed;
-			}
-		}
-		else if (Special == VSHSpecial_Bunny)
-		{
-			if (GetPlayerWeaponSlot(client, TFWeaponSlot_Primary) == GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon"))
-			{
-				buttons &= ~IN_ATTACK;
-				return Plugin_Changed;
-			}
-		}
-#if defined MIKU_ON
-		else if (Special == VSHSpecial_Miku && VSHSpecial_Miku_Rage && client!= Hale)
-		{
-			if(ValidPlayer(client,true) && Hale>0){
-				new Float:slaveVecs[3];
-				new Float:masterVecs[3];
-				new Float:chainDistance;
-				new masterID=Hale;
-				GetClientAbsOrigin(client,slaveVecs);
-				if(ValidPlayer(masterID,true)){
-					GetClientAbsOrigin(masterID,masterVecs);
-				}else{
-					//If Hale is no logner alive, stop rage
-					VSHSpecial_Miku_Rage=false;
-					return Plugin_Continue;
-				}
-
-				chainDistance = GetVectorDistance(slaveVecs,masterVecs);
-				//Look at Master.//////////////////////////////////////////
-				//DP("%i",masterID);
-				//masterVecs[2]+=40;
-				if(masterID>0 && IsPlayerAlive(masterID)){
-					new Float:angleVecs[3];
-					new Float:angleToMaster[3];
-
-					SubtractVectors(slaveVecs,masterVecs,angleVecs);
-					GetVectorAngles(angleVecs,angleToMaster);
-
-					angleToMaster[1]+=angleOffset[client];
-					if(angleToMaster[1] >0){
-						angleToMaster[1]= -(180-angleToMaster[1]);
-					}else{
-						angleToMaster[1]= (180+angleToMaster[1]);
-					}
-					if(angleToMaster[0] >180){
-						angleToMaster[0]-=360;
-					}
-					angleToMaster[0]=-angleToMaster[0];
-					angles=angleToMaster;
-				}
-
-				TeleportEntity(client,NULL_VECTOR,angles,NULL_VECTOR);
-				////////////////////////////////////////////////////////////
-				//DP("%f",chainDistance);
-				//DP("%i",enemyID[client]);
-				if(ValidPlayer(masterID,true)){
-					if(chainDistance >300.0){
-						//Too Far away; Cant see master. Teleport to master.
-						if(!LOS(client,masterID)){
-							TeleportEntity(client,masterVecs,NULL_VECTOR,NULL_VECTOR);
-						}
-					}
-					if(chainDistance >=150.0){
-						//If can't see, attempt to move around to get there.
-						if(!LOS(client,masterID) && !LOS(masterID,client)){
-							if(angleOffset[client]<180.0 && angleOffset[client]>=0.0){
-								angleOffset[client]+=1.0;
-							}else{
-								if(angleOffset[client]==180.0){
-									angleOffset[client]=-1.0;
-								}
-								angleOffset[client]-=1.0;
-							}
-							//DP("%f",angleOffset[client]);
-						}else{
-							angleOffset[client]=0.0;
-						}
-						//Close but getting too far; Run.
-						//SetEntDataFloat(client,FindSendPropOffs("CTFPlayer","m_flMaxspeed"),50.0,true);
-						vel = moveForward(vel,chainDistance);
-						//DP("%f",myMaxSpeed[client]);
-					}
-					if(chainDistance >=50.0){
-						if(GetClientButtons(masterID) & IN_JUMP){
-							buttons |= IN_JUMP;
-						}
-					}
-					if(chainDistance <125.0){
-						vel = moveBackwards(vel,chainDistance);
-						angleOffset[client]=0.0;
-					}
-				}
-			}
-		}
-#endif
-	}
-	return Plugin_Continue;
-}
 
 // TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved
 // TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved TF2_OnConditionRemoved
@@ -394,48 +206,6 @@ stock RandomlyDisguise(client)  //original code was mecha's, but the original co
 	}
 }*/
 
-// TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical
-// TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical
-// TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical TF2_CalcIsAttackCritical
-
-public Action:TF2_CalcIsAttackCritical(client, weapon, String:weaponname[], &bool:result)
-{
-	if (!IsValidClient(client, false) || !Enabled) return Plugin_Continue;
-
-	// HHH can climb walls
-	if (IsValidEntity(weapon) && Special == VSHSpecial_HHH && client == Hale && HHHClimbCount <= 9 && VSHRoundState > ROUNDSTATE_EVENT_ROUND_START)
-	{
-		new index = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
-
-		if (index == 266 && StrEqual(weaponname, "tf_weapon_sword", false))
-		{
-			SickleClimbWalls(client, weapon);
-			WeighDownTimer = 0.0;
-			HHHClimbCount++;
-		}
-	}
-
-	if (client == Hale)
-	{
-		if (VSHRoundState != ROUNDSTATE_START_ROUND_TIMER) return Plugin_Continue;
-		if (TF2_IsPlayerCritBuffed(client)) return Plugin_Continue;
-		if (!haleCrits)
-		{
-			result = false;
-			return Plugin_Changed;
-		}
-	}
-	else if (IsValidEntity(weapon))
-	{
-		new index = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
-		if (index == 232 && StrEqual(weaponname, "tf_weapon_club", false))
-		{
-			SickleClimbWalls(client, weapon);
-		}
-	}
-	return Plugin_Continue;
-}
-
 // SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls
 // SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls
 // SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls SickleClimbWalls
@@ -488,86 +258,6 @@ public SickleClimbWalls(client, weapon)     //Credit to Mecha the Slag
 public bool:TraceRayDontHitSelf(entity, mask, any:data)
 {
 	return (entity != data);
-}
-
-// HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound
-// HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound
-// HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound HookSound
-
-public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
-{
-	if (!Enabled || ((entity != Hale) && ((entity <= 0) || !IsValidClient(Hale) || (entity != GetPlayerWeaponSlot(Hale, 0)))))
-		return Plugin_Continue;
-	if (StrContains(sample, "saxton_hale", false) != -1)
-		return Plugin_Continue;
-	if (strcmp(sample, "vo/engineer_LaughLong01.wav", false) == 0)
-	{
-		strcopy(sample, PLATFORM_MAX_PATH, VagineerKSpree);
-		return Plugin_Changed;
-	}
-	if (entity == Hale && Special == VSHSpecial_HHH && strncmp(sample, "vo", 2, false) == 0 && StrContains(sample, "halloween_boss") == -1)
-	{
-		if (GetRandomInt(0, 100) <= 10)
-		{
-			Format(sample, PLATFORM_MAX_PATH, "%s0%i.wav", HHHLaught, GetRandomInt(1, 4));
-			return Plugin_Changed;
-		}
-	}
-	if (Special != VSHSpecial_CBS && !strncmp(sample, "vo", 2, false) && StrContains(sample, "halloween_boss") == -1)
-	{
-		if (Special == VSHSpecial_Vagineer)
-		{
-			if (StrContains(sample, "engineer_moveup", false) != -1)
-				Format(sample, PLATFORM_MAX_PATH, "%s%i.wav", VagineerJump, GetRandomInt(1, 2));
-			else if (StrContains(sample, "engineer_no", false) != -1 || GetRandomInt(0, 9) > 6)
-				strcopy(sample, PLATFORM_MAX_PATH, "vo/engineer_no01.wav");
-			else
-				strcopy(sample, PLATFORM_MAX_PATH, "vo/engineer_jeers02.wav");
-			return Plugin_Changed;
-		}
-		else if (Special == VSHSpecial_Bunny)
-		{
-			if (StrContains(sample, "gibberish", false) == -1 && StrContains(sample, "burp", false) == -1 && !GetRandomInt(0, 2))
-			{
-				//Do sound things
-				strcopy(sample, PLATFORM_MAX_PATH, BunnyRandomVoice[GetRandomInt(0, sizeof(BunnyRandomVoice)-1)]);
-				return Plugin_Changed;
-			}
-			return Plugin_Continue;
-		}
-#if defined MIKU_ON
-		else if (Special == VSHSpecial_Miku)
-		{
-			//if (StrContains(sample, "scout", false) == -1 && !GetRandomInt(0, 2))
-			if (StrContains(sample, "scout", false) > -1)
-			{
-				//if(!GetRandomInt(0, 2))
-				//{
-				//Do sound things
-				strcopy(sample, PLATFORM_MAX_PATH, MikuRandomVoice[GetRandomInt(0, sizeof(MikuRandomVoice)-1)]);
-				return Plugin_Changed;
-				//}
-				//else
-				//{
-					//return Plugin_Handled;
-				//}
-			}
-			return Plugin_Continue;
-		}
-#endif
-		return Plugin_Handled;
-	}
-	return Plugin_Continue;
-}
-
-// OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated
-// OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated
-// OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated OnEntityCreated
-
-public OnEntityCreated(entity, const String:classname[])
-{
-	if (Enabled && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER && strcmp(classname, "tf_projectile_pipe", false) == 0)
-		SDKHook(entity, SDKHook_SpawnPost, OnEggBombSpawned);
 }
 
 // OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned OnEggBombSpawned

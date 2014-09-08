@@ -23,6 +23,12 @@ stock const String:SpecialNames[][] = {
 	"Hatsunemiku"
 };
 
+enum VSHChatBlock {
+	VSHChatFalse=0,
+	VSHChatTrue,
+	VSHChatBlock,
+}
+
 
 // VSHRoundState
 #define ROUNDSTATE_INVALID						-1		/**< Invalid RoundState (VSH is disabled)*/
@@ -33,6 +39,104 @@ stock const String:SpecialNames[][] = {
 // ========================================================================
 // STOCK
 // ========================================================================
+stock Directory_AddFileToDownloadsTable(String:custom_path[])
+{
+	//decl String:path2[PLATFORM_MAX_PATH];
+
+	new String:path[1024];
+	new FileType:type;
+
+	new Handle:dir = OpenDirectory(custom_path);
+	if (dir == INVALID_HANDLE)
+	{
+		return;
+	}
+	new String:ThePath[1024];
+
+	while (ReadDirEntry(dir, path, sizeof(path), type))
+	{
+		if (type == FileType_File)
+		{
+			Format(ThePath, sizeof(ThePath), "%s%s",custom_path,path);
+
+			if(StrContains(path,".mdl") != -1)
+			{
+				//LogDownloads("PrecacheModel:");
+				PrecacheModel(ThePath,true);
+			}
+
+			AddFileToDownloadsTable(ThePath);
+			//PrintToServer("[STORE-SKINS] Downloads table: %s",ThePath);
+			//LogDownloads(ThePath);
+		}
+	}
+
+	CloseHandle(dir);
+}
+
+public bool:LOSFilter(entity,mask)
+{
+	return !(entity==ignoreClient || (ValidPlayer(entity,true)&&entity!=los_target));
+}
+stock LOS(client,target)
+{
+	los_target=target;
+	if(ValidPlayer(client,true)&&ValidPlayer(target,true))
+	{
+		new Float:PlayerEyePos[3];
+		new Float:OtherPlayerPos[3];
+		GetClientEyePosition(client,PlayerEyePos); //GetClientEyePosition(
+		GetClientEyePosition(target,OtherPlayerPos); //GetClientAbsPosition
+		//ignoreClient=client;
+		TR_TraceRayFilter(PlayerEyePos,OtherPlayerPos,MASK_ALL,RayType_EndPoint,LOSFilter);
+		if(TR_DidHit())
+		{
+			new entity=TR_GetEntityIndex();
+			if(entity==target)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Prints a message in the chat area with [VSH] pre-appended.
+ * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
+ *
+ * @param client      Client index, pass 0 for message to all.
+ * @param szMessage   Message (formatting rules).
+ * @return            No return
+ */
+stock VSH_ChatMessage(client, const String:szMessage[], any:...)
+{
+	if (client == 0)
+	{
+		decl String:szBuffer[250];
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i) && !IsFakeClient(i))
+			{
+				SetGlobalTransTarget(i);
+				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
+				Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
+				CPrintToChat(i, szBuffer);
+			}
+		}
+	}
+	else
+	{
+		decl String:szBuffer[250];
+		SetGlobalTransTarget(client);
+		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
+		Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
+		if(ValidPlayer(client))
+		{
+			CPrintToChat(client, szBuffer);
+		}
+	}
+}
 
 stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=false) {
 	if(client>0 && client<=MaxClients && IsClientConnected(client) && IsClientInGame(client))
@@ -49,9 +153,95 @@ stock bool:ValidPlayer(client,bool:check_alive=false,bool:alivecheckbyhealth=fal
 	return false;
 }
 
+//insensitive
+//say foo
+//say /foo
+//say \foo
+//say !foo
+//returns TRUE if found
+stock VSHChatBlock:CommandCheck(String:compare[],String:commandwanted[])
+{
+	new String:commandwanted2[70];
+	new String:commandwanted3[70];
+	new String:commandwanted4[70];
+	Format(commandwanted2,sizeof(commandwanted2),"\\%s",commandwanted);
+	Format(commandwanted3,sizeof(commandwanted3),"/%s",commandwanted);
+	Format(commandwanted4,sizeof(commandwanted4),"!%s",commandwanted);
+	if(strcmp(compare,commandwanted,false)==0
+	||strcmp(compare,commandwanted2,false)==0
+	||strcmp(compare,commandwanted3,false)==0)
+	{
+		return VSHChatBlock;
+	}
+	else if(strcmp(compare,commandwanted4,false)==0)
+	{
+		return VSHChatTrue;
+	}
+
+	return VSHChatFalse;
+}
+
 // ========================================================================
 // NATIVE
 // ========================================================================
+
+//=============================================================================
+// Chance Modifier
+//=============================================================================
+
+//helper, directly uses last inflictor and damagetype
+// Acts like a DPS limiter
+native Float:VSH_ChanceModifier(attacker);
+
+//=============================================================================
+// Get Damage Details
+//=============================================================================
+
+//get the actual damage dealt from War3_DealDamage, because real damage is different after taking account to magic/physical armor
+//u wana call this immediately after War3_DealDamage cuz this is a single global variable. when someone else calls War3_DealDamage it will be changed
+native VSH_GetVSHDamageDealt();
+
+//get the depth of the damage stack, usually 1 or more
+native VSH_GetDamageStack();
+
+/*
+ * forces the damage to be multiplied by @num
+ * shall only be done inside SDKHOOKS damage forward (when damage hasnt been dealt yet)
+ * @noreturn
+ */
+native VSH_DamageModPercent(Float:num);
+
+//return the game damagetype (burn, laser, etc) of the last damage (TakeDmg forward)
+native VSH_GetDamageType();
+
+native VSH_SetDamageType(DamageTypeToSet);
+
+//get inflictor of the last damage (TakeDmg forward) (ie sentry gun  is a different object than the attacker itself)
+native VSH_GetDamageInflictor();
+
+//=============================================================================
+// Is client Sentry Owner?
+//=============================================================================
+
+/**
+ * Basically checks to see if this is a Owner's sentry.
+ *
+ * best use inside OnW3TakeDmgBullet or OnW3TakeDmgBullet or SDKHooks calls that have inflictors
+ * where you can use this code:
+ *  new inflictor = W3GetDamageInflictor();
+ *  then pass the inflictor as the entity below:
+ *
+ * @param client: client you wish to check as the owner
+ * @param UseInternalInflictor: true if you wish the native to grab the W3GetDamageInflictor for you.
+ *         ^ only use if you are using inside a OnW3TakeDamage function type, else use your own
+ *         (Default true)
+ * @param ExternalInflictor: entity you wish to check that maybe a sentry / optional
+ *        Make sure you put UseInternalInflictor as false.
+ *
+ * @param return: true if the client is the sentry owner and the entity is the owned sentry
+ *
+ */
+native bool:VSH_IsOwnerSentry(client,bool:UseInternalInflictor=true,ExternalInflictor=0);
 
 /**
  * If special is enabled
@@ -143,6 +333,66 @@ native VSH_GetRoundState();
 // ========================================================================
 
 /**
+ * Allows you to capture only Say
+ *
+ * VSHSayCommandCheckPre && VSHSayCommandCheckPost
+ *
+ * StripQuotes and TrimString is used on WholeString[]
+ * also GetCmdArgString is used for WholeString[]
+ *
+ * TrimString is only used on ChatString[]
+ * GetCmdArg(1,arg1,sizeof(arg1)) is used on ChatString[]
+ *
+ * you can change the strings for VSHSayCommandCheckPre,
+ * but you can not change the strings for VSHSayCommandCheckPost.
+ *
+*/
+forward Action:VSHSayCommandCheckPre(client,String:WholeString[],String:ChatString[]);
+forward Action:VSHSayCommandCheckPost(client,String:WholeString[],String:ChatString[]);
+
+/**
+ * Allows you to capture only Team Say
+ *
+ * VSHSayTeamCommandCheckPre && VSHSayTeamCommandCheckPost
+ *
+ * StripQuotes and TrimString is used on WholeString[]
+ * also GetCmdArgString is used for WholeString[]
+ *
+ * TrimString is only used on ChatString[]
+ * GetCmdArg(1,arg1,sizeof(arg1)) is used on ChatString[]
+ *
+ * you can change the strings for VSHSayTeamCommandCheckPre,
+ * but you can not change the strings for VSHSayTeamCommandCheckPost.
+ *
+*/
+forward Action:VSHSayTeamCommandCheckPre(client,String:WholeString[],String:ChatString[]);
+forward Action:VSHSayTeamCommandCheckPost(client,String:WholeString[],String:ChatString[]);
+
+/**
+ * Allows you to capture both Team Say and Say commands
+ *
+ * VSHSayAllCommandCheckPre && VSHSayAllCommandCheckPost
+ *
+ * This is called last.
+ *
+ * Both VSHSayCommandCheck* and VSHSayTeamCommandCheck* get called first,
+ * Then VSHSayAllCommandCheck* is called last.
+ *
+ * StripQuotes and TrimString is used on WholeString[]
+ * also GetCmdArgString is used for WholeString[]
+ *
+ * TrimString is only used on ChatString[]
+ * GetCmdArg(1,arg1,sizeof(arg1)) is used on ChatString[]
+ *
+ *
+ * you can change the strings for VSHSayAllCommandCheckPre,
+ * but you can not change the strings for VSHSayAllCommandCheckPost.
+ *
+*/
+forward Action:VSHSayAllCommandCheckPre(client,String:WholeString[],String:ChatString[]);
+forward Action:VSHSayAllCommandCheckPost(client,String:WholeString[],String:ChatString[]);
+
+/**
  * Before Hale is created.
  *
  * @param iSpecial 	integer index of the Special.
@@ -194,6 +444,39 @@ forward Action:VSH_OnDoWeighdown();
  */
 forward Action:VSH_OnMusic(String:sound[], &Float:time);
 
+//=============================================================================
+// Fowards - DAMAGE
+//=============================================================================
+/**
+ * Called when a an entity takes damage, requires SDK Hooks until SM natively supports this.
+ * @param victim: Victim entity.
+ * @param attacker: Attacker entity.
+ * @param damage: How much damage is done.
+ * @noreturn
+ *
+ * order of execution is
+ * damageallpre
+ * bulletpre (if bullet)
+ * damageall
+ * bullet  (if bullet)
+ */
+//FF triggers this function!!! even though it didnt damage any teammate
+//THIS is a theoretical damage given by the engine, if u want real damage dealt use the hurt-event
+//use natives to retrieve inflictor and game damagetype
+//becareful when using this, u should only use this to reduce incoming damage. if you want to return damge, only use on bullet (first trigger damage)(below) or check IsBullet
+//you may set damage mod percent HERE
+//you may NOT DAMAGE IN HERE
+forward OnVSH_TakeDmgAllPre(victim,attacker,Float:damage,damagecustom);
+
+//you may NOT set damage mod percent HERE
+//you may DAMAGE in here, however damage will be engine theoretical damage, not actual damage dealt
+forward OnVSH_TakeDmgAll(victim,attacker,Float:damage);
+
+//very generic damage event
+//derrived from the game engine's posthurt event
+//FRIENDLY FIRE IS NOT FILTERED
+forward OnVSHEventPostHurt(victim,attacker,dmgamount,const String:weapon[32]);
+
 public SharedPlugin:__pl_SaxtonHale =
 {
 	name = "saxtonhale",
@@ -217,5 +500,14 @@ public __pl_SaxtonHale_SetNTVOptional()
 	MarkNativeAsOptional("VSH_GetSaxtonHaleHealthMax");
 	MarkNativeAsOptional("VSH_GetClientDamage");
 	MarkNativeAsOptional("VSH_GetRoundState");
+
+	MarkNativeAsOptional("VSH_ChanceModifier");
+	MarkNativeAsOptional("VSH_GetVSHDamageDealt");
+	MarkNativeAsOptional("VSH_GetDamageStack");
+	MarkNativeAsOptional("VSH_DamageModPercent");
+	MarkNativeAsOptional("VSH_GetDamageType");
+	MarkNativeAsOptional("VSH_SetDamageType");
+	MarkNativeAsOptional("VSH_GetDamageInflictor");
+	MarkNativeAsOptional("VSH_IsOwnerSentry");
 }
 #endif

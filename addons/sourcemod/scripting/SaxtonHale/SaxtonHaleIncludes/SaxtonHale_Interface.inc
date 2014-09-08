@@ -27,6 +27,8 @@
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
+	new APLRes:StartStatus=APLRes_Success;
+
 	MarkNativeAsOptional("GetUserMessageType");
 	MarkNativeAsOptional("PbSetInt");
 	MarkNativeAsOptional("PbSetBool");
@@ -59,23 +61,16 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	CreateNative("VSH_GetRoundState", Native_GetRoundState);
 	OnGetRoundState = CreateGlobalForward("VSH_OnGetRoundState", ET_Hook, Param_CellByRef);*/
 
-	CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
-	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
-	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
-	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
-	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
-	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
-	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
-	CreateNative("VSH_GetClientDamage", Native_GetDamage);
-	CreateNative("VSH_GetRoundState", Native_GetRoundState);
-	CreateNative("VSH_GetNextSaxtonHaleUserId", Native_GetNextSaxtonHaleUserId);
-	CreateNative("VSH_IsSpecialEnabled", Native_IsSpecialEnabled);
-	OnSpecialSelection = CreateGlobalForward("VSH_OnSpecialSelection", ET_Hook, Param_CellByRef);
-	OnHaleCreated = CreateGlobalForward("VSH_OnHaleCreated", ET_Ignore, Param_Cell);
-	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
-	OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);
-	OnHaleWeighdown = CreateGlobalForward("VSH_OnDoWeighdown", ET_Hook);
-	OnMusic = CreateGlobalForward("VSH_OnMusic", ET_Hook, Param_String, Param_FloatByRef);
+	if(!SaxtonHale_InitNatives())
+	{
+		StartStatus=APLRes_Failure;
+	}
+
+	if(!SaxtonHale_InitForwards())
+	{
+		StartStatus=APLRes_Failure;
+	}
+
 	RegPluginLibrary("saxtonhale");
 #if defined _steamtools_included
 	MarkNativeAsOptional("Steam_SetGameDescription");
@@ -84,7 +79,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	{
 		OnLateLoad();
 	}
-	return APLRes_Success;
+	return StartStatus;
 }
 
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
@@ -93,44 +88,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
-
-/**
- * Prints a message in the chat area with [VSH] pre-appended.
- * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
- *
- * @param client      Client index, pass 0 for message to all.
- * @param szMessage   Message (formatting rules).
- * @return            No return
- */
-stock VSH_ChatMessage(client, const String:szMessage[], any:...)
-{
-	if (client == 0)
-	{
-		decl String:szBuffer[250];
-		for (new i = 1; i <= MaxClients; i++)
-		{
-			if (IsClientInGame(i) && !IsFakeClient(i))
-			{
-				SetGlobalTransTarget(i);
-				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-				Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
-				CPrintToChat(i, szBuffer);
-			}
-		}
-	}
-	else
-	{
-		decl String:szBuffer[250];
-		SetGlobalTransTarget(client);
-		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-		Format(szBuffer, sizeof(szBuffer), "{olive}[VSH]{default} %s", szBuffer);
-		if(ValidPlayer(client))
-		{
-			CPrintToChat(client, szBuffer);
-		}
-	}
-}
-
 
 /*
  * End's the current round, allows specifying the winning
@@ -181,67 +138,6 @@ stock Float:moveBackwards(Float:vel[3],Float:MaxSpeed){
 	vel[0] = -MaxSpeed;
 	return vel;
 }
-public bool:LOSFilter(entity,mask)
-{
-	return !(entity==ignoreClient || (ValidPlayer(entity,true)&&entity!=los_target));
-}
-stock LOS(client,target)
-{
-	los_target=target;
-	if(ValidPlayer(client,true)&&ValidPlayer(target,true))
-	{
-		new Float:PlayerEyePos[3];
-		new Float:OtherPlayerPos[3];
-		GetClientEyePosition(client,PlayerEyePos); //GetClientEyePosition(
-		GetClientEyePosition(target,OtherPlayerPos); //GetClientAbsPosition
-		//ignoreClient=client;
-		TR_TraceRayFilter(PlayerEyePos,OtherPlayerPos,MASK_ALL,RayType_EndPoint,LOSFilter);
-		if(TR_DidHit())
-		{
-			new entity=TR_GetEntityIndex();
-			if(entity==target)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-stock Directory_AddFileToDownloadsTable(String:custom_path[])
-{
-	//decl String:path2[PLATFORM_MAX_PATH];
-
-	new String:path[1024];
-	new FileType:type;
-
-	new Handle:dir = OpenDirectory(custom_path);
-	if (dir == INVALID_HANDLE)
-	{
-		return;
-	}
-	new String:ThePath[1024];
-
-	while (ReadDirEntry(dir, path, sizeof(path), type))
-	{
-		if (type == FileType_File)
-		{
-			Format(ThePath, sizeof(ThePath), "%s%s",custom_path,path);
-
-			if(StrContains(path,".mdl") != -1)
-			{
-				//LogDownloads("PrecacheModel:");
-				PrecacheModel(ThePath,true);
-			}
-
-			AddFileToDownloadsTable(ThePath);
-			//PrintToServer("[STORE-SKINS] Downloads table: %s",ThePath);
-			//LogDownloads(ThePath);
-		}
-	}
-
-	CloseHandle(dir);
-}
-
 stock bool:IsSaxtonHaleMap(bool:forceRecalc = false)
 {
 	static bool:found = false;
