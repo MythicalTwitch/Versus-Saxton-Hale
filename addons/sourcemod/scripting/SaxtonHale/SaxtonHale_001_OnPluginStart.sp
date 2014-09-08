@@ -65,6 +65,19 @@ public OnPluginStart()
 	AddMultiTargetFilter("@hale", HaleTargetFilter, "the current Boss", false);
 	AddMultiTargetFilter("@!hale", HaleTargetFilter, "all non-Boss players", false);
 
+	// Events for all games
+	if(!HookEventEx("player_spawn",VSH_PlayerSpawnEvent,EventHookMode_Pre)) //,EventHookMode_Pre
+	{
+		PrintToServer("[VSH] Could not hook the player_spawn event.");
+		return false;
+	}
+	if(!HookEventEx("player_death",VSH_PlayerDeathEvent,EventHookMode_Pre))
+	{
+		PrintToServer("[VSH] Could not hook the player_death event.");
+		return false;
+	}
+
 	SaxtonHale_DamageSystem_OnPluginStart();
+	SaxtonHale_PlayerClass_OnPluginStart();
 }
 

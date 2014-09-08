@@ -1,91 +1,12 @@
 // War3Source_Engine_Death_And_Spawn_Events.sp
 
-public Internal_OnWar3EventSpawn(client)
+public Internal_OnVSHEventSpawn(client)
 {
-	// War3Source_000_Engine_Hint.sp
-	lastoutput[client][0] = '\0';
-
-	// War3Source_Engine_Aura.sp
-	ShouldCalcAura();
-
-	War3Source_Engine_BuffMaxHP_OnWar3EventSpawn(client);
-
-	War3Source_Engine_CooldownMgr_OnWar3EventSpawn(client);
-
-	War3Source_Engine_Easy_Buff_OnWar3EventSpawn(client);
-
-	War3Source_Engine_NewPlayers_OnWar3EventSpawn(client);
-
-	War3Source_Engine_PlayerClass_OnWar3EventSpawn(client);
-
-	War3Source_Engine_Regen_OnWar3EventSpawn(client);
-
-	War3Source_Engine_Wards_Engine_OnWar3EventSpawn(client);
-
-	War3Source_Engine_WCX_Engine_Skills_OnWar3EventSpawn(client);
-
-	War3Source_Engine_BotControl_OnWar3EventSpawn(client);
 }
 
-public Internal_OnWar3EventDeath(victim,attacker,deathrace,distance,attacker_hpleft)
+public Internal_OnVSHEventDeath(victim,attacker,deathrace,distance,attacker_hpleft)
 {
-	// War3Source_Engine_Aura.sp
-	ShouldCalcAura();
-
-	War3Source_Engine_Easy_Buff_OnWar3EventDeath(victim, attacker, deathrace);
-
-	War3Source_Engine_NewPlayers_OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft);
-
-	War3Source_Engine_PlayerClass_OnWar3EventDeath(victim, attacker);
-
-	War3Source_Engine_PlayerDeathWeapons_OnWar3EventDeath(victim);
-
-	War3Source_Engine_Race_KDR_OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft);
-
-	War3Source_Engine_Wards_Engine_OnWar3EventDeath(victim, attacker);
-
-	War3Source_Engine_Wards_Wards_OnWar3EventDeath(victim, attacker);
-
-	War3Source_Engine_BotControl_OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft);
-
-#if GGAMETYPE_JAILBREAK == JAILBREAK_OFF
-	War3Source_Engine_XPGold_OnWar3EventDeath(victim,attacker);
-#endif
 }
-
-new iRoundNumber;
-
-public Action:EndFreezeTime(Handle:timer,any:roundNum)
-{
-	if(roundNum==iRoundNumber)
-	{
-		bInFreezeTime=false;
-	}
-}
-
-public War3Source_RoundStartEvent(Handle:event,const String:name[],bool:dontBroadcast)
-{
-	bInFreezeTime=true;
-	++iRoundNumber;
-	new Handle:freezeTimeCvar=FindConVar("mp_freezetime");
-	if(freezeTimeCvar)
-	{
-		new Float:fFreezeTime=GetConVarFloat(freezeTimeCvar);
-		if(fFreezeTime>0.0)
-		{
-			CreateTimer(fFreezeTime,EndFreezeTime,iRoundNumber);
-		}
-		else
-		{
-			bInFreezeTime=false;
-		}
-	}
-	else
-	{
-		bInFreezeTime=false;
-	}
-}
-
 
 /*
 public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroadcast)
@@ -100,7 +21,21 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 }
 */
 
-public War3Source_PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
+DoForward_OnVSH_EventSpawn(client){
+		Call_StartForward(g_OnEventSpawn);
+		Call_PushCell(client);
+		Call_Finish(dummyreturn);
+}
+DoForward_OnVSH_EventDeath(victim,killer,distance,attacker_hpleft){
+		Call_StartForward(g_OnEventDeath);
+		Call_PushCell(victim);
+		Call_PushCell(killer);
+		Call_PushCell(distance);
+		Call_PushCell(attacker_hpleft);
+		Call_Finish(dummyreturn);
+}
+
+public VSH_PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
 	new userid=GetEventInt(event,"userid");
 	if(userid>0)
@@ -112,65 +47,24 @@ public War3Source_PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBro
 			//DP("spawn %d",client);
 
 			//bIgnoreTrackGF[client]=false;
-			War3_SetMaxHP_INTERNAL(client,GetClientHealth(client));
+			//SetMaxHP_INTERNAL(client,GetClientHealth(client));
 			//PrintToChatAll("%d",GetClientHealth(index));
 
-			CheckPendingRace(client);
-			if(IsFakeClient(client)&&W3IsPlayerXPLoaded(client)&&GetRace(client)==0&&GetConVarInt(botsetraces)){ //W3IsPlayerXPLoaded(client) is for skipping until putin server is fired (which cleared variables)
-				new tries=100;
-				//new motherbot = War3_GetRaceIDByShortname("motherbot");
-				while(tries>0)
-				{
-					new race=GetRandomInt(1,War3_GetRacesLoaded());
-					if(!W3RaceHasFlag(race,"nobots")) // may want to remove race!=motherbot then put "nobots" for motherbot along with hidden
-					{
-						tries=0;
-						//PrintToServer("race to be %d",race);
-						SetRace(client,race);
-						SetLevel(client,race,W3GetRaceMaxLevel(race));
-						for(new i=1;i<=GetRaceSkillCount(race);i++)
-						{
-							War3_SetSkillLevelINTERNAL(client,race,i,GetRaceSkillMaxLevel(race,i));
-						}
-						W3DoLevelCheck(client);
-					}
-					tries--;
-				}
-				//PrintToServer("race %d level %d %d",War3_GetRace(client),War3_GetLevel(client,race),War3_GetSkillLevel(client,race,0));
-					// Check Bots for classname assignment
-				//CreateTimer(10.0,Check_Bot_ClassName_Timer,userid);
-			}
-			new raceid=GetRace(client);
-			if(!GetPlayerProp(client,SpawnedOnce))
+			if(!VSH_GetPlayerProp(client,SpawnedOnce))
 			{
-				SetPlayerProp(client,SpawnedOnce,true);
-			}
-			else if(raceid<1&&W3IsPlayerXPLoaded(client))
-			{
-				ShowChangeRaceMenu(client);
-			}
-			else if(raceid>0&&GetConVarInt(hRaceLimitEnabled)>0&&GetRacesOnTeam(raceid,GetClientTeam(client),true)>W3GetRaceMaxLimitTeam(raceid,GetClientTeam(client))){
-				CheckRaceTeamLimit(raceid,GetClientTeam(client));  //show changerace inside
-			}
-			raceid=GetRace(client);//get again it may have changed
-			if(raceid>0){
-
-				W3DoLevelCheck(client);
-				War3_ShowXP(client);
-
-				W3CreateEvent(DoCheckRestrictedItems,client);
+				VSH_SetPlayerProp(client,SpawnedOnce,true);
 			}
 			//forward to all other plugins last
-			Internal_OnWar3EventSpawn(client);
+			Internal_OnVSHEventSpawn(client);
 
-			DoForward_OnWar3EventSpawn(client);
+			DoForward_OnVSH_EventSpawn(client);
 
 			SetPlayerProp(client,bStatefulSpawn,false); //no longer a "stateful" spawn
 		}
 	}
 }
 
-public  Action:War3Source_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
+public Action:VSH_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
 	new uid_victim = GetEventInt(event, "userid");
 	new uid_attacker = GetEventInt(event, "attacker");
@@ -220,65 +114,60 @@ public  Action:War3Source_PlayerDeathEvent(Handle:event,const String:name[],bool
 			deadringereath=true;
 			//PrintToChat(client,"war3 debug: dead ringer kill");
 
+			/*
 			new assister=GetClientOfUserId(GetEventInt(event,"assister"));
 
 			if(victimIndex!=attackerIndex&&ValidPlayer(attackerIndex))
 			{
 				if(GetClientTeam(attackerIndex)!=GetClientTeam(victimIndex))
 				{
-					decl String:weapon[64];
-					GetEventString(event,"weapon",weapon,sizeof(weapon));
-					new bool:is_hs,bool:is_melee;
-					is_hs=(GetEventInt(event,"customkill")==1);
+					//decl String:weapon[64];
+					//GetEventString(event,"weapon",weapon,sizeof(weapon));
+					//new bool:is_hs,bool:is_melee;
+					//is_hs=(GetEventInt(event,"customkill")==1);
 					//DP("wep %s",weapon);
-					is_melee=W3IsDamageFromMelee(weapon);
-					if(assister>=0 && GetRace(assister)>0)
+					//is_melee=W3IsDamageFromMelee(weapon);
+					if(assister>=0)
 					{
-						W3GiveFakeXPGold(attackerIndex,victimIndex,assister,XPAwardByFakeAssist,_,_,"",_,_);
+						// fake death
 					}
-					W3GiveFakeXPGold(attackerIndex,victimIndex,assister,XPAwardByFakeKill,0,0,"",is_hs,is_melee);
+					// fake death
 				}
 			}
+			*/
 
-		}
-		else
-		{
-			W3DoLevelCheck(victimIndex);
 		}
 	}
 
-	if(bHasDiedThisFrame[victimIndex]>0){
-		return Plugin_Handled;
-	}
-	bHasDiedThisFrame[victimIndex]++;
-	//lastly
-	//DP("died? %d",bHasDiedThisFrame[victimIndex]);
 	if(victimIndex&&!deadringereath) //forward to all other plugins last
 	{
-
-		W3VarArr[DeathRace]=GetRace(victimIndex);
-
 		new Handle:oldevent=W3GetVar(SmEvent);
-	//	DP("new event %d",event);
-		W3SetVar(SmEvent,event); //stacking on stack
+		//	DP("new event %d",event);
+		VSHSetVar(SmEvent,event); //stacking on stack
 
-		///pre death event, internal event
-		W3SetVar(EventArg1,attackerIndex);
-		W3CreateEvent(OnDeathPre,victimIndex);
+		//pre death event, internal event
+		//W3SetVar(EventArg1,attackerIndex);
 
-		Internal_OnWar3EventDeath(victimIndex,attackerIndex,W3VarArr[DeathRace],distance,attacker_hpleft);
-		//post death event actual forward
-		//DoForward_OnWar3EventDeath(victimIndex,attackerIndex,W3VarArr[DeathRace],distance,attacker_hpleft,weapon);
-		DoForward_OnWar3EventDeath(victimIndex,attackerIndex,W3VarArr[DeathRace],distance,attacker_hpleft);
+		//CreateEvent(OnDeathPre,victimIndex);
+		// Create a Event for pre death later?
 
-		W3SetVar(SmEvent,oldevent); //restore on stack , if any
-		//DP("restore event %d",event);
-		//then we allow change race AFTER death forward
+		Internal_OnVSHEventDeath(victimIndex,attackerIndex,distance,attacker_hpleft);
+
+		DoForward_OnVSH_EventDeath(victimIndex,attackerIndex,distance,attacker_hpleft);
+
+		VSHSetVar(SmEvent,oldevent); //restore on stack , if any
+
 		SetPlayerProp(victimIndex,bStatefulSpawn,true);//next spawn shall be stateful
-		CheckPendingRace(victimIndex);
-
 	}
 	return Plugin_Continue;
 }
 
+public Float:calcDistance(Float:x1,Float:x2,Float:y1,Float:y2,Float:z1,Float:z2){
+	//Distance between two 3d points
+	new Float:dx = x1-x2;
+	new Float:dy = y1-y2;
+	new Float:dz = z1-z2;
+
+	return(SquareRoot(dx*dx + dy*dy + dz*dz));
+}
 
