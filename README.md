@@ -7,6 +7,8 @@ It wasn't made by me, but I'm updating and rewriting code how I'd like to use it
 
 This is not the offical version of Saxton-Hale.
 
+Please wait to use the develop branch.. it is in total reconstruction and will not run properly!
+
 
 Version 1.50 - 29 Aug 2014
 
