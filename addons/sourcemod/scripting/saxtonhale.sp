@@ -18,7 +18,8 @@ New plugin thread on AlliedMods: https://forums.alliedmods.net/showthread.php?p=
 #include "SaxtonHale/SaxtonHale_001_GameEvents.sp"
 #include "SaxtonHale/SaxtonHale_001_HookSound.sp"
 #include "SaxtonHale/SaxtonHale_001_OnEntityCreated.sp"
-#include "SaxtonHale/SaxtonHale_001_OnGameFrame.sp"
+// not needed atm
+//#include "SaxtonHale/SaxtonHale_001_OnGameFrame.sp"
 #include "SaxtonHale/SaxtonHale_001_OnMapEvents.sp"
 #include "SaxtonHale/SaxtonHale_001_OnPlayerRunCmd.sp"
 #include "SaxtonHale/SaxtonHale_001_OnPluginEnd.sp"
@@ -37,6 +38,16 @@ New plugin thread on AlliedMods: https://forums.alliedmods.net/showthread.php?p=
 #include "SaxtonHale/SaxtonHale_Menu.sp"
 #include "SaxtonHale/SaxtonHale_PlayerClass.sp"
 #include "SaxtonHale/SaxtonHale_Timers.sp"
+
+#include "SaxtonHale/SaxtonHale_Register_Hale.sp"
+#include "SaxtonHale/SaxtonHale_GlobalVars.sp"
+
+//#include "SaxtonHale/"
+//#include "SaxtonHale/"
+//#include "SaxtonHale/"
+//#include "SaxtonHale/"
+//#include "SaxtonHale/"
+//#include "SaxtonHale/"
 
 public Plugin:myinfo = {
 	name = "Versus Saxton Hale",
