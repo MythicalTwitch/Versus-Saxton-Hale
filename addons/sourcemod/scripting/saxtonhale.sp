@@ -35,6 +35,7 @@ New plugin thread on AlliedMods: https://forums.alliedmods.net/showthread.php?p=
 #include "SaxtonHale/SaxtonHale_Events.sp"
 #include "SaxtonHale/SaxtonHale_Health.sp"
 #include "SaxtonHale/SaxtonHale_Menu.sp"
+#include "SaxtonHale/SaxtonHale_PlayerClass.sp"
 #include "SaxtonHale/SaxtonHale_Timers.sp"
 
 public Plugin:myinfo = {
