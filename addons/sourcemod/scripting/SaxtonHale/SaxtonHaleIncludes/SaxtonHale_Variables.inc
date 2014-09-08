@@ -1,3 +1,7 @@
+new dummyreturn;
+
+new p_properties[MAXPLAYERS + 1][VSH_PlayerProp];
+
 #if defined _steamtools_included
 new bool:steamtools = false;
 #endif
@@ -20,7 +24,7 @@ new los_target;
 new ignoreClient;
 #endif
 
-
+new VSHVarArr[VSHVar];
 
 new Damage[MAXPLAYERS + 1];
 new AirDamage[MAXPLAYERS + 1]; // Air Strike
@@ -113,6 +117,8 @@ new defaulttakedamagetype;
 new bool:g_bClientRJFlag[MAXPLAYERS+1] = { false, ... };
 
 // HANDLES FOR FOWARDS:
+new Handle:g_OnEventSpawn;
+new Handle:g_OnEventDeath;
 new Handle:OnSpecialSelection;
 new Handle:OnHaleCreated;
 new Handle:OnHaleJump;

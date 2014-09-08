@@ -88,6 +88,23 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+stock any:GetPlayerProp(client,VSH_PlayerProp:property)
+{
+	if (client > 0 && client <= MaxClients)
+	{
+		return p_properties[client][property];
+	}
+	else
+		return 0;
+}
+stock SetPlayerProp(client,VSH_PlayerProp:property,any:value)
+{
+	if (client > 0 && client <= MaxClients)
+	{
+		p_properties[client][property]=value;
+	}
+}
+
 
 /*
  * End's the current round, allows specifying the winning
