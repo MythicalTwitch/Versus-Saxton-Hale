@@ -1,3 +1,14 @@
+// SaxtonHale_Timers.sp
+
+//OnMakeModelTimer
+
+new Handle:OnMakeModelTimer;
+
+public bool:SaxtonHale_Timers_InitForwards()
+{
+	OnMakeModelTimer = CreateGlobalForward("VSH_OnMakeModelTimer", ET_Hook, Param_String, Param_CellByRef);
+}
+
 public Action:Timer_Announce(Handle:hTimer)
 {
 	static announcecount=-1;
@@ -608,6 +619,8 @@ public Action:MakeModelTimer(Handle:hTimer)
 		return Plugin_Stop;
 	}
 	new body = 0;
+	new String:HaleModelStr[PLATFORM_MAX_PATH];
+	/*
 	switch (Special)
 	{
 		case VSHSpecial_Miku:
@@ -634,11 +647,21 @@ public Action:MakeModelTimer(Handle:hTimer)
 //          GetClientAuthString(Hale, steamid, sizeof(steamid));
 			if (GetUserFlagBits(Hale) & ADMFLAG_CUSTOM1) body = (1 << 0)|(1 << 1);
 		}
+	}*/
+
+	new Action:act = Plugin_Continue;
+	Call_StartForward(OnMakeModelTimer);
+	Call_PushStringEx(HaleModelStr, sizeof(HaleModelStr), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+	Call_PushCellRef(body);
+	Call_Finish(act);
+	if (act == Plugin_Changed)
+	{
+		SetVariantString(HaleModelStr);
+		//  DispatchKeyValue(Hale, "targetname", "hale");
+		AcceptEntityInput(Hale, "SetCustomModel");
+		SetEntProp(Hale, Prop_Send, "m_bUseClassAnimations", 1);
+		SetEntProp(Hale, Prop_Send, "m_nBody", body);
 	}
-//  DispatchKeyValue(Hale, "targetname", "hale");
-	AcceptEntityInput(Hale, "SetCustomModel");
-	SetEntProp(Hale, Prop_Send, "m_bUseClassAnimations", 1);
-	SetEntProp(Hale, Prop_Send, "m_nBody", body);
 	return Plugin_Continue;
 }
 

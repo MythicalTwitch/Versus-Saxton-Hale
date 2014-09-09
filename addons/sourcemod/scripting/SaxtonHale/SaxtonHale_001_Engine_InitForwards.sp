@@ -21,7 +21,7 @@ public bool:SaxtonHale_InitForwards()
 
 	Return_InitForwards = DamageSystem_InitForwards();
 
-	//Return_InitForwards =
+	Return_InitForwards = SaxtonHale_Timers_InitForwards();
 
 	//Return_InitForwards =
 

@@ -540,6 +540,15 @@ forward Action:VSHSayAllCommandCheckPre(client,String:WholeString[],String:ChatS
 forward Action:VSHSayAllCommandCheckPost(client,String:WholeString[],String:ChatString[]);
 
 /**
+ * This is called to fix Model Glitches, you should use replace HaleModel with your model name.
+ *
+ * @param HaleModel 	string of Hale Model.
+ * @param body		 	integer of SetEntProp(Hale, Prop_Send, "m_nBody", body);
+ * @return		    Change HaleModel and return Plugin_Changed to change it. Plugin_Continue if your Boss Plugin doesn't match HaleID when you get it.
+ */
+forward Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body);
+
+/**
  * Before Hale is created.
  *
  * @param iSpecial 	integer index of the Special.
@@ -630,6 +639,8 @@ forward OnVSH_TakeDmgAll(victim,attacker,Float:damage);
 //derrived from the game engine's posthurt event
 //FRIENDLY FIRE IS NOT FILTERED
 forward OnVSHEventPostHurt(victim,attacker,dmgamount,const String:weapon[32]);
+
+forward VSH_OnMakeModelTimer()
 
 public SharedPlugin:__pl_SaxtonHale =
 {

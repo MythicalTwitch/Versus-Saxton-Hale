@@ -15,14 +15,6 @@
 
 #define CBS_MAX_ARROWS 9
 
-#define EASTER_BUNNY_ON
-#define BunnyModel "models/player/saxton_hale/easter_demo.mdl"
-#define BunnyModelPrefix "models/player/saxton_hale/easter_demo"
-#define EggModel "models/player/saxton_hale/w_easteregg.mdl"
-#define EggModelPrefix "models/player/saxton_hale/w_easteregg"
-#define ReloadEggModel "models/player/saxton_hale/c_easter_cannonball.mdl"
-#define ReloadEggModelPrefix "models/player/saxton_hale/c_easter_cannonball"
-
 // Working on Adding Miku as a new boss..
 
 #define MIKU_ON
@@ -81,77 +73,6 @@ stock const String:MikuRandomVoice[][] = {
 	"saxton_hale/miku/miku_what_is_this.mp3"
 };
 #endif
-
-stock const String:BunnyWin[][] = {
-	"vo/demoman_gibberish01.wav",
-	"vo/demoman_gibberish12.wav",
-	"vo/demoman_cheers02.wav",
-	"vo/demoman_cheers03.wav",
-	"vo/demoman_cheers06.wav",
-	"vo/demoman_cheers07.wav",
-	"vo/demoman_cheers08.wav",
-	"vo/taunts/demoman_taunts12.wav"
-};
-stock const String:BunnyJump[][] = {
-	"vo/demoman_gibberish07.wav",
-	"vo/demoman_gibberish08.wav",
-	"vo/demoman_laughshort01.wav",
-	"vo/demoman_positivevocalization04.wav"
-};
-stock const String:BunnyRage[][] = {
-	"vo/demoman_positivevocalization03.wav",
-	"vo/demoman_dominationscout05.wav",
-	"vo/demoman_cheers02.wav"
-};
-stock const String:BunnyFail[][] = {
-	"vo/demoman_gibberish04.wav",
-	"vo/demoman_gibberish10.wav",
-	"vo/demoman_jeers03.wav",
-	"vo/demoman_jeers06.wav",
-	"vo/demoman_jeers07.wav",
-	"vo/demoman_jeers08.wav"
-};
-stock const String:BunnyKill[][] = {
-	"vo/demoman_gibberish09.wav",
-	"vo/demoman_cheers02.wav",
-	"vo/demoman_cheers07.wav",
-	"vo/demoman_positivevocalization03.wav"
-};
-stock const String:BunnySpree[][] = {
-	"vo/demoman_gibberish05.wav",
-	"vo/demoman_gibberish06.wav",
-	"vo/demoman_gibberish09.wav",
-	"vo/demoman_gibberish11.wav",
-	"vo/demoman_gibberish13.wav",
-	"vo/demoman_autodejectedtie01.wav"
-};
-stock const String:BunnyLast[][] = {
-	"vo/taunts/demoman_taunts05.wav",
-	"vo/taunts/demoman_taunts04.wav",
-	"vo/demoman_specialcompleted07.wav"
-};
-stock const String:BunnyPain[][] = {
-	"vo/demoman_sf12_badmagic01.wav",
-	"vo/demoman_sf12_badmagic07.wav",
-	"vo/demoman_sf12_badmagic10.wav"
-};
-stock const String:BunnyStart[][] = {
-	"vo/demoman_gibberish03.wav",
-	"vo/demoman_gibberish11.wav"
-};
-stock const String:BunnyRandomVoice[][] = {
-	"vo/demoman_positivevocalization03.wav",
-	"vo/demoman_jeers08.wav",
-	"vo/demoman_gibberish03.wav",
-	"vo/demoman_cheers07.wav",
-	"vo/demoman_sf12_badmagic01.wav",
-	"vo/burp02.wav",
-	"vo/burp03.wav",
-	"vo/burp04.wav",
-	"vo/burp05.wav",
-	"vo/burp06.wav",
-	"vo/burp07.wav"
-};
 
 // MIKU
 #define MIKUTheme "saxton_hale/miku/miku_song.mp3"

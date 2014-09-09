@@ -104,6 +104,15 @@ public Boss_Start(client)
 
 new numHaleKills;
 
+
+public Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body)
+{
+	if(VSH_GetHaleID()!=thisHaleID) return Plugin_Continue;
+
+	strcopy(HaleModel, PLATFORM_MAX_PATH, HaleModel);
+	if (GetUserFlagBits(Hale) & ADMFLAG_CUSTOM1) body = (1 << 0)|(1 << 1);
+}
+
 // ================================================================================
 // HookSound
 // ================================================================================
