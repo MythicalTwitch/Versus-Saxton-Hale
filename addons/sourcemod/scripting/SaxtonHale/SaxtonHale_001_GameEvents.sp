@@ -105,6 +105,8 @@ public Action:VSH_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBro
 		victimIndex=GetClientOfUserId(uid_victim);
 	}
 
+	// for some reason Hale needs to know about deathringer
+	/*
 	new bool:deadringereath=false;
 	if(uid_victim>0)
 	{
@@ -114,7 +116,7 @@ public Action:VSH_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBro
 			deadringereath=true;
 			//PrintToChat(client,"war3 debug: dead ringer kill");
 
-			/*
+
 			new assister=GetClientOfUserId(GetEventInt(event,"assister"));
 
 			if(victimIndex!=attackerIndex&&ValidPlayer(attackerIndex))
@@ -134,12 +136,13 @@ public Action:VSH_PlayerDeathEvent(Handle:event,const String:name[],bool:dontBro
 					// fake death
 				}
 			}
-			*/
+
 
 		}
-	}
+	}*/
 
-	if(victimIndex&&!deadringereath) //forward to all other plugins last
+	//if(victimIndex&&!deadringereath) //forward to all other plugins last
+	if(victimIndex) //forward to all other plugins last
 	{
 		new Handle:oldevent=VSHGetVar(SmEvent);
 		//	DP("new event %d",event);

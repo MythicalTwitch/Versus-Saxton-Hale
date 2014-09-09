@@ -13,6 +13,7 @@ public SaxtonHale_Register_Hale_OnPluginStart()
 
 public bool:SaxtonHale_Register_Hale_InitNatives()
 {
+	CreateNative("VSH_GetHaleID", Native_VSH_GetHaleID);
 	CreateNative("VSH_GetHaleName", Native_VSH_GetHaleName);
 	CreateNative("VSH_RegisterHale", Native_VSH_RegisterHale);
 	CreateNative("VSH_UnregisterHale", Native_VSH_UnregisterHale);
@@ -27,6 +28,11 @@ stock CallHale(HaleIndex,client)
 	Call_StartForward(hFwd);
 	Call_PushCell(client);
 	Call_Finish(result);
+}
+
+public Native_VSH_GetHaleID(Handle:hPlugin, iNumParams)
+{
+	return HaleID;
 }
 
 public Native_VSH_GetHaleName(Handle:hPlugin, iNumParams)

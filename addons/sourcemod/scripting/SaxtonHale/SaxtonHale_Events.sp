@@ -747,6 +747,8 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 		else
 			KSpreeTimer = GetGameTime() + 5.0;
 	}
+
+
 	if ((TF2_GetPlayerClass(client) == TFClass_Engineer) && !(deathflags & TF_DEATHFLAG_DEADRINGER))
 	{
 		for (new ent = MaxClients + 1; ent < ME; ent++)

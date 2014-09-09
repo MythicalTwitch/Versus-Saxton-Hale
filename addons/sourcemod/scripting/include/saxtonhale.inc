@@ -77,6 +77,7 @@ enum VSHChat {
 // ========================================================================
 // STOCK
 // ========================================================================
+
 stock bool:VSH_IsUbered(client)
 {
 	new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
@@ -355,6 +356,13 @@ native bool:VSH_IsSaxtonHaleModeMap();
  * @return True if VSH is enabled, false otherwise.
  */
 native bool:VSH_IsSaxtonHaleModeEnabled();
+
+/**
+ * Returns the Registered ID of the Addon Plugin being used for the Hale Boss.
+ *
+ * @return		    	 (-1 if invalid/doesn't exist).
+ */
+native VSH_GetHaleID();
 
 /**
  * Returns the userid of the current Hale.
