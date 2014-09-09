@@ -433,6 +433,10 @@ public Native_GetDamage(Handle:plugin, numParams)
 	return result;
 }*/
 
+public Native_GetRedAlivePlayers(Handle:plugin, numParams)
+{
+	return RedAlivePlayers;
+}
 public Native_IsEnabled(Handle:plugin, numParams)
 {
 	return Enabled;
@@ -450,6 +454,10 @@ public Native_GetTeam(Handle:plugin, numParams)
 public Native_GetSpecial(Handle:plugin, numParams)
 {
 	return _:Special;
+}
+public Native_SetHealth(Handle:plugin, numParams)
+{
+	HaleHealth=GetNativeCell(1);
 }
 public Native_GetHealth(Handle:plugin, numParams)
 {

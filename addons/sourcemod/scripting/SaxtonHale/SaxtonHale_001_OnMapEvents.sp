@@ -3,7 +3,6 @@
 public OnMapStart()
 {
 	HPTime = 0.0;
-	KSpreeTimer = 0.0;
 	MusicTimer = INVALID_HANDLE;
 	hHHHTeleTimer = INVALID_HANDLE;
 	TeamRoundCounter = 0;

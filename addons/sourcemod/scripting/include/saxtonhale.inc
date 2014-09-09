@@ -3,6 +3,10 @@
 #endif
 #define _VSH_included
 
+#include <sdktools_functions>
+#include <sdktools_entinput>
+#include <sdktools_sound>
+
 new ignoreClient;
 new los_target;
 
@@ -74,9 +78,32 @@ enum VSHChat {
 #define ROUNDSTATE_START_ROUND_TIMER			1		/**< Start of a timer for roundstart (during round) */
 #define ROUNDSTATE_ROUND_END					2		/**< Found in SaxtonHale_Timers "StartHaleTimer" (after round end) */ //%50
 
+#define SOUNDEXCEPT_MUSIC 0
+#define SOUNDEXCEPT_VOICE 1
+
+
 // ========================================================================
 // STOCK
 // ========================================================================
+stock FindEntityByClassname2(startEnt, const String:classname[])
+{
+	/* If startEnt isn't valid shifting it back to the nearest valid one */
+	while (startEnt > -1 && !IsValidEntity(startEnt)) startEnt--;
+	return FindEntityByClassname(startEnt, classname);
+}
+
+stock ForceTeamWin(team)
+{
+	new ent = FindEntityByClassname2(-1, "team_control_point_master");
+	if (ent == -1)
+	{
+		ent = CreateEntityByName("team_control_point_master");
+		DispatchSpawn(ent);
+		AcceptEntityInput(ent, "Enable");
+	}
+	SetVariantInt(team);
+	AcceptEntityInput(ent, "SetWinner");
+}
 
 stock bool:VSH_IsUbered(client)
 {
@@ -235,6 +262,27 @@ stock VSHChat:CommandCheck(String:compare[],String:commandwanted[])
 // ========================================================================
 // NATIVE
 // ========================================================================
+
+/**
+ * Returns the amount of Red Alive Players.
+ *
+ * @return		    	integer: Returns the amount of Red Alive Players.
+ */
+native VSH_GetRedAlivePlayers();
+
+native VSH_EmitSoundToAllExcept(exceptiontype = SOUNDEXCEPT_MUSIC, const String:sample[],
+				 entity = SOUND_FROM_PLAYER,
+				 channel = SNDCHAN_AUTO,
+				 level = SNDLEVEL_NORMAL,
+				 flags = SND_NOFLAGS,
+				 Float:volume = SNDVOL_NORMAL,
+				 pitch = SNDPITCH_NORMAL,
+				 speakerentity = -1,
+				 const Float:origin[3] = NULL_VECTOR,
+				 const Float:dir[3] = NULL_VECTOR,
+				 bool:updatePos = true,
+				 Float:soundtime = 0.0);
+
 functag RegisterHaleCallback HaleCallback:public(client);
 
 /**
@@ -270,17 +318,17 @@ native VSH_UnregisterHale(String:name[]);
 native VSH_SetPlayerProp(client,VSH_PlayerProp:property,any:value);
 native any:VSH_GetPlayerProp(client,VSH_PlayerProp:property);
 
-//=============================================================================
+//====================
 // Chance Modifier
-//=============================================================================
+//====================
 
 //helper, directly uses last inflictor and damagetype
 // Acts like a DPS limiter
 native Float:VSH_ChanceModifier(attacker);
 
-//=============================================================================
+//====================
 // Get Damage Details
-//=============================================================================
+//====================
 
 //get the actual damage dealt from War3_DealDamage, because real damage is different after taking account to magic/physical armor
 //u wana call this immediately after War3_DealDamage cuz this is a single global variable. when someone else calls War3_DealDamage it will be changed
@@ -304,9 +352,9 @@ native VSH_SetDamageType(DamageTypeToSet);
 //get inflictor of the last damage (TakeDmg forward) (ie sentry gun  is a different object than the attacker itself)
 native VSH_GetDamageInflictor();
 
-//=============================================================================
+//==========================
 // Is client Sentry Owner?
-//=============================================================================
+//==========================
 
 /**
  * Basically checks to see if this is a Owner's sentry.
@@ -394,6 +442,13 @@ native VSH_GetSpecialRoundIndex();
  * @return		    	An integer representing Hale's health.
  */
 native VSH_GetSaxtonHaleHealth();
+
+/**
+ * Sets Hale's current health.
+ *
+ * @return		    	none.
+ */
+native VSH_SetSaxtonHaleHealth(health);
 
 /**
  * Hale's initial health.
@@ -596,6 +651,7 @@ public __pl_SaxtonHale_SetNTVOptional()
 	MarkNativeAsOptional("VSH_GetSaxtonHaleTeam");
 	MarkNativeAsOptional("VSH_GetSpecialRoundIndex");
 	MarkNativeAsOptional("VSH_GetSaxtonHaleHealth");
+	MarkNativeAsOptional("VSH_SetSaxtonHaleHealth");
 	MarkNativeAsOptional("VSH_GetSaxtonHaleHealthMax");
 	MarkNativeAsOptional("VSH_GetClientDamage");
 	MarkNativeAsOptional("VSH_GetRoundState");
@@ -608,5 +664,7 @@ public __pl_SaxtonHale_SetNTVOptional()
 	MarkNativeAsOptional("VSH_SetDamageType");
 	MarkNativeAsOptional("VSH_GetDamageInflictor");
 	MarkNativeAsOptional("VSH_IsOwnerSentry");
+
+	MarkNativeAsOptional("VSH_EmitSoundToAllExcept");
 }
 #endif

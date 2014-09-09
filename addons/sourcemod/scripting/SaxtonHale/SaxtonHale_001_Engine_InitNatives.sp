@@ -7,11 +7,14 @@ public bool:SaxtonHale_InitNatives()
 {
 	new bool:Return_InitNatives=false;
 
+	CreateNative("VSH_GetRedAlivePlayers", Native_GetRedAlivePlayers);
+
 	CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
 	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
 	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
 	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
 	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
+	CreateNative("VSH_SetSaxtonHaleHealth", Native_SetHealth);
 	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
 	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
 	CreateNative("VSH_GetClientDamage", Native_GetDamage);

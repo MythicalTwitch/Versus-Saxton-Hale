@@ -1,8 +1,12 @@
 // saxtonhale_addon_saxtonhale.sp
 
 #include <saxtonhale>
+#include <tf2_stocks>
 
 #define HALE_TITLE "Saxton Hale"
+
+new Float:KSpreeTimer;
+new KSpreeCount = 1;
 
 public Plugin:myinfo =
 {
@@ -66,7 +70,7 @@ public OnAllPluginsLoaded()
 
 	thisHaleID=VSH_RegisterHale(HALE_TITLE, BossCallback);
 
-	PrintToServer(0,"Registered: %s haleid: %d",HALE_TITLE,haleid);
+	PrintToServer("Registered: %s haleid: %d",HALE_TITLE,thisHaleID);
 }
 
 public OnPluginEnd()
@@ -74,7 +78,7 @@ public OnPluginEnd()
 	if(LibraryExists("saxtonhale"))
 	{
 		VSH_UnregisterHale(HALE_TITLE);
-		PrintToServer(0,"UnRegistered: %s haleid: %d",HALE_TITLE,haleid);
+		PrintToServer("UnRegistered: %s haleid: %d",HALE_TITLE,thisHaleID);
 		thisHaleID=-1;
 	}
 }
@@ -83,6 +87,7 @@ public OnMapStart()
 {
 	// Load sounds, materials, model, etc.
 	AddToDownload();
+	KSpreeTimer = 0.0;
 }
 
 
@@ -110,21 +115,23 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 			numHaleKills++;
 			if (customkill != TF_CUSTOM_BOOTS_STOMP)
 			{
-				if (Special == VSHSpecial_Hale) SetEventString(event, "weapon", "fists");
+				SetEventString(event, "weapon", "fists");
 			}
-			return Plugin_Continue;
+			return 1;
 		}
 
 		if (victim == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
 		{
+			new String:s[PLATFORM_MAX_PATH];
 			Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleFail, GetRandomInt(1, 3));
-			EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-			EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+			EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+			VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 
-			if (HaleHealth < 0)
-				HaleHealth = 0;
-			ForceTeamWin(OtherTeam);
-			return Plugin_Continue;
+			if (VSH_GetSaxtonHaleHealth() < 0)
+				VSH_SetSaxtonHaleHealth(0);
+			// ForceTeamWin(OtherTeam);
+			ForceTeamWin(VSH_GetSaxtonHaleTeam()==2?3:2);
+			return 1;
 		}
 
 		if (attacker == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
@@ -132,10 +139,11 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 			numHaleKills++;
 
 			if (customkill != TF_CUSTOM_BOOTS_STOMP) SetEventString(event, "weapon", "fists");
-			if (!GetRandomInt(0, 2) && RedAlivePlayers != 1)
+			if (!GetRandomInt(0, 2) && VSH_GetRedAlivePlayers() != 1)
 			{
+				new String:s[PLATFORM_MAX_PATH];
 				strcopy(s, PLATFORM_MAX_PATH, "");
-				new TFClassType:playerclass = TF2_GetPlayerClass(client);
+				new TFClassType:playerclass = TF2_GetPlayerClass(victim);
 				switch (playerclass)
 				{
 					case TFClass_Scout:     strcopy(s, PLATFORM_MAX_PATH, HaleKillScout132);
@@ -165,8 +173,8 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 				}
 				if (!StrEqual(s, ""))
 				{
-					EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-					EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+					VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+					VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 				}
 			}
 
@@ -175,8 +183,9 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 			else
 				KSpreeCount = 1;
 
-			if (KSpreeCount == 3 && RedAlivePlayers != 1)
+			if (KSpreeCount == 3 && VSH_GetRedAlivePlayers() != 1)
 			{
+				new String:s[PLATFORM_MAX_PATH];
 				new see = GetRandomInt(0, 7);
 				if (!see || see == 1)
 					strcopy(s, PLATFORM_MAX_PATH, HaleKSpree);
@@ -185,8 +194,8 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 				else
 					Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKillKSpree132, GetRandomInt(1, 2));
 
-				EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-				EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 
 				KSpreeCount = 0;
 			}
@@ -194,6 +203,7 @@ public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 				KSpreeTimer = GetGameTime() + 5.0;
 		}
 	}
+	return 1;
 }
 
 public AddToDownload()

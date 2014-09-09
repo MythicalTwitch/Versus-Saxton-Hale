@@ -1,5 +1,7 @@
 new dummyreturn;
 
+new HaleID=-1;
+
 new p_properties[MAXPLAYERS + 1][VSH_PlayerProp];
 
 #if defined _steamtools_included
@@ -42,9 +44,7 @@ new NextHale;
 new Float:Stabbed;
 new Float:Marketed;
 new Float:HPTime;
-new Float:KSpreeTimer;
 new Float:WeighDownTimer;
-new KSpreeCount = 1;
 new Float:UberRageCount;
 new Float:GlowTimer;
 new bool:bEnableSuperDuperJump;
@@ -142,5 +142,5 @@ new Handle:OnGetRoundState;*/
 
 //new bool:ACH_Enabled;
 
-new numHaleKills = 0;    //See if the Hale was boosting his buddies or afk
+//new numHaleKills = 0;    //See if the Hale was boosting his buddies or afk
 

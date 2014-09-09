@@ -88,6 +88,156 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
 // STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS STOCKS
+
+
+
+// MAY NOT USE THIS, but since created will keep for a bit
+stock bool:ParseLoadFile(String:filepath[1024])
+{
+	//filepath == "configs/saxtonhale/loadfiles.cfg"
+	decl String:path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM,path,sizeof(path),filepath);
+
+	/* Return true if an update was available. */
+	new Handle:kv = CreateKeyValues("SaxtonHale");
+
+	if (!FileToKeyValues(kv, path))
+	{
+		CloseHandle(kv);
+		return false;
+	}
+
+	decl String:TmpString[PLATFORM_MAX_PATH];
+	new String:extensions[][] = { ".mdl", ".dx80.vtx", ".dx90.vtx", ".sw.vtx", ".vvd", ".phy" };
+	new String:extensionsb[][] = { ".vtf", ".vmt" };
+	decl i;
+
+	decl String:sBuffer[PLATFORM_MAX_PATH];
+
+	// PrecacheModel and add extra extensions and AddFileToDownloadsTable
+	if (KvJumpToKey(kv, "ModelPrefix"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				for (i = 0; i < sizeof(extensions); i++)
+				{
+					Format(TmpString, PLATFORM_MAX_PATH, "%s%s", sBuffer, extensions[i]);
+					if (FileExists(TmpString, true)) AddFileToDownloadsTable(TmpString);
+					if (StrEqual(extensions[i],".mdl") && FileExists(TmpString, true)) PrecacheModel(TmpString, true);
+				}
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	// PrecacheModel Only
+	if (KvJumpToKey(kv, "ModelManual"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				if (FileExists(sBuffer, true)) PrecacheModel(sBuffer, true);
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	// AddFileToDownloadsTable
+	if (KvJumpToKey(kv, "MaterialsAutomatic"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				for (i = 0; i < sizeof(extensionsb); i++)
+				{
+					Format(TmpString, PLATFORM_MAX_PATH, "%s%s", sBuffer, extensionsb[i]);
+					AddFileToDownloadsTable(TmpString);
+				}
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	// AddFileToDownloadsTable
+	if (KvJumpToKey(kv, "MaterialsManual"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				AddFileToDownloadsTable(sBuffer);
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	// PrecacheSound and AddFileToDownloadsTable
+	if (KvJumpToKey(kv, "PrecacheSoundAutomatic"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				PrecacheSound(sBuffer, true);
+				Format(TmpString, PLATFORM_MAX_PATH, "sound/%s", sBuffer);
+				AddFileToDownloadsTable(TmpString);
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	// PrecacheSound Only
+	if (KvJumpToKey(kv, "PrecacheSoundManual"))
+	{
+		if (KvGotoFirstSubKey(kv, false))
+		{
+			do
+			{
+				KvGetSectionName(kv, sBuffer, sizeof(sBuffer));
+
+				PrecacheSound(sBuffer, true);
+
+			} while (KvGotoNextKey(kv, false));
+			KvGoBack(kv);
+		}
+
+		KvGoBack(kv);
+	}
+
+	CloseHandle(kv);
+
+	return true;
+}
+
 stock any:GetPlayerProp(client,VSH_PlayerProp:property)
 {
 	if (client > 0 && client <= MaxClients)
@@ -1032,19 +1182,6 @@ stock FindNextHaleEx()
 	return FindNextHale(added);
 }
 
-stock ForceTeamWin(team)
-{
-	new ent = FindEntityByClassname2(-1, "team_control_point_master");
-	if (ent == -1)
-	{
-		ent = CreateEntityByName("team_control_point_master");
-		DispatchSpawn(ent);
-		AcceptEntityInput(ent, "Enable");
-	}
-	SetVariantInt(team);
-	AcceptEntityInput(ent, "SetWinner");
-}
-
 stock AttachParticle(ent, String:particleType[], Float:offset = 0.0, bool:battach = true)
 {
 	new particle = CreateEntityByName("info_particle_system");
@@ -1859,13 +1996,6 @@ stock AttachProjectileModel(entity, String:strModel[], String:strAnim[] = "")
 		LogError("(AttachProjectileModel): Could not create prop_dynamic");
 	}
 	return -1;
-}
-
-stock FindEntityByClassname2(startEnt, const String:classname[])
-{
-	/* If startEnt isn't valid shifting it back to the nearest valid one */
-	while (startEnt > -1 && !IsValidEntity(startEnt)) startEnt--;
-	return FindEntityByClassname(startEnt, classname);
 }
 
 /* Removes all weapons from a client's weapon slot
