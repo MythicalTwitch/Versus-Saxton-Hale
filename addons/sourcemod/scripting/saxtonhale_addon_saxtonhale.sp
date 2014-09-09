@@ -64,6 +64,11 @@ public Plugin:myinfo =
 
 new thisHaleID=-1;
 
+public OnPluginStart()
+{
+	AddNormalSoundHook(HookSound);
+}
+
 public OnAllPluginsLoaded()
 {
 	if(!LibraryExists("saxtonhale")) SetFailState("Unabled to find plugin: SaxtonHale");
@@ -99,110 +104,133 @@ public Boss_Start(client)
 
 new numHaleKills;
 
+// ================================================================================
+// HookSound
+// ================================================================================
+
+/* seems to be only for the specials and not hale
+public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
+{
+	if(VSH_GetHaleID()!=thisHaleID) return Plugin_Continue;
+
+	new Hale = GetClientOfUserId(VSH_GetSaxtonHaleUserId());
+
+	if (!VSH_IsSaxtonHaleModeEnabled() || ((entity != Hale) && ((entity <= 0) || !ValidPlayer(Hale) || (entity != GetPlayerWeaponSlot(Hale, 0)))))
+		return Plugin_Continue;
+	if (StrContains(sample, "saxton_hale", false) != -1)
+		return Plugin_Continue;
+	return Plugin_Continue;
+}*/
+
+// ================================================================================
+// VSH_OnEventDeath
+// ================================================================================
+
+
 public VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft)
 {
-	if(VSH_GetHaleID()==thisHaleID)
+	if(VSH_GetHaleID()!=thisHaleID) return;
+
+	new Hale = GetClientOfUserId(VSH_GetSaxtonHaleUserId());
+
+	new Handle:event = VSHGetVar(SmEvent);
+
+	new deathflags = GetEventInt(event, "death_flags");
+	new customkill = GetEventInt(event, "customkill");
+
+	if (attacker == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER && (deathflags & TF_DEATHFLAG_DEADRINGER))
 	{
-		new Hale = GetClientOfUserId(VSH_GetSaxtonHaleUserId());
-
-		new Handle:event = VSHGetVar(SmEvent);
-
-		new deathflags = GetEventInt(event, "death_flags");
-		new customkill = GetEventInt(event, "customkill");
-
-		if (attacker == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER && (deathflags & TF_DEATHFLAG_DEADRINGER))
+		numHaleKills++;
+		if (customkill != TF_CUSTOM_BOOTS_STOMP)
 		{
-			numHaleKills++;
-			if (customkill != TF_CUSTOM_BOOTS_STOMP)
-			{
-				SetEventString(event, "weapon", "fists");
-			}
-			return 1;
+			SetEventString(event, "weapon", "fists");
 		}
+		return 1;
+	}
 
-		if (victim == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
+	if (victim == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
+	{
+		new String:s[PLATFORM_MAX_PATH];
+		Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleFail, GetRandomInt(1, 3));
+		EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+		VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+
+		if (VSH_GetSaxtonHaleHealth() < 0)
+			VSH_SetSaxtonHaleHealth(0);
+		// ForceTeamWin(OtherTeam);
+		ForceTeamWin(VSH_GetSaxtonHaleTeam()==2?3:2);
+		return 1;
+	}
+
+	if (attacker == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
+	{
+		numHaleKills++;
+
+		if (customkill != TF_CUSTOM_BOOTS_STOMP) SetEventString(event, "weapon", "fists");
+		if (!GetRandomInt(0, 2) && VSH_GetRedAlivePlayers() != 1)
 		{
 			new String:s[PLATFORM_MAX_PATH];
-			Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleFail, GetRandomInt(1, 3));
-			EmitSoundToAll(s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-			VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, victim, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-
-			if (VSH_GetSaxtonHaleHealth() < 0)
-				VSH_SetSaxtonHaleHealth(0);
-			// ForceTeamWin(OtherTeam);
-			ForceTeamWin(VSH_GetSaxtonHaleTeam()==2?3:2);
-			return 1;
+			strcopy(s, PLATFORM_MAX_PATH, "");
+			new TFClassType:playerclass = TF2_GetPlayerClass(victim);
+			switch (playerclass)
+			{
+				case TFClass_Scout:     strcopy(s, PLATFORM_MAX_PATH, HaleKillScout132);
+				case TFClass_Pyro:      strcopy(s, PLATFORM_MAX_PATH, HaleKillPyro132);
+				case TFClass_DemoMan:   strcopy(s, PLATFORM_MAX_PATH, HaleKillDemo132);
+				case TFClass_Heavy:     strcopy(s, PLATFORM_MAX_PATH, HaleKillHeavy132);
+				case TFClass_Medic:     strcopy(s, PLATFORM_MAX_PATH, HaleKillMedic);
+				case TFClass_Sniper:
+				{
+					if (GetRandomInt(0, 1)) strcopy(s, PLATFORM_MAX_PATH, HaleKillSniper1);
+					else strcopy(s, PLATFORM_MAX_PATH, HaleKillSniper2);
+				}
+				case TFClass_Spy:
+				{
+					new see = GetRandomInt(0, 2);
+					if (!see) strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy1);
+					else if (see == 1) strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy2);
+					else strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy132);
+				}
+				case TFClass_Engineer:
+				{
+					new see = GetRandomInt(0, 3);
+					if (!see) strcopy(s, PLATFORM_MAX_PATH, HaleKillEngie1);
+					else if (see == 1) strcopy(s, PLATFORM_MAX_PATH, HaleKillEngie2);
+					else Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKillEngie132, GetRandomInt(1, 2));
+				}
+			}
+			if (!StrEqual(s, ""))
+			{
+				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+			}
 		}
 
-		if (attacker == Hale && VSH_GetRoundState() == ROUNDSTATE_START_ROUND_TIMER)
+		if (GetGameTime() <= KSpreeTimer)
+			KSpreeCount++;
+		else
+			KSpreeCount = 1;
+
+		if (KSpreeCount == 3 && VSH_GetRedAlivePlayers() != 1)
 		{
-			numHaleKills++;
-
-			if (customkill != TF_CUSTOM_BOOTS_STOMP) SetEventString(event, "weapon", "fists");
-			if (!GetRandomInt(0, 2) && VSH_GetRedAlivePlayers() != 1)
-			{
-				new String:s[PLATFORM_MAX_PATH];
-				strcopy(s, PLATFORM_MAX_PATH, "");
-				new TFClassType:playerclass = TF2_GetPlayerClass(victim);
-				switch (playerclass)
-				{
-					case TFClass_Scout:     strcopy(s, PLATFORM_MAX_PATH, HaleKillScout132);
-					case TFClass_Pyro:      strcopy(s, PLATFORM_MAX_PATH, HaleKillPyro132);
-					case TFClass_DemoMan:   strcopy(s, PLATFORM_MAX_PATH, HaleKillDemo132);
-					case TFClass_Heavy:     strcopy(s, PLATFORM_MAX_PATH, HaleKillHeavy132);
-					case TFClass_Medic:     strcopy(s, PLATFORM_MAX_PATH, HaleKillMedic);
-					case TFClass_Sniper:
-					{
-						if (GetRandomInt(0, 1)) strcopy(s, PLATFORM_MAX_PATH, HaleKillSniper1);
-						else strcopy(s, PLATFORM_MAX_PATH, HaleKillSniper2);
-					}
-					case TFClass_Spy:
-					{
-						new see = GetRandomInt(0, 2);
-						if (!see) strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy1);
-						else if (see == 1) strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy2);
-						else strcopy(s, PLATFORM_MAX_PATH, HaleKillSpy132);
-					}
-					case TFClass_Engineer:
-					{
-						new see = GetRandomInt(0, 3);
-						if (!see) strcopy(s, PLATFORM_MAX_PATH, HaleKillEngie1);
-						else if (see == 1) strcopy(s, PLATFORM_MAX_PATH, HaleKillEngie2);
-						else Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKillEngie132, GetRandomInt(1, 2));
-					}
-				}
-				if (!StrEqual(s, ""))
-				{
-					VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-					VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, attacker, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-				}
-			}
-
-			if (GetGameTime() <= KSpreeTimer)
-				KSpreeCount++;
+			new String:s[PLATFORM_MAX_PATH];
+			new see = GetRandomInt(0, 7);
+			if (!see || see == 1)
+				strcopy(s, PLATFORM_MAX_PATH, HaleKSpree);
+			else if (see < 5)
+				Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKSpreeNew, GetRandomInt(1, 5));
 			else
-				KSpreeCount = 1;
+				Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKillKSpree132, GetRandomInt(1, 2));
 
-			if (KSpreeCount == 3 && VSH_GetRedAlivePlayers() != 1)
-			{
-				new String:s[PLATFORM_MAX_PATH];
-				new see = GetRandomInt(0, 7);
-				if (!see || see == 1)
-					strcopy(s, PLATFORM_MAX_PATH, HaleKSpree);
-				else if (see < 5)
-					Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKSpreeNew, GetRandomInt(1, 5));
-				else
-					Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleKillKSpree132, GetRandomInt(1, 2));
+			VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+			VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
 
-				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-				VSH_EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
-
-				KSpreeCount = 0;
-			}
-			else
-				KSpreeTimer = GetGameTime() + 5.0;
+			KSpreeCount = 0;
 		}
+		else
+			KSpreeTimer = GetGameTime() + 5.0;
 	}
+
 	return 1;
 }
 
