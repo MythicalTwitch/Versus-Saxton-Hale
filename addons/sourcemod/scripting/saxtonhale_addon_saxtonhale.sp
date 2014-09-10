@@ -21,7 +21,7 @@ public Plugin:myinfo =
 
 // NEED TO FIGURE OUT WHAT NEEDS TO STAY IN ENGINE AND WHAT CAN BE LOADED FOR THE BOSS
 
-#define HaleModel "models/player/saxton_hale/saxton_hale.mdl"
+#define thisHaleModel "models/player/saxton_hale/saxton_hale.mdl"
 
 #define HaleModelPrefix "models/player/saxton_hale/saxton_hale"
 #define HaleYellName "saxton_hale/saxton_hale_responce_1a.wav"
@@ -109,8 +109,10 @@ public Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body)
 {
 	if(VSH_GetHaleID()!=thisHaleID) return Plugin_Continue;
 
-	strcopy(HaleModel, PLATFORM_MAX_PATH, HaleModel);
+	strcopy(HaleModel, PLATFORM_MAX_PATH, thisHaleModel);
 	if (GetUserFlagBits(Hale) & ADMFLAG_CUSTOM1) body = (1 << 0)|(1 << 1);
+
+	return Plugin_Changed;
 }
 
 // ================================================================================
@@ -255,7 +257,7 @@ public AddToDownload()
 		if (FileExists(s, true)) AddFileToDownloadsTable(s);
 	}
 
-	PrecacheModel(HaleModel, true);
+	PrecacheModel(thisHaleModel, true);
 
 	for (i = 0; i < sizeof(extensionsb); i++)
 	{

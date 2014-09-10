@@ -540,7 +540,26 @@ forward Action:VSHSayAllCommandCheckPre(client,String:WholeString[],String:ChatS
 forward Action:VSHSayAllCommandCheckPost(client,String:WholeString[],String:ChatString[]);
 
 /**
+ * You should set your Boss's Class here or anything that you want to happen
+ * before the boss create's it's model.
+ *
+ * @return		    nothing.
+ */
+forward VSH_OnMakeHale();
+
+
+/**
+ * You should setup your Boss Equipment here.
+ *
+ * @return		    nothing.
+ */
+forward VSH_OnEquipSaxton();
+
+/**
  * This is called to fix Model Glitches, you should use replace HaleModel with your model name.
+ *
+ * The main reason we are using this instead of just setting a global variable is because
+ * the Hale Boss does something special for the glitch compared to the other bosses.
  *
  * @param HaleModel 	string of Hale Model.
  * @param body		 	integer of SetEntProp(Hale, Prop_Send, "m_nBody", body);

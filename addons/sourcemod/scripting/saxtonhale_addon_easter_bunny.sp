@@ -130,6 +130,30 @@ public Boss_Start(client)
 {
 }
 
+public VSH_OnEquipSaxton()
+{
+
+}
+
+public VSH_OnMakeHaleTimer()
+{
+	if(VSH_GetHaleID()!=thisHaleID) return;
+
+	new Hale = GetClientOfUserId(VSH_GetSaxtonHaleUserId());
+
+	TF2_SetPlayerClass(Hale, TFClass_DemoMan, _, false);
+
+	return;
+}
+
+public Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body)
+{
+	if(VSH_GetHaleID()!=thisHaleID) return Plugin_Continue;
+
+	strcopy(HaleModel, PLATFORM_MAX_PATH, BunnyModel);
+
+	return Plugin_Changed;
+}
 
 public AddToDownload()
 {

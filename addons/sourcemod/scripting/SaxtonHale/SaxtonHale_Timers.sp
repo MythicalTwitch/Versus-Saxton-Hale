@@ -3,10 +3,14 @@
 //OnMakeModelTimer
 
 new Handle:OnMakeModelTimer;
+new Handle:OnMakeHale;
+new Handle:OnEquipSaxton;
 
 public bool:SaxtonHale_Timers_InitForwards()
 {
 	OnMakeModelTimer = CreateGlobalForward("VSH_OnMakeModelTimer", ET_Hook, Param_String, Param_CellByRef);
+	OnMakeHale = CreateGlobalForward("VSH_OnMakeHale", ET_Ignore);
+	OnEquipSaxton = CreateGlobalForward("VSH_OnEquipSaxton", ET_Ignore);
 }
 
 public Action:Timer_Announce(Handle:hTimer)
@@ -672,6 +676,10 @@ public Action:MakeHale(Handle:hTimer)
 		return Plugin_Continue;
 	}
 
+	Call_StartForward(OnMakeHale);
+	Call_Finish(dummyreturn);
+
+	/*
 	switch (Special)
 	{
 		case VSHSpecial_Miku:
@@ -684,7 +692,7 @@ public Action:MakeHale(Handle:hTimer)
 			TF2_SetPlayerClass(Hale, TFClass_DemoMan, _, false);
 		case VSHSpecial_CBS:
 			TF2_SetPlayerClass(Hale, TFClass_Sniper, _, false);
-	}
+	}*/
 	TF2_RemovePlayerDisguise(Hale);
 
 	if (GetClientTeam(Hale) != HaleTeam)
@@ -742,7 +750,11 @@ public Action:MakeHale(Handle:hTimer)
 			//AcceptEntityInput(ent, "kill");
 		}
 	}
-	EquipSaxton(Hale);
+
+	//EquipSaxton(Hale);
+	Call_StartForward(OnEquipSaxton);
+	Call_Finish(dummyreturn);
+
 
 	if (VSHRoundState >= ROUNDSTATE_EVENT_ROUND_START && GetClientClasshelpinfoCookie(Hale))
 	{
