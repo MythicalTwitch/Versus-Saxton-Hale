@@ -1,5 +1,8 @@
+
 public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damagetype, &weapon, Float:damageForce[3], Float:damagePosition[3], damagecustom)
 {
+	//PrintToChatAll("OnTakeDamage client %d attacker %d inflictor %d damagetype %d",client,attacker,inflictor,damagetype);
+
 	if (!Enabled || !IsValidEdict(attacker) || ((attacker <= 0) && (client == Hale)) || TF2_IsPlayerInCondition(client, TFCond_Ubercharged))
 		return Plugin_Continue;
 	if (VSHRoundState == ROUNDSTATE_EVENT_ROUND_START && (client == Hale || (client != attacker && attacker != Hale)))
@@ -58,6 +61,13 @@ public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damage
 				damage = 850.0;
 				return Plugin_Changed;
 			}
+			if (TF2_IsPlayerInCondition(client, TFCond_Cloaked) && TF2_IsPlayerInCondition(client, TFCond_DeadRingered))
+			{
+				if (damagetype & DMG_CRIT) damagetype &= ~DMG_CRIT;
+				damage = 850.0;
+				return Plugin_Changed;
+			}
+
 //          return Plugin_Changed;
 		}
 		new buffweapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Secondary);
@@ -595,4 +605,34 @@ public OnPreThinkPost(client)
 		}*/
 	}
 }
-
+/*
+public Action:SDK_Forwarded_TraceAttack(victim, &attacker, &inflictor, &Float:damage, &damagetype, &ammotype, hitbox, hitgroup)
+{
+	PrintToChatAll("SDK_Forwarded_TraceAttack victim %d attacker %d inflictor %d damagetype %d",attacker,attacker,inflictor,damagetype);
+	if(IsValidClient(attacker) || IsValidClient(inflictor))
+	{
+		PrintToChatAll("attacker %d",attacker);
+		PrintToChatAll("victim %d",victim);
+		PrintToChatAll("inflictor %d",inflictor);
+		PrintToChatAll("damagetype %d",damagetype);
+		PrintToChatAll("hitbox %d",hitbox);
+		PrintToChatAll("hitgroup %d",hitgroup);
+		if (TF2_GetPlayerClass(attacker) == TFClass_Spy)
+		{
+			PrintToChatAll("TFClass_Spy");
+			new String:spyweapon[64];
+			PrintToChatAll("IsValidClient(attacker)");
+			GetClientWeapon( attacker, spyweapon , 64);
+			if(StrEqual(spyweapon, "tf_weapon_knife") && (damagetype==135270528||damagetype==134221952))
+			{
+				PrintToChatAll("damage before %.2f",damage);
+				PrintToChatAll("tf_weapon_knife");
+				damage = FloatMul(float(GetClientHealth(victim)),0.05);
+				PrintToChatAll("damage after %.2f",damage);
+				return Plugin_Changed;
+			}
+		}
+	}
+	return Plugin_Continue;
+}
+*/

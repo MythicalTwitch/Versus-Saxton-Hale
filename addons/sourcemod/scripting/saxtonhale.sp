@@ -113,6 +113,7 @@ public OnPluginStart()
 		{
 			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 			SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+			//SDKHook(client, SDKHook_TraceAttack,  SDK_Forwarded_TraceAttack);
 
 #if defined _tf2attributes_included
 			if (IsPlayerAlive(client))

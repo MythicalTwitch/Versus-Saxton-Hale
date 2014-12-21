@@ -1,10 +1,11 @@
-public OnClientPostAdminCheck(client)
+public OnClientPutInServer(client)
 {
 	VSHFlags[client] = 0;
 //  MusicDisabled[client] = false;
 //  VoiceDisabled[client] = false;
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 	SDKHook(client, SDKHook_PreThinkPost, OnPreThinkPost);
+	//SDKHook(client, SDKHook_TraceAttack,  SDK_Forwarded_TraceAttack);
 	//bSkipNextHale[client] = false;
 	Damage[client] = 0;
 	AirDamage[client] = 0;
