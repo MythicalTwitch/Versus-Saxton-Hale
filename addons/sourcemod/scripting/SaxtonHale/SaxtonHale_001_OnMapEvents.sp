@@ -9,7 +9,9 @@ public OnMapStart()
 	doorchecktimer = INVALID_HANDLE;
 	Hale = -1;
 	for (new i = 1; i <= MaxClients; i++)
+	{
 		VSHFlags[i] = 0;
+	}
 	if (IsSaxtonHaleMap(true))
 	{
 		AddToDownload();

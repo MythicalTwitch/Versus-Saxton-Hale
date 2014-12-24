@@ -44,7 +44,7 @@ enum VSH_PlayerProp
 	Float:LastChangeTeamTime,
 	bool:bStatefulSpawn, //set true if spawn is a non repeated spawn. set to true on join and death, set false after spawn forward is finished.
 }
-
+/*
 enum VSHSpecials_id
 {
 	VSHSpecial_None = -1,
@@ -64,6 +64,7 @@ stock const String:SpecialNames[][] = {
 	"The Easter Bunny",
 	"Hatsunemiku"
 };
+*/
 
 enum VSHChat {
 	VSHChatFalse=0,
@@ -283,8 +284,6 @@ native VSH_EmitSoundToAllExcept(exceptiontype = SOUNDEXCEPT_MUSIC, const String:
 				 bool:updatePos = true,
 				 Float:soundtime = 0.0);
 
-functag RegisterHaleCallback HaleCallback:public(client);
-
 /**
  * Get's a Registered Hale's name.
  *
@@ -298,12 +297,13 @@ native VSH_GetHaleName(HaleIndex,String:retstr[],maxlen);
 /**
  * Register's a Hale Boss.
  *
- * @param name			Name of the Hale Boss.
- * @param func			Callback for menu items.
- * @param denyreason	if exists, will display disabled menu with reason if denied access.  Leave "" to disable this feature.
- * @return				true is created new menu item, false if changed menu item.
+ * @param name			Full name of the Hale Boss.
+ * @param shortname		shortname used in translations and other means.  (no spaces)
+ * 						it will be used as replacement for "vsh_*_hp" where * is the shortname\
+ *
+ * @return				returns Hale's ID
  */
-native bool:VSH_RegisterHale(const String:name[], RegisterHaleCallback:callback);
+native VSH_RegisterHale(const String:name[], const String:shortname[]);
 
 /**
  * Unregister a Hale Boss.
@@ -377,13 +377,6 @@ native VSH_GetDamageInflictor();
 native bool:VSH_IsOwnerSentry(client,bool:UseInternalInflictor=true,ExternalInflictor=0);
 
 /**
- * If special is enabled
- *
- * @return		true if enabled - false if disabled
- */
-native bool:VSH_IsSpecialEnabled(VSHSpecials_id:idSpecial);
-
-/**
  * Returns the next Saxton Hale userid.
  *
  * @return		    	Userid of current Hale/boss (-1 if invalid/doesn't exist).
@@ -411,6 +404,14 @@ native bool:VSH_IsSaxtonHaleModeEnabled();
  * @return		    	 (-1 if invalid/doesn't exist).
  */
 native VSH_GetHaleID();
+
+/**
+ * Returns the userid of the current Hale.
+ * @param client		client index.
+ *
+ * @return		    	true if is hale, otherwise false
+ */
+native VSH_IsHale(client);
 
 /**
  * Returns the userid of the current Hale.
@@ -542,10 +543,12 @@ forward Action:VSHSayAllCommandCheckPost(client,String:WholeString[],String:Chat
 /**
  * You should set your Boss's Class here or anything that you want to happen
  * before the boss create's it's model.
+ * iHale			client index
+ * iHaleID			Hale's registered ID.
  *
  * @return		    nothing.
  */
-forward VSH_OnMakeHale();
+forward VSH_OnMakeHale(iHale,iHaleID);
 
 
 /**
@@ -574,6 +577,15 @@ forward Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body);
  * @return		    Change iSpecial and return Plugin_Changed to change it. Plugin_Continue to keep the current Special.
  */
 forward Action:VSH_OnSpecialSelection(&VSHSpecials_id:iSpecial);
+
+/**
+ * When Hale is created.
+ *
+ * @param iHale 	integer index of Hale.
+ * @param iHaleID 	registered hale id
+ * @return		    Returning does nothing.
+ */
+forward VSH_OnSetEquipment(iHale, iHaleID);
 
 /**
  * When Hale is created.
@@ -646,7 +658,7 @@ forward VSH_OnEventDeath(victim, attacker, distance, attacker_hpleft);
 //THIS is a theoretical damage given by the engine, if u want real damage dealt use the hurt-event
 //use natives to retrieve inflictor and game damagetype
 //becareful when using this, u should only use this to reduce incoming damage. if you want to return damge, only use on bullet (first trigger damage)(below) or check IsBullet
-//you may set damage mod percent HERE
+//you may set damage mod percent HERE or change damage
 //you may NOT DAMAGE IN HERE
 forward OnVSH_TakeDmgAllPre(victim,attacker,&Float:damage,damagecustom);
 

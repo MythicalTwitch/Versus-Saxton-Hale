@@ -4,6 +4,13 @@ public EquipSaxton(client)
 	new SaxtonWeapon;
 	TF2_RemoveAllWeapons2(client);
 	HaleCharge = 0;
+
+	Call_StartForward(OnSetEquipment);
+	Call_PushCell(Hale);
+	Call_PushCell(HaleRaceID);
+	Call_Finish();
+
+	/*
 	switch (Special)
 	{
 #if defined MIKU_ON
@@ -48,7 +55,7 @@ public EquipSaxton(client)
 			SaxtonWeapon = SpawnWeapon(client, "tf_weapon_shovel", 5, 100, 4, attribs);
 			SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", SaxtonWeapon);
 		}
-	}
+	}*/
 }
 
 public Action:TF2Items_OnGiveNamedItem(client, String:classname[], iItemDefinitionIndex, &Handle:hItem)

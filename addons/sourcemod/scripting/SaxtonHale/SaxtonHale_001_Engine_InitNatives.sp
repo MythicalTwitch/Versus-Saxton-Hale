@@ -11,6 +11,7 @@ public bool:SaxtonHale_InitNatives()
 
 	CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
 	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
+	CreateNative("VSH_IsHale", Native_IsHale);
 	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
 	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
 	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
@@ -20,7 +21,6 @@ public bool:SaxtonHale_InitNatives()
 	CreateNative("VSH_GetClientDamage", Native_GetDamage);
 	CreateNative("VSH_GetRoundState", Native_GetRoundState);
 	CreateNative("VSH_GetNextSaxtonHaleUserId", Native_GetNextSaxtonHaleUserId);
-	CreateNative("VSH_IsSpecialEnabled", Native_IsSpecialEnabled);
 
 	Return_InitNatives = SaxtonHale_DamageSystem_InitNatives();
 

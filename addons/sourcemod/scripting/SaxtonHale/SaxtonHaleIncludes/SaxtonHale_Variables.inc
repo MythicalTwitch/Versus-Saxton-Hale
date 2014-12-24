@@ -1,6 +1,6 @@
 new dummyreturn;
 
-new HaleID=-1;
+new HaleRaceID=-1;
 
 new p_properties[MAXPLAYERS + 1][VSH_PlayerProp];
 
@@ -14,10 +14,8 @@ new playing;
 new healthcheckused;
 new RedAlivePlayers;
 new RoundCount;
-new VSHSpecials_id:Special;
-new VSHSpecials_id:Incoming;
-
-new bool:Special_Enabled[VSHSpecials_id]={false,...};
+new Special;
+new Incoming;
 
 #if defined MIKU_ON
 new bool:VSHSpecial_Miku_Rage=false;
@@ -34,7 +32,7 @@ new curHelp[MAXPLAYERS + 1];
 new uberTarget[MAXPLAYERS + 1];
 
 new VSHFlags[MAXPLAYERS + 1];
-new Hale = -1;
+//new Hale = -1;
 new HaleHealthMax;
 new HaleHealth;
 new HaleHealthLast;
@@ -143,4 +141,62 @@ new Handle:OnGetRoundState;*/
 //new bool:ACH_Enabled;
 
 //new numHaleKills = 0;    //See if the Hale was boosting his buddies or afk
+
+
+//=============================
+// War3Source_Engine_RaceClass ------------------------------ RACE CLASS
+//=============================
+new totalRacesLoaded=0;  ///USE raceid=1;raceid<=GetRacesLoaded();raceid++ for looping
+///race instance variables
+//RACE ID = index of [MAXRACES], raceid 1 is raceName[1][32]
+
+new String:raceName[MAXRACES][32];
+new String:raceShortname[MAXRACES][16];
+new String:raceShortdesc[MAXRACES][32];
+new bool:raceTranslated[MAXRACES];
+new bool:ignoreRaceEnd; ///dont do anything on CreateRaceEnd cuz this its already done once
+
+//zeroth skill is NOT  used
+new raceSkillCount[MAXRACES];
+new String:raceSkillName[MAXRACES][MAXSKILLCOUNT][32];
+new String:raceSkillDescription[MAXRACES][MAXSKILLCOUNT][512];
+new raceSkillDescReplaceNum[MAXRACES][MAXSKILLCOUNT];
+new String:raceSkillDescReplace[MAXRACES][MAXSKILLCOUNT][5][64]; ///MAX 5 params for replacement //64 string length
+new bool:skillTranslated[MAXRACES][MAXSKILLCOUNT];
+
+enum SkillRedirect
+{
+	genericskillid,
+}
+new bool:SkillRedirected[MAXRACES][MAXSKILLCOUNT];
+new SkillRedirectedToSkill[MAXRACES][MAXSKILLCOUNT];
+
+new bool:skillIsUltimate[MAXRACES][MAXSKILLCOUNT];
+new skillMaxLevel[MAXRACES][MAXSKILLCOUNT];
+//new skillProp[MAXRACES][MAXSKILLCOUNT][W3SkillProp];        // not used anywhere
+
+new MinLevelCvar[MAXRACES];
+new AccessFlagCvar[MAXRACES];
+new RaceOrderCvar[MAXRACES];
+new RaceFlagsCvar[MAXRACES];
+new RestrictItemsCvar[MAXRACES];
+new RestrictLimitCvar[MAXRACES][2];
+
+new Handle:m_MinimumUltimateLevel;
+
+new bool:racecreationended=true;
+new String:creatingraceshortname[16];
+
+new raceCell[MAXRACES][ENUM_RaceObject];
+
+new bool:ReloadRaces_Id[MAXRACES];
+new ReloadRaces_Client_Race[MAXPLAYERSCUSTOM];
+new String:ReloadRaces_Shortname[MAXRACES][16];
+new String:ReloadRaces_longname[MAXRACES][32];
+
+
+//=============================
+// War3Source_Engine_PlayerClass
+//=============================
+new p_properties[MAXPLAYERSCUSTOM][W3PlayerProp];
 

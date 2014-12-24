@@ -16,6 +16,7 @@ public bool:SaxtonHale_InitForwards()
 	OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);
 	OnHaleWeighdown = CreateGlobalForward("VSH_OnDoWeighdown", ET_Hook);
 	OnMusic = CreateGlobalForward("VSH_OnMusic", ET_Hook, Param_String, Param_FloatByRef);
+	OnSetEquipment = CreateGlobalForward("VSH_OnSetEquipment", ET_Ignore, Param_Cell, Param_Cell);
 
 	Return_InitForwards = CommandHook_InitForwards();
 

@@ -58,7 +58,8 @@ public OnPluginStart()
 		}
 	}
 
-	AddNormalSoundHook(HookSound);
+	// need to add into the addon files
+	//AddNormalSoundHook(HookSound);
 #if defined _steamtools_included
 	steamtools = LibraryExists("SteamTools");
 #endif

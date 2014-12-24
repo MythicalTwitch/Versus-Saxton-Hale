@@ -1,4 +1,5 @@
-#define MENUID_EXTRA_NUM 1000
+
+#define STRING(%1) %1, sizeof(%1)
 
 #define ME 2048
 

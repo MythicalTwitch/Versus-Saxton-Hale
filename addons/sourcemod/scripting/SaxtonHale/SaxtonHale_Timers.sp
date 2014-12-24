@@ -9,7 +9,7 @@ new Handle:OnEquipSaxton;
 public bool:SaxtonHale_Timers_InitForwards()
 {
 	OnMakeModelTimer = CreateGlobalForward("VSH_OnMakeModelTimer", ET_Hook, Param_String, Param_CellByRef);
-	OnMakeHale = CreateGlobalForward("VSH_OnMakeHale", ET_Ignore);
+	OnMakeHale = CreateGlobalForward("VSH_OnMakeHale", ET_Ignore, Param_Cell);
 	OnEquipSaxton = CreateGlobalForward("VSH_OnEquipSaxton", ET_Ignore);
 }
 
@@ -356,7 +356,7 @@ public Action:Timer_MusicPlay(Handle:timer)
 		strcopy(sound, sizeof(sound), "");
 		time = -1.0;
 	}
-	else
+/*	else
 	{
 		switch (Special)
 		{
@@ -381,7 +381,7 @@ public Action:Timer_MusicPlay(Handle:timer)
 				time = 210.0;
 			}
 		}
-	}
+	}*/
 	new Action:act = Plugin_Continue;
 	Call_StartForward(OnMusic);
 	decl String:sound2[PLATFORM_MAX_PATH];
@@ -534,7 +534,7 @@ public Action:StartHaleTimer(Handle:hTimer)
 	HaleHealth = HaleHealthMax;
 	HaleHealthLast = HaleHealth;
 	CreateTimer(0.2, CheckAlivePlayers);
-	CreateTimer(0.2, HaleTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+	//CreateTimer(0.2, HaleTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(0.2, StartRound);
 	CreateTimer(0.2, ClientTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	if (!PointType && playing > GetConVarInt(cvarAliveToEnable))
@@ -598,7 +598,8 @@ public Action:MessageTimer(Handle:hTimer, any:client)
 			doorchecktimer = CreateTimer(5.0, Timer_CheckDoors, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	}
 	decl String:translation[32];
-	switch (Special)
+	klkl
+	/*switch (Special)
 	{
 		case VSHSpecial_Miku: strcopy(translation, sizeof(translation), "vsh_start_miku");
 		case VSHSpecial_Bunny: strcopy(translation, sizeof(translation), "vsh_start_bunny");
@@ -606,7 +607,8 @@ public Action:MessageTimer(Handle:hTimer, any:client)
 		case VSHSpecial_HHH: strcopy(translation, sizeof(translation), "vsh_start_hhh");
 		case VSHSpecial_CBS: strcopy(translation, sizeof(translation), "vsh_start_cbs");
 		default: strcopy(translation, sizeof(translation), "vsh_start_hale");
-	}
+	}*/
+
 	SetHudTextParams(-1.0, 0.2, 10.0, 255, 255, 255, 255);
 	if (client != 9001 && !(GetClientButtons(client) & IN_SCORE)) //bad
 		ShowHudText(client, -1, "%T", translation, client, Hale, HaleHealthMax);
@@ -1168,302 +1170,6 @@ public Action:ClientTimer(Handle:hTimer)
 					}
 				}
 			}
-		}
-	}
-	return Plugin_Continue;
-}
-
-
-public Action:HaleTimer(Handle:hTimer)
-{
-	if (VSHRoundState == ROUNDSTATE_ROUND_END)
-	{
-		if (IsValidClient(Hale, false) && IsPlayerAlive(Hale)) TF2_AddCondition(Hale, TFCond_SpeedBuffAlly, 14.0);
-		return Plugin_Stop;
-	}
-	if (!IsValidClient(Hale))
-		return Plugin_Continue;
-	if (TF2_IsPlayerInCondition(Hale, TFCond_Jarated))
-		TF2_RemoveCondition(Hale, TFCond_Jarated);
-	if (TF2_IsPlayerInCondition(Hale, TFCond_MarkedForDeath))
-		TF2_RemoveCondition(Hale, TFCond_MarkedForDeath);
-	if (TF2_IsPlayerInCondition(Hale, TFCond_Disguised))
-		TF2_RemoveCondition(Hale, TFCond_Disguised);
-	if (TF2_IsPlayerInCondition(Hale, TFCond:42) && TF2_IsPlayerInCondition(Hale, TFCond_Dazed))
-		TF2_RemoveCondition(Hale, TFCond_Dazed);
-	new Float:speed = HaleSpeed + 0.7 * (100 - HaleHealth * 100 / HaleHealthMax);
-	SetEntPropFloat(Hale, Prop_Send, "m_flMaxspeed", speed);
-//  SetEntProp(Hale, Prop_Data, "m_iHealth", HaleHealth);
-//  SetEntProp(Hale, Prop_Send, "m_iHealth", HaleHealth);
-	if (HaleHealth <= 0 && IsPlayerAlive(Hale)) HaleHealth = 1;
-	SetHaleHealthFix(Hale, HaleHealth, HaleHealthMax);
-	SetHudTextParams(-1.0, 0.77, 0.35, 255, 255, 255, 255);
-	SetGlobalTransTarget(Hale);
-	if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, healthHUD, "%t", "vsh_health", HaleHealth, HaleHealthMax);
-	if (HaleRage/RageDMG >= 1)
-	{
-		if (IsFakeClient(Hale) && !(VSHFlags[Hale] & VSHFLAG_BOTRAGE))
-		{
-			CreateTimer(1.0, Timer_BotRage, _, TIMER_FLAG_NO_MAPCHANGE);
-			VSHFlags[Hale] |= VSHFLAG_BOTRAGE;
-		}
-		else if (!(GetClientButtons(Hale) & IN_SCORE))
-		{
-			SetHudTextParams(-1.0, 0.83, 0.35, 255, 64, 64, 255);
-			ShowSyncHudText(Hale, rageHUD, "%t", "vsh_do_rage");
-		}
-	}
-	else if (!(GetClientButtons(Hale) & IN_SCORE))
-	{
-		SetHudTextParams(-1.0, 0.83, 0.35, 255, 255, 255, 255);
-		ShowSyncHudText(Hale, rageHUD, "%t", "vsh_rage_meter", HaleRage*100/RageDMG);
-	}
-	SetHudTextParams(-1.0, 0.88, 0.35, 255, 255, 255, 255);
-	if (GlowTimer <= 0.0)
-	{
-		SetEntProp(Hale, Prop_Send, "m_bGlowEnabled", 0);
-		GlowTimer = 0.0;
-	}
-	else
-		GlowTimer -= 0.2;
-	if (bEnableSuperDuperJump)
-	{
-		/*if (HaleCharge <= 0)
-		{
-			HaleCharge = 0;
-			if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, jumpHUD, "%t", "vsh_super_duper_jump");
-		}*/
-		SetHudTextParams(-1.0, 0.88, 0.35, 255, 64, 64, 255);
-	}
-
-	new buttons = GetClientButtons(Hale);
-	if (((buttons & IN_DUCK) || (buttons & IN_ATTACK2)) && (HaleCharge >= 0)) // && !(buttons & IN_JUMP)
-	{
-		if (Special == VSHSpecial_HHH)
-		{
-			if (HaleCharge + 5 < HALEHHH_TELEPORTCHARGE)
-				HaleCharge += 5;
-			else
-				HaleCharge = HALEHHH_TELEPORTCHARGE;
-			if (!(GetClientButtons(Hale) & IN_SCORE))
-			{
-				if (bEnableSuperDuperJump)
-				{
-					ShowSyncHudText(Hale, jumpHUD, "%t", "vsh_super_duper_jump");
-				}
-				else
-				{
-					ShowSyncHudText(Hale, jumpHUD, "%t", "vsh_teleport_status", HaleCharge * 2);
-				}
-			}
-		}
-		else
-		{
-			if (HaleCharge + 5 < HALE_JUMPCHARGE)
-				HaleCharge += 5;
-			else
-				HaleCharge = HALE_JUMPCHARGE;
-			if (!(GetClientButtons(Hale) & IN_SCORE))
-			{
-				if (bEnableSuperDuperJump)
-				{
-					ShowSyncHudText(Hale, jumpHUD, "%t", "vsh_super_duper_jump");
-				}
-				else
-				{
-					ShowSyncHudText(Hale, jumpHUD, "%t", "vsh_jump_status", HaleCharge * 4);
-				}
-
-			}
-		}
-	}
-	else if (HaleCharge < 0)
-	{
-		HaleCharge += 5;
-		if (Special == VSHSpecial_HHH)
-		{
-			if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, jumpHUD, "%t %i", "vsh_teleport_status_2", -HaleCharge/20);
-		}
-		else if (!(GetClientButtons(Hale) & IN_SCORE)) ShowSyncHudText(Hale, jumpHUD, "%t %i", "vsh_jump_status_2", -HaleCharge/20);
-	}
-	else
-	{
-		decl Float:ang[3];
-		GetClientEyeAngles(Hale, ang);
-		if ((ang[0] < -45.0) && (HaleCharge > 1))
-		{
-			new Action:act = Plugin_Continue;
-			new bool:super = bEnableSuperDuperJump;
-			Call_StartForward(OnHaleJump);
-			Call_PushCellRef(super);
-			Call_Finish(act);
-			if (act != Plugin_Continue && act != Plugin_Changed)
-				return Plugin_Continue;
-			if (act == Plugin_Changed) bEnableSuperDuperJump = super;
-			decl Float:pos[3];
-			if (Special == VSHSpecial_HHH && (HaleCharge == HALEHHH_TELEPORTCHARGE || bEnableSuperDuperJump))
-			{
-				decl target;
-				do
-				{
-					target = GetRandomInt(1, MaxClients);
-				}
-				while ((RedAlivePlayers > 0) && (!IsValidClient(target, false) || (target == Hale) || !IsPlayerAlive(target) || GetClientTeam(target) != OtherTeam));
-				if (IsValidClient(target))
-				{
-					// Chdata's HHH teleport rework
-					if (TF2_GetPlayerClass(target) != TFClass_Scout && TF2_GetPlayerClass(target) != TFClass_Soldier)
-					{
-						SetEntProp(Hale, Prop_Send, "m_CollisionGroup", 2); //Makes HHH clipping go away for player and some projectiles
-						hHHHTeleTimer = CreateTimer(bEnableSuperDuperJump ? 4.0:2.0, HHHTeleTimer, TIMER_FLAG_NO_MAPCHANGE);
-					}
-
-					GetClientAbsOrigin(target, pos);
-					SetEntPropFloat(Hale, Prop_Send, "m_flNextAttack", GetGameTime() + (bEnableSuperDuperJump ? 4.0 : 2.0));
-					if (GetEntProp(target, Prop_Send, "m_bDucked"))
-					{
-						VSHFlags[Hale] |= VSHFLAG_NEEDSTODUCK;
-						decl Float:collisionvec[3];
-						collisionvec[0] = 24.0;
-						collisionvec[1] = 24.0;
-						collisionvec[2] = 62.0;
-						SetEntPropVector(Hale, Prop_Send, "m_vecMaxs", collisionvec);
-						SetEntProp(Hale, Prop_Send, "m_bDucked", 1);
-						SetEntityFlags(Hale, GetEntityFlags(Hale)|FL_DUCKING);
-						new Handle:timerpack;
-						CreateDataTimer(0.2, Timer_StunHHH, timerpack, TIMER_FLAG_NO_MAPCHANGE);
-						WritePackCell(timerpack, bEnableSuperDuperJump);
-						WritePackCell(timerpack, GetClientUserId(target));
-					}
-					else TF2_StunPlayer(Hale, (bEnableSuperDuperJump ? 4.0 : 2.0), 0.0, TF_STUNFLAGS_GHOSTSCARE|TF_STUNFLAG_NOSOUNDOREFFECT, target);
-					TeleportEntity(Hale, pos, NULL_VECTOR, NULL_VECTOR);
-					SetEntProp(Hale, Prop_Send, "m_bGlowEnabled", 0);
-					GlowTimer = 0.0;
-					CreateTimer(3.0, RemoveEnt, EntIndexToEntRef(AttachParticle(Hale, "ghost_appearation")));
-					CreateTimer(3.0, RemoveEnt, EntIndexToEntRef(AttachParticle(Hale, "ghost_appearation", _, false)));
-
-					// Chdata's HHH teleport rework
-					decl Float:vPos[3];
-					GetEntPropVector(target, Prop_Send, "m_vecOrigin", vPos);
-
-					EmitSoundToClient(Hale, "misc/halloween/spell_teleport.wav", _, _, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, vPos, NULL_VECTOR, false, 0.0);
-					EmitSoundToClient(target, "misc/halloween/spell_teleport.wav", _, _, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, vPos, NULL_VECTOR, false, 0.0);
-
-					PrintCenterText(target, "You've been teleported to!");
-
-					HaleCharge=-1100;
-				}
-				if (bEnableSuperDuperJump)
-					bEnableSuperDuperJump = false;
-			}
-			else if (Special != VSHSpecial_HHH)
-			{
-				decl Float:vel[3];
-				GetEntPropVector(Hale, Prop_Data, "m_vecVelocity", vel);
-				if (bEnableSuperDuperJump)
-				{
-					vel[2]=750 + HaleCharge * 13.0 + 2000;
-					bEnableSuperDuperJump = false;
-				}
-				else
-					vel[2]=750 + HaleCharge * 13.0;
-				SetEntProp(Hale, Prop_Send, "m_bJumping", 1);
-				vel[0] *= (1+Sine(float(HaleCharge) * FLOAT_PI / 50));
-				vel[1] *= (1+Sine(float(HaleCharge) * FLOAT_PI / 50));
-				TeleportEntity(Hale, NULL_VECTOR, NULL_VECTOR, vel);
-				HaleCharge=-120;
-				new String:s[PLATFORM_MAX_PATH];
-				switch (Special)
-				{
-					case VSHSpecial_Vagineer:
-						Format(s, PLATFORM_MAX_PATH, "%s%i.wav", VagineerJump, GetRandomInt(1, 2));
-					case VSHSpecial_CBS:
-						strcopy(s, PLATFORM_MAX_PATH, CBSJump1);
-					case VSHSpecial_Bunny:
-						strcopy(s, PLATFORM_MAX_PATH, BunnyJump[GetRandomInt(0, sizeof(BunnyJump)-1)]);
-#if defined MIKU_ON
-					case VSHSpecial_Miku:
-						strcopy(s, PLATFORM_MAX_PATH, MikuJump[GetRandomInt(0, sizeof(MikuJump)-1)]);
-#endif
-					case VSHSpecial_Hale:
-					{
-						Format(s, PLATFORM_MAX_PATH, "%s%i.wav", GetRandomInt(0, 1) ? HaleJump : HaleJump132, GetRandomInt(1, 2));
-					}
-				}
-				if (s[0] != '\0')
-				{
-					GetEntPropVector(Hale, Prop_Send, "m_vecOrigin", pos);
-					EmitSoundToAll(s, Hale, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, pos, NULL_VECTOR, true, 0.0);
-					EmitSoundToAll(s, Hale, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, pos, NULL_VECTOR, true, 0.0);
-					for (new i = 1; i <= MaxClients; i++)
-						if (IsValidClient(i) && (i != Hale))
-						{
-							EmitSoundToClient(i, s, Hale, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, pos, NULL_VECTOR, true, 0.0);
-							EmitSoundToClient(i, s, Hale, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, pos, NULL_VECTOR, true, 0.0);
-						}
-				}
-			}
-		}
-		else
-			HaleCharge = 0;
-	}
-	if (RedAlivePlayers == 1)
-	{
-		switch (Special)
-		{
-#if defined MIKU_ON
-			case VSHSpecial_Miku:
-				PrintCenterTextAll("%t", "vsh_miku_hp", HaleHealth, HaleHealthMax);
-#endif
-			case VSHSpecial_Bunny:
-				PrintCenterTextAll("%t", "vsh_bunny_hp", HaleHealth, HaleHealthMax);
-			case VSHSpecial_Vagineer:
-				PrintCenterTextAll("%t", "vsh_vagineer_hp", HaleHealth, HaleHealthMax);
-			case VSHSpecial_HHH:
-				PrintCenterTextAll("%t", "vsh_hhh_hp", HaleHealth, HaleHealthMax);
-			case VSHSpecial_CBS:
-				PrintCenterTextAll("%t", "vsh_cbs_hp", HaleHealth, HaleHealthMax);
-			default:
-				PrintCenterTextAll("%t", "vsh_hale_hp", HaleHealth, HaleHealthMax);
-		}
-	}
-	if (OnlyScoutsLeft())
-	{
-		new Float:rage = 0.001*RageDMG;
-		HaleRage += RoundToCeil(rage);
-		if (HaleRage > RageDMG)
-			HaleRage = RageDMG;
-	}
-
-	if (!(GetEntityFlags(Hale) & FL_ONGROUND))
-	{
-		WeighDownTimer += 0.2;
-	}
-	else
-	{
-		HHHClimbCount = 0;
-		WeighDownTimer = 0.0;
-	}
-
-	if (WeighDownTimer >= 4.0 && buttons & IN_DUCK && GetEntityGravity(Hale) != 6.0)
-	{
-		decl Float:ang[3];
-		GetClientEyeAngles(Hale, ang);
-		if ((ang[0] > 60.0))
-		{
-			new Action:act = Plugin_Continue;
-			Call_StartForward(OnHaleWeighdown);
-			Call_Finish(act);
-			if (act != Plugin_Continue)
-				return Plugin_Continue;
-			new Float:fVelocity[3];
-			GetEntPropVector(Hale, Prop_Data, "m_vecVelocity", fVelocity);
-			fVelocity[2] = -1000.0;
-			TeleportEntity(Hale, NULL_VECTOR, NULL_VECTOR, fVelocity);
-			SetEntityGravity(Hale, 6.0);
-			CreateTimer(2.0, Timer_GravityCat, GetClientUserId(Hale), TIMER_FLAG_NO_MAPCHANGE);
-			CPrintToChat(Hale, "{olive}[VSH]{default} %t", "vsh_used_weighdown");
-			WeighDownTimer = 0.0;
 		}
 	}
 	return Plugin_Continue;

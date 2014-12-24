@@ -43,7 +43,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 
 	// VSH_OnSpecialSelection
 	new Action:act = Plugin_Continue;
-	new VSHSpecials_id:NewSpecial = Special;
+	new NewSpecial = Special;
 	Call_StartForward(OnSpecialSelection);
 	Call_PushCellRef(NewSpecial);
 	Call_Finish(act);

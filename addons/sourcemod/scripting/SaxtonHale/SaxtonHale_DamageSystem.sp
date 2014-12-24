@@ -62,8 +62,8 @@ public bool:SaxtonHale_DamageSystem_InitNatives()
 
 public bool:DamageSystem_InitForwards()
 {
-	FHOnVSH_TakeDmgAllPre=CreateGlobalForward("OnVSH_TakeDmgAllPre",ET_Hook,Param_Cell,Param_Cell,Param_Cell,Param_Cell);
-	FHOnVSH_TakeDmgAll=CreateGlobalForward("OnVSH_TakeDmgAll",ET_Hook,Param_Cell,Param_Cell,Param_CellByRef);
+	FHOnVSH_TakeDmgAllPre=CreateGlobalForward("OnVSH_TakeDmgAllPre",ET_Hook,Param_Cell,Param_Cell,Param_CellByRef,Param_Cell);
+	FHOnVSH_TakeDmgAll=CreateGlobalForward("OnVSH_TakeDmgAll",ET_Hook,Param_Cell,Param_Cell,Param_Cell);
 
 	g_OnVSHEventPostHurtFH=CreateGlobalForward("OnVSHEventPostHurt",ET_Ignore,Param_Cell,Param_Cell,Param_Cell,Param_String);
 
@@ -266,7 +266,7 @@ public Action:SDK_Forwarded_OnTakeDamage(victim, &attacker, &inflictor, &Float:d
 			Call_StartForward(FHOnVSH_TakeDmgAll);
 			Call_PushCell(victim);
 			Call_PushCell(attacker);
-			Call_PushCellRef(damage);
+			Call_PushCell(damage);
 			Call_Finish(dummyresult); //this will be returned to
 
 		}

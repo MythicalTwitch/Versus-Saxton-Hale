@@ -1,5 +1,5 @@
 // SaxtonHale_001_HookSound.sp
-
+/*
 public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
 {
 	if (!Enabled || ((entity != Hale) && ((entity <= 0) || !IsValidClient(Hale) || (entity != GetPlayerWeaponSlot(Hale, 0)))))
@@ -65,3 +65,4 @@ public Action:HookSound(clients[64], &numClients, String:sample[PLATFORM_MAX_PAT
 	}
 	return Plugin_Continue;
 }
+*/

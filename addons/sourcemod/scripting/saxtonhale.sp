@@ -1,3 +1,15 @@
+
+// TO DO:
+
+// Changing all Special variables to HaleRaceID
+// moving special timers to their corresponding addons
+
+
+
+
+
+
+
 /*
 ===Versus Saxton Hale Mode===
 Created by Rainbolt Dash (formerly Dr.Eggman): programmer, model-maker, mapper.
@@ -441,6 +453,10 @@ public Native_IsEnabled(Handle:plugin, numParams)
 {
 	return Enabled;
 }
+public Native_IsHale(Handle:plugin, numParams)
+{
+	return IsValidClient(Hale)?true:false;
+}
 public Native_GetHale(Handle:plugin, numParams)
 {
 	if (IsValidClient(Hale))
@@ -451,9 +467,9 @@ public Native_GetTeam(Handle:plugin, numParams)
 {
 	return HaleTeam;
 }
-public Native_GetSpecial(Handle:plugin, numParams)
+public Native_GetHaleRaceID(Handle:plugin, numParams)
 {
-	return _:Special;
+	return HaleRaceID;
 }
 public Native_SetHealth(Handle:plugin, numParams)
 {
@@ -484,9 +500,4 @@ public Native_GetNextSaxtonHaleUserId(Handle:plugin, numParams)
 	if (ValidPlayer(client))
 		return GetClientUserId(client);
 	return -1;
-}
-public Native_IsSpecialEnabled(Handle:plugin, numParams)
-{
-	new VSHSpecials_id:Special_id = VSHSpecials_id:GetNativeCell(1);
-	return Special_Enabled[Special_id];
 }

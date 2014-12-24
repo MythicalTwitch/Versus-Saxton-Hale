@@ -2,19 +2,6 @@
 
 public Load_ConVars()
 {
-	// Currently used for a Native VSH_IsSpecialEnabled()
-	Special_Enabled[VSHSpecial_Hale]=true;
-	Special_Enabled[VSHSpecial_Vagineer]=true;
-	Special_Enabled[VSHSpecial_HHH]=true;
-	Special_Enabled[VSHSpecial_CBS]=true;
-
-#if defined EASTER_BUNNY_ON
-	Special_Enabled[VSHSpecial_Bunny]=true;
-#endif
-#if defined MIKU_ON
-	Special_Enabled[VSHSpecial_Miku]=true;
-#endif
-
 	cvarVersion = CreateConVar("hale_version", haleversiontitles[maxversion], "VS Saxton Hale Version", FCVAR_NOTIFY|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_DONTRECORD);
 	cvarHaleSpeed = CreateConVar("hale_speed", "340.0", "Speed of Saxton Hale", FCVAR_PLUGIN);
 	cvarPointType = CreateConVar("hale_point_type", "0", "Select condition to enable point (0 - alive players, 1 - time)", FCVAR_PLUGIN, true, 0.0, true, 1.0);

@@ -34,32 +34,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	MarkNativeAsOptional("PbSetBool");
 	MarkNativeAsOptional("PbSetString");
 	MarkNativeAsOptional("PbAddString");
-/*  CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
-	OnIsVSHMap = CreateGlobalForward("VSH_OnIsSaxtonHaleModeMap", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
-	OnIsEnabled = CreateGlobalForward("VSH_OnIsSaxtonHaleModeEnabled", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
-	OnGetHale = CreateGlobalForward("VSH_OnGetSaxtonHaleUserId", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
-	OnGetTeam = CreateGlobalForward("VSH_OnGetSaxtonHaleTeam", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
-	OnGetSpecial = CreateGlobalForward("VSH_OnGetSpecialRoundIndex", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
-	OnGetHealth = CreateGlobalForward("VSH_OnGetSaxtonHaleHealth", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
-	OnGetHealthMax = CreateGlobalForward("VSH_OnGetSaxtonHaleHealthMax", ET_Hook, Param_CellByRef);
-
-	CreateNative("VSH_GetClientDamage", Native_GetDamage);
-	OnGetDamage = CreateGlobalForward("VSH_OnGetClientDamage", ET_Hook, Param_Cell,Param_CellByRef);
-
-	CreateNative("VSH_GetRoundState", Native_GetRoundState);
-	OnGetRoundState = CreateGlobalForward("VSH_OnGetRoundState", ET_Hook, Param_CellByRef);*/
 
 	if(!SaxtonHale_InitNatives())
 	{
@@ -457,46 +431,20 @@ stock CheckToTeleportToSpawn()
 
 	CloseHandle(fileh);
 }
-stock bool:CheckNextSpecial()
+stock bool:CheckNextHaleRaceID()
 {
-	if (!bSpecials)
+	if (Incoming != -1)
 	{
-		Special = VSHSpecial_Hale;
+		HaleRaceID = Incoming;
+		Incoming = -1;
 		return true;
 	}
-	if (Incoming != VSHSpecial_None)
+	while (Incoming == -1 || (HaleRaceID && HaleRaceID == Incoming))
 	{
-		Special = Incoming;
-		Incoming = VSHSpecial_None;
-		return true;
+		Incoming = GetRandomInt(0, GetHalesLoaded());
 	}
-	while (Incoming == VSHSpecial_None || (Special && Special == Incoming))
-	{
-		Incoming = VSHSpecials_id:GetRandomInt(0, 8);
-		if (Special != VSHSpecial_Hale && !GetRandomInt(0, 5)) Incoming = VSHSpecial_Hale;
-		else
-		{
-			switch (Incoming)
-			{
-				case 1: Incoming = VSHSpecial_Vagineer;
-				case 2: Incoming = VSHSpecial_HHH;
-				case 3: Incoming = VSHSpecial_CBS;
-#if defined EASTER_BUNNY_ON
-				case 4: Incoming = VSHSpecial_Bunny;
-#endif
-#if defined MIKU_ON
-				case 5: Incoming = VSHSpecial_Miku;
-#endif
-				default: Incoming = VSHSpecial_Hale;
-			}
-			if (IsDecemberHoliday() && !GetRandomInt(0, 7)) Incoming = VSHSpecial_CBS;
-#if defined EASTER_BUNNY_ON
-			if (IsEasterHoliday() && !GetRandomInt(0, 7)) Incoming = VSHSpecial_Bunny;
-#endif
-		}
-	}
-	Special = Incoming;
-	Incoming = VSHSpecial_None;
+	HaleRaceID = Incoming;
+	Incoming = -1;
 	return true;        //OH GOD WHAT AM I DOING THIS ALWAYS RETURNS TRUE (still better than using QueuePanelH as a dummy)
 }
 stock bool:IsEasterHoliday(bool:forceRecalc = false)
@@ -645,9 +593,10 @@ stock CalcScores()
 			for (j = 0; damage - 600 > 0; damage -= 600, j++){}
 			SetEventInt(aevent, "points", j);
 			FireEvent(aevent);
-			if (i == Hale)
+			//if (i == Hale)
+			if(GetPlayerProp(i,IsHale))
 			{
-				if (IsFakeClient(Hale)) botqueuepoints = 0;
+				if (IsFakeClient(i)) botqueuepoints = 0;
 				else SetClientQueuePoints(i, 0);
 			}
 			else if (!IsFakeClient(i) && (GetClientTeam(i) > _:TFTeam_Spectator || spec))
@@ -910,7 +859,9 @@ stock SetArenaCapEnableTime(Float:time)
 stock ForceHale(admin, client, bool:hidden, bool:forever = false)
 {
 	if (forever)
+	{
 		Hale = client;
+	}
 	else
 		NextHale = client;
 	if (!hidden)
@@ -1050,11 +1001,11 @@ stock TeleportToSpawn(iClient, iTeam = 0)
 	GetEntPropVector(iEnt, Prop_Send, "m_angRotation", vAng);
 	TeleportEntity(iClient, vPos, vAng, NULL_VECTOR);
 
-	if (Special == VSHSpecial_HHH)
-	{
-		CreateTimer(3.0, RemoveEnt, EntIndexToEntRef(AttachParticle(iEnt, "ghost_appearation", _, false)));
-		EmitSoundToAll("misc/halloween/spell_teleport.wav", _, _, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, vPos, NULL_VECTOR, false, 0.0);
-	}
+	//if (Special == VSHSpecial_HHH)
+	//{
+		//CreateTimer(3.0, RemoveEnt, EntIndexToEntRef(AttachParticle(iEnt, "ghost_appearation", _, false)));
+		//EmitSoundToAll("misc/halloween/spell_teleport.wav", _, _, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, vPos, NULL_VECTOR, false, 0.0);
+	//}
 
 	/*if (GetArraySize(hArray) <= 0)
 	{
