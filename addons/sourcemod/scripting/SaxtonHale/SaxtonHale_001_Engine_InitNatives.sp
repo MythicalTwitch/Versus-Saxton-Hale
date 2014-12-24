@@ -14,7 +14,7 @@ public bool:SaxtonHale_InitNatives()
 	CreateNative("VSH_IsHale", Native_IsHale);
 	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
 	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
-	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
+	CreateNative("VSH_GetHaleRaceIDRoundIndex", Native_GetHaleRaceID);
 	CreateNative("VSH_SetSaxtonHaleHealth", Native_SetHealth);
 	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
 	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
