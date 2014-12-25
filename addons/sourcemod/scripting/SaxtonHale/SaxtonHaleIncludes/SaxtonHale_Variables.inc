@@ -1,8 +1,5 @@
 new dummyreturn;
 
-new Hale=-1;
-new HaleRaceID=-1;
-
 new p_properties[MAXPLAYERS + 1][VSH_PlayerProp];
 
 #if defined _steamtools_included
@@ -25,7 +22,8 @@ new curHelp[MAXPLAYERS + 1];
 new uberTarget[MAXPLAYERS + 1];
 
 new VSHFlags[MAXPLAYERS + 1];
-//new Hale = -1;
+new Hale = -1;
+new HaleRaceID=-1;
 new HaleHealthMax;
 new HaleHealth;
 new HaleHealthLast;
