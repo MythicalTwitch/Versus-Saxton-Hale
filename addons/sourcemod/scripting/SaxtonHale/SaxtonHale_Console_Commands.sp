@@ -44,9 +44,6 @@ public Load_RegAdminCmd()
 
 public Load_AddCommandListener()
 {
-	AddCommandListener(DoTaunt, "taunt");
-	AddCommandListener(DoTaunt, "+taunt");
-	AddCommandListener(cdVoiceMenu, "voicemenu");
 	AddCommandListener(DoSuicide, "explode");
 	AddCommandListener(DoSuicide, "kill");
 	AddCommandListener(DoSuicide2, "jointeam");
@@ -172,57 +169,38 @@ public Action:Command_MakeNextSpecial(client, args)
 
 	decl String:arg[32];
 	decl String:name[64];
-	if (!bSpecials)
-	{
-		ReplyToCommand(client, "[VSH] This server isn't set up to use special bosses! Set the cvar hale_specials 1 in the VSH config to enable on next map!");
-		return Plugin_Handled;
-	}
+
 	if (args < 1)
 	{
-		ReplyToCommand(client, "[VSH] Usage: hale_special <hale, vagineer, hhh, christian>");
+		ReplyToCommand(client, "[VSH] Usage: hale_special <hal, vag, hhh, chris>");
 		return Plugin_Handled;
 	}
 	GetCmdArgString(arg, sizeof(arg));
-	if (StrContains(arg, "hal", false) != -1)
+
+	decl String:szName[32];
+
+	Incoming = -1;
+
+	for(new i = 0; i < GetArraySize(g_hHaleName); i++)
 	{
-		Incoming = VSHSpecial_Hale;
-		name = "Saxton Hale";
+		GetArrayString(g_hHaleName, i, szName, sizeof(szName));
+		if(StrContains(szName, arg) != -1)
+		{
+			Incoming = i;
+			strcopy(STRING(name), szName);
+
+			break;
+		}
 	}
-	else if (StrContains(arg, "vag", false) != -1)
+
+	if(Incoming==-1)
 	{
-		Incoming = VSHSpecial_Vagineer;
-		name = "the Vagineer";
+		ReplyToCommand(client, "Could not find %s", name);
 	}
-	else if (StrContains(arg, "hhh", false) != -1)
-	{
-		Incoming = VSHSpecial_HHH;
-		name = "the Horseless Headless Horsemann Jr.";
-	}
-	else if (StrContains(arg, "chr", false) != -1 || StrContains(arg, "cbs", false) != -1)
-	{
-		Incoming = VSHSpecial_CBS;
-		name = "the Christian Brutal Sniper";
-	}
-#if defined EASTER_BUNNY_ON
-	else if (StrContains(arg, "bun", false) != -1 || StrContains(arg, "eas", false) != -1)
-	{
-		Incoming = VSHSpecial_Bunny;
-		name = "the Easter Bunny";
-	}
-#endif
-#if defined MIKU_ON
-	else if (StrContains(arg, "mik", false) != -1 || StrContains(arg, "miku", false) != -1)
-	{
-		Incoming = VSHSpecial_Miku;
-		name = "the Hatsunemiku";
-	}
-#endif
 	else
 	{
-		ReplyToCommand(client, "[VSH] Usage: hale_special <hale, vagineer, hhh, christian>");
-		return Plugin_Handled;
+		ReplyToCommand(client, "[VSH] Set the next Special to %s", name);
 	}
-	ReplyToCommand(client, "[VSH] Set the next Special to %s", name);
 	return Plugin_Handled;
 }
 
@@ -230,160 +208,6 @@ public Action:Command_NextHale(client, args)
 {
 	if (Enabled)
 		CreateTimer(0.2, MessageTimer);
-	return Plugin_Continue;
-}
-
-/*
- Call medic to rage update by Chdata
-
-*/
-public Action:cdVoiceMenu(iClient, const String:sCommand[], iArgc)
-{
-	if (iArgc < 2) return Plugin_Handled;
-
-	decl String:sCmd1[8], String:sCmd2[8];
-
-	GetCmdArg(1, sCmd1, sizeof(sCmd1));
-	GetCmdArg(2, sCmd2, sizeof(sCmd2));
-
-	// Capture call for medic commands (represented by "voicemenu 0 0")
-
-	if (sCmd1[0] == '0' && sCmd2[0] == '0' && IsPlayerAlive(iClient) && iClient == Hale)
-	{
-		if (HaleRage / RageDMG >= 1)
-		{
-			DoTaunt(iClient, "", 0);
-			return Plugin_Handled;
-		}
-	}
-
-	return (iClient == Hale && Special != VSHSpecial_CBS && Special != VSHSpecial_Bunny && Special != VSHSpecial_Miku) ? Plugin_Handled : Plugin_Continue;
-}
-
-public Action:DoTaunt(client, const String:command[], argc)
-{
-	if (!Enabled || (client != Hale))
-		return Plugin_Continue;
-
-	if (bNoTaunt) // Prevent double-tap rages
-	{
-		return Plugin_Handled;
-	}
-
-	decl String:s[PLATFORM_MAX_PATH];
-	if (HaleRage/RageDMG >= 1)
-	{
-		decl Float:pos[3];
-		GetEntPropVector(client, Prop_Send, "m_vecOrigin", pos);
-		pos[2] += 20.0;
-		new Action:act = Plugin_Continue;
-		Call_StartForward(OnHaleRage);
-		new Float:dist;
-		new Float:newdist;
-		switch (Special)
-		{
-			case VSHSpecial_Vagineer: dist = RageDist/(1.5);
-			case VSHSpecial_Bunny: dist = RageDist/(1.5);
-			case VSHSpecial_Miku: dist = RageDist*1.5;
-			case VSHSpecial_CBS: dist = RageDist/(2.5);
-			default: dist = RageDist;
-		}
-		newdist = dist;
-		Call_PushFloatRef(newdist);
-		Call_Finish(act);
-		if (act != Plugin_Continue && act != Plugin_Changed)
-			return Plugin_Continue;
-		if (act == Plugin_Changed) dist = newdist;
-		TF2_AddCondition(Hale, TFCond:42, 4.0);
-		switch (Special)
-		{
-			case VSHSpecial_Vagineer:
-			{
-				if (GetRandomInt(0, 2))
-					strcopy(s, PLATFORM_MAX_PATH, VagineerRageSound);
-				else
-					Format(s, PLATFORM_MAX_PATH, "%s%i.wav", VagineerRageSound2, GetRandomInt(1, 2));
-				TF2_AddCondition(Hale, TFCond_Ubercharged, 99.0);
-				UberRageCount = 0.0;
-
-				CreateTimer(0.6, UseRage, dist);
-				CreateTimer(0.1, UseUberRage, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-			}
-			case VSHSpecial_HHH:
-			{
-				Format(s, PLATFORM_MAX_PATH, "%s", HHHRage2);
-				CreateTimer(0.6, UseRage, dist);
-			}
-			case VSHSpecial_Bunny:
-			{
-				strcopy(s, PLATFORM_MAX_PATH, BunnyRage[GetRandomInt(1, sizeof(BunnyRage)-1)]);
-				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
-				TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
-				new weapon = SpawnWeapon(client, "tf_weapon_grenadelauncher", 19, 100, 5, "1 ; 0.6 ; 6 ; 0.1 ; 411 ; 150.0 ; 413 ; 1.0 ; 37 ; 0.0 ; 280 ; 17 ; 477 ; 1.0 ; 467 ; 1.0 ; 181 ; 2.0 ; 252 ; 0.7");
-				SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", weapon);
-				SetEntProp(weapon, Prop_Send, "m_iClip1", 50);
-//              new vm = CreateVM(client, ReloadEggModel);
-//              SetEntPropEnt(vm, Prop_Send, "m_hWeaponAssociatedWith", weapon);
-//              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
-				SetAmmo(client, TFWeaponSlot_Primary, 0);
-				//add charging?
-				CreateTimer(0.6, UseRage, dist);
-			}
-#if defined MIKU_ON
-			case VSHSpecial_Miku:
-			{
-				strcopy(s, PLATFORM_MAX_PATH, MikuRage[GetRandomInt(1, sizeof(MikuRage)-1)]);
-				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
-				//TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
-				//new weapon = SpawnWeapon(client, "tf_weapon_grenadelauncher", 19, 100, 5, "1 ; 0.6 ; 6 ; 0.1 ; 411 ; 150.0 ; 413 ; 1.0 ; 37 ; 0.0 ; 280 ; 17 ; 477 ; 1.0 ; 467 ; 1.0 ; 181 ; 2.0 ; 252 ; 0.7");
-				//SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", weapon);
-				//SetEntProp(weapon, Prop_Send, "m_iClip1", 50);
-//              new vm = CreateVM(client, ReloadEggModel);
-//              SetEntPropEnt(vm, Prop_Send, "m_hWeaponAssociatedWith", weapon);
-//              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
-				//SetAmmo(client, TFWeaponSlot_Primary, 0);
-				//add charging?
-				VSHSpecial_Miku_Rage=true;
-				CreateTimer(10.0, EndMikuRage);
-				CreateTimer(0.6, UseRage, dist);
-			}
-#endif
-			case VSHSpecial_CBS:
-			{
-				if (GetRandomInt(0, 1))
-					Format(s, PLATFORM_MAX_PATH, "%s", CBS1);
-				else
-					Format(s, PLATFORM_MAX_PATH, "%s", CBS3);
-				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
-				TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
-				SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", SpawnWeapon(client, "tf_weapon_compound_bow", 1005, 100, 5, "2 ; 2.1 ; 6 ; 0.5 ; 37 ; 0.0 ; 280 ; 19 ; 551 ; 1"));
-				SetAmmo(client, TFWeaponSlot_Primary, ((RedAlivePlayers >= CBS_MAX_ARROWS) ? CBS_MAX_ARROWS : RedAlivePlayers));
-				CreateTimer(0.6, UseRage, dist);
-				CreateTimer(0.1, UseBowRage);
-			}
-			default:
-			{
-				Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleRageSound, GetRandomInt(1, 4));
-				CreateTimer(0.6, UseRage, dist);
-			}
-		}
-		EmitSoundToAll(s, client, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
-		EmitSoundToAll(s, client, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
-		for (new i = 1; i <= MaxClients; i++)
-		{
-			if (IsValidClient(i) && i != Hale)
-			{
-				EmitSoundToClient(i, s, client, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
-				EmitSoundToClient(i, s, client, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
-			}
-		}
-		HaleRage = 0;
-		VSHFlags[Hale] &= ~VSHFLAG_BOTRAGE;
-	}
-
-	bNoTaunt = true;
-	CreateTimer(1.5, Timer_NoTaunting, _, TIMER_FLAG_NO_MAPCHANGE);
-
 	return Plugin_Continue;
 }
 
@@ -418,6 +242,12 @@ public Command_GetHP(client)
 		return;
 	if (client == Hale)
 	{
+		decl String:szHaleShortName[32],String:szBuffer[128];
+		GetHaleShortName(HaleRaceID,STRING(szHaleShortName));
+		Format(STRING(szBuffer), "vsh_%s_show_hp",szHaleShortName);
+
+		PrintCenterTextAll("%t", szBuffer, HaleHealth, HaleHealthMax);
+/*
 		switch (Special)
 		{
 #if defined MIKU_ON
@@ -434,13 +264,22 @@ public Command_GetHP(client)
 				PrintCenterTextAll("%t", "vsh_cbs_show_hp", HaleHealth, HaleHealthMax);
 			default:
 				PrintCenterTextAll("%t", "vsh_hale_show_hp", HaleHealth, HaleHealthMax);
-		}
+		}*/
 		HaleHealthLast = HaleHealth;
 		return;
 	}
 	if (GetGameTime() >= HPTime)
 	{
 		healthcheckused++;
+
+		decl String:szHaleShortName[32],String:szBuffer[128];
+		GetHaleShortName(HaleRaceID,STRING(szHaleShortName));
+		Format(STRING(szBuffer), "vsh_%s_hp",szHaleShortName);
+
+
+		PrintCenterTextAll("%t", szBuffer, HaleHealth, HaleHealthMax);
+		CPrintToChatAll("{olive}[VSH]{default} %t", szBuffer, HaleHealth, HaleHealthMax);
+/*
 		switch (Special)
 		{
 #if defined MIKU_ON
@@ -475,14 +314,18 @@ public Command_GetHP(client)
 				PrintCenterTextAll("%t", "vsh_hale_hp", HaleHealth, HaleHealthMax);
 				CPrintToChatAll("{olive}[VSH]{default} %t", "vsh_hale_hp", HaleHealth, HaleHealthMax);
 			}
-		}
+		}*/
 		HaleHealthLast = HaleHealth;
 		HPTime = GetGameTime() + (healthcheckused < 3 ? 20.0 : 80.0);
 	}
 	else if (RedAlivePlayers == 1)
+	{
 		CPrintToChat(client, "{olive}[VSH]{default} %t", "vsh_already_see");
+	}
 	else
+	{
 		CPrintToChat(client, "{olive}[VSH]{default} %t", "vsh_wait_hp", RoundFloat(HPTime-GetGameTime()), HaleHealthLast);
+	}
 	return;
 }
 

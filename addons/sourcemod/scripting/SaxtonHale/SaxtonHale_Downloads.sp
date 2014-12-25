@@ -1,3 +1,4 @@
+/*
 public AddToDownload()
 {
 	decl String:s[PLATFORM_MAX_PATH];
@@ -385,3 +386,4 @@ public AddToDownload()
 	}
 #endif
 }
+*/

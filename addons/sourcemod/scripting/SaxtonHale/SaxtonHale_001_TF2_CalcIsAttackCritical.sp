@@ -1,5 +1,5 @@
 // SaxtonHale_001_TF2_CalcIsAttackCritical.sp
-
+/*
 public Action:TF2_CalcIsAttackCritical(client, weapon, String:weaponname[], &bool:result)
 {
 	if (!IsValidClient(client, false) || !Enabled) return Plugin_Continue;
@@ -37,3 +37,4 @@ public Action:TF2_CalcIsAttackCritical(client, weapon, String:weaponname[], &boo
 	}
 	return Plugin_Continue;
 }
+*/

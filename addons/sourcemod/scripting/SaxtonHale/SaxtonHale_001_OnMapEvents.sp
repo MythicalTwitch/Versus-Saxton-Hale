@@ -14,7 +14,7 @@ public OnMapStart()
 	}
 	if (IsSaxtonHaleMap(true))
 	{
-		AddToDownload();
+		//AddToDownload();
 		IsDecemberHoliday(true);
 		MapHasMusic(true);
 		CheckToChangeMapDoors();

@@ -10,7 +10,7 @@ public bool:SaxtonHale_InitForwards()
 	g_OnEventSpawn=CreateGlobalForward("VSH_OnEventSpawn",ET_Ignore,Param_Cell);
 	g_OnEventDeath=CreateGlobalForward("VSH_OnEventDeath",ET_Ignore,Param_Cell,Param_Cell,Param_Cell,Param_Cell);
 
-	OnSpecialSelection = CreateGlobalForward("VSH_OnSpecialSelection", ET_Hook, Param_CellByRef);
+	OnHaleRaceSelection = CreateGlobalForward("VSH_OnHaleRaceSelection", ET_Hook, Param_CellByRef);
 	OnHaleCreated = CreateGlobalForward("VSH_OnHaleCreated", ET_Ignore, Param_Cell);
 	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
 	OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);

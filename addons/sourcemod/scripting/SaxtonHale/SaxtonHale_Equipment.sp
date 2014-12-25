@@ -1,7 +1,7 @@
 public EquipSaxton(client)
 {
 	bEnableSuperDuperJump = false;
-	new SaxtonWeapon;
+	//new SaxtonWeapon;
 	TF2_RemoveAllWeapons2(client);
 	HaleCharge = 0;
 

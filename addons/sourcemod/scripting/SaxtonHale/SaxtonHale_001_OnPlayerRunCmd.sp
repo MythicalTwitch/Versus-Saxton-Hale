@@ -1,5 +1,5 @@
 // SaxtonHale_001_OnPlayerRunCmd.sp
-
+/*
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
 	if (Enabled && client == Hale)
@@ -112,3 +112,4 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	}
 	return Plugin_Continue;
 }
+*/

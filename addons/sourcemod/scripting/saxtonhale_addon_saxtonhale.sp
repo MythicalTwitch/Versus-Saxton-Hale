@@ -67,6 +67,13 @@ new thisHaleID=-1;
 public OnPluginStart()
 {
 	AddNormalSoundHook(HookSound);
+
+	AddCommandListener(cdVoiceMenu, "voicemenu");
+	AddCommandListener(DoTaunt, "taunt");
+	AddCommandListener(DoTaunt, "+taunt");
+
+	HookEvent("object_destroyed", event_destroy, EventHookMode_Pre);
+
 }
 
 public OnAllPluginsLoaded()
@@ -758,6 +765,192 @@ public Action:HaleTimer(Handle:hTimer)
 			CreateTimer(2.0, Timer_GravityCat, GetClientUserId(Hale), TIMER_FLAG_NO_MAPCHANGE);
 			CPrintToChat(Hale, "{olive}[VSH]{default} %t", "vsh_used_weighdown");
 			WeighDownTimer = 0.0;
+		}
+	}
+	return Plugin_Continue;
+}
+
+
+
+/*
+ Call medic to rage update by Chdata
+
+*/
+public Action:cdVoiceMenu(iClient, const String:sCommand[], iArgc)
+{
+	if (iArgc < 2) return Plugin_Handled;
+
+	decl String:sCmd1[8], String:sCmd2[8];
+
+	GetCmdArg(1, sCmd1, sizeof(sCmd1));
+	GetCmdArg(2, sCmd2, sizeof(sCmd2));
+
+	// Capture call for medic commands (represented by "voicemenu 0 0")
+
+	if (sCmd1[0] == '0' && sCmd2[0] == '0' && IsPlayerAlive(iClient) && iClient == Hale)
+	{
+		if (HaleRage / RageDMG >= 1)
+		{
+			DoTaunt(iClient, "", 0);
+			return Plugin_Handled;
+		}
+	}
+
+	//return (iClient == Hale && Special != VSHSpecial_CBS && Special != VSHSpecial_Bunny && Special != VSHSpecial_Miku) ? Plugin_Handled : Plugin_Continue;
+	return (iClient == Hale) ? Plugin_Handled : Plugin_Continue;
+}
+
+
+
+public Action:DoTaunt(client, const String:command[], argc)
+{
+	if (!Enabled || (client != Hale))
+		return Plugin_Continue;
+
+	if (bNoTaunt) // Prevent double-tap rages
+	{
+		return Plugin_Handled;
+	}
+
+	decl String:s[PLATFORM_MAX_PATH];
+	if (HaleRage/RageDMG >= 1)
+	{
+		decl Float:pos[3];
+		GetEntPropVector(client, Prop_Send, "m_vecOrigin", pos);
+		pos[2] += 20.0;
+		new Action:act = Plugin_Continue;
+		Call_StartForward(OnHaleRage);
+		new Float:dist;
+		new Float:newdist;
+		switch (Special)
+		{
+			case VSHSpecial_Vagineer: dist = RageDist/(1.5);
+			case VSHSpecial_Bunny: dist = RageDist/(1.5);
+			case VSHSpecial_Miku: dist = RageDist*1.5;
+			case VSHSpecial_CBS: dist = RageDist/(2.5);
+			default: dist = RageDist;
+		}
+		newdist = dist;
+		Call_PushFloatRef(newdist);
+		Call_Finish(act);
+		if (act != Plugin_Continue && act != Plugin_Changed)
+			return Plugin_Continue;
+		if (act == Plugin_Changed) dist = newdist;
+		TF2_AddCondition(Hale, TFCond:42, 4.0);
+		switch (Special)
+		{
+			case VSHSpecial_Vagineer:
+			{
+				if (GetRandomInt(0, 2))
+					strcopy(s, PLATFORM_MAX_PATH, VagineerRageSound);
+				else
+					Format(s, PLATFORM_MAX_PATH, "%s%i.wav", VagineerRageSound2, GetRandomInt(1, 2));
+				TF2_AddCondition(Hale, TFCond_Ubercharged, 99.0);
+				UberRageCount = 0.0;
+
+				CreateTimer(0.6, UseRage, dist);
+				CreateTimer(0.1, UseUberRage, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+			}
+			case VSHSpecial_HHH:
+			{
+				Format(s, PLATFORM_MAX_PATH, "%s", HHHRage2);
+				CreateTimer(0.6, UseRage, dist);
+			}
+			case VSHSpecial_Bunny:
+			{
+				strcopy(s, PLATFORM_MAX_PATH, BunnyRage[GetRandomInt(1, sizeof(BunnyRage)-1)]);
+				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
+				TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
+				new weapon = SpawnWeapon(client, "tf_weapon_grenadelauncher", 19, 100, 5, "1 ; 0.6 ; 6 ; 0.1 ; 411 ; 150.0 ; 413 ; 1.0 ; 37 ; 0.0 ; 280 ; 17 ; 477 ; 1.0 ; 467 ; 1.0 ; 181 ; 2.0 ; 252 ; 0.7");
+				SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", weapon);
+				SetEntProp(weapon, Prop_Send, "m_iClip1", 50);
+//              new vm = CreateVM(client, ReloadEggModel);
+//              SetEntPropEnt(vm, Prop_Send, "m_hWeaponAssociatedWith", weapon);
+//              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
+				SetAmmo(client, TFWeaponSlot_Primary, 0);
+				//add charging?
+				CreateTimer(0.6, UseRage, dist);
+			}
+#if defined MIKU_ON
+			case VSHSpecial_Miku:
+			{
+				strcopy(s, PLATFORM_MAX_PATH, MikuRage[GetRandomInt(1, sizeof(MikuRage)-1)]);
+				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
+				//TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
+				//new weapon = SpawnWeapon(client, "tf_weapon_grenadelauncher", 19, 100, 5, "1 ; 0.6 ; 6 ; 0.1 ; 411 ; 150.0 ; 413 ; 1.0 ; 37 ; 0.0 ; 280 ; 17 ; 477 ; 1.0 ; 467 ; 1.0 ; 181 ; 2.0 ; 252 ; 0.7");
+				//SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", weapon);
+				//SetEntProp(weapon, Prop_Send, "m_iClip1", 50);
+//              new vm = CreateVM(client, ReloadEggModel);
+//              SetEntPropEnt(vm, Prop_Send, "m_hWeaponAssociatedWith", weapon);
+//              SetEntPropEnt(weapon, Prop_Send, "m_hExtraWearableViewModel", vm);
+				//SetAmmo(client, TFWeaponSlot_Primary, 0);
+				//add charging?
+				VSHSpecial_Miku_Rage=true;
+				CreateTimer(10.0, EndMikuRage);
+				CreateTimer(0.6, UseRage, dist);
+			}
+#endif
+			case VSHSpecial_CBS:
+			{
+				if (GetRandomInt(0, 1))
+					Format(s, PLATFORM_MAX_PATH, "%s", CBS1);
+				else
+					Format(s, PLATFORM_MAX_PATH, "%s", CBS3);
+				EmitSoundToAll(s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, _, pos, NULL_VECTOR, false, 0.0);
+				TF2_RemoveWeaponSlot2(client, TFWeaponSlot_Primary);
+				SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", SpawnWeapon(client, "tf_weapon_compound_bow", 1005, 100, 5, "2 ; 2.1 ; 6 ; 0.5 ; 37 ; 0.0 ; 280 ; 19 ; 551 ; 1"));
+				SetAmmo(client, TFWeaponSlot_Primary, ((RedAlivePlayers >= CBS_MAX_ARROWS) ? CBS_MAX_ARROWS : RedAlivePlayers));
+				CreateTimer(0.6, UseRage, dist);
+				CreateTimer(0.1, UseBowRage);
+			}
+			default:
+			{
+				Format(s, PLATFORM_MAX_PATH, "%s%i.wav", HaleRageSound, GetRandomInt(1, 4));
+				CreateTimer(0.6, UseRage, dist);
+			}
+		}
+		EmitSoundToAll(s, client, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
+		EmitSoundToAll(s, client, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsValidClient(i) && i != Hale)
+			{
+				EmitSoundToClient(i, s, client, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
+				EmitSoundToClient(i, s, client, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, client, pos, NULL_VECTOR, true, 0.0);
+			}
+		}
+		HaleRage = 0;
+		VSHFlags[Hale] &= ~VSHFLAG_BOTRAGE;
+	}
+
+	bNoTaunt = true;
+	CreateTimer(1.5, Timer_NoTaunting, _, TIMER_FLAG_NO_MAPCHANGE);
+
+	return Plugin_Continue;
+}
+
+
+// event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
+
+public Action:event_destroy(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	if (Enabled)
+	{
+		new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+		new customkill = GetEventInt(event, "customkill");
+		if (attacker == Hale) /* || (attacker == Companion)*/
+		{
+			if (Special == VSHSpecial_Hale)
+			{
+				if (customkill != TF_CUSTOM_BOOTS_STOMP) SetEventString(event, "weapon", "fists");
+				if (!GetRandomInt(0, 4))
+				{
+					decl String:s[PLATFORM_MAX_PATH];
+					strcopy(s, PLATFORM_MAX_PATH, HaleSappinMahSentry132);
+					EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_VOICE, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+					EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, SNDCHAN_ITEM, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, NULL_VECTOR, NULL_VECTOR, false, 0.0);
+				}
+			}
 		}
 	}
 	return Plugin_Continue;

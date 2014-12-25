@@ -593,8 +593,7 @@ stock CalcScores()
 			for (j = 0; damage - 600 > 0; damage -= 600, j++){}
 			SetEventInt(aevent, "points", j);
 			FireEvent(aevent);
-			//if (i == Hale)
-			if(GetPlayerProp(i,IsHale))
+			if (i == Hale)
 			{
 				if (IsFakeClient(i)) botqueuepoints = 0;
 				else SetClientQueuePoints(i, 0);

@@ -1,10 +1,5 @@
 // SaxtonHale_Register_Hale.sp
 
-new Handle:g_hHaleName = INVALID_HANDLE;
-new Handle:g_hHaleShortName = INVALID_HANDLE;
-
-new HalesLoaded=0;
-
 public SaxtonHale_Register_Hale_OnPluginStart()
 {
 	g_hHaleName = CreateArray(ByteCountToCells(32));
@@ -20,6 +15,11 @@ public bool:SaxtonHale_Register_Hale_InitNatives()
 	return true;
 }
 
+stock GetHaleShortName(iHaleID,String:szHaleShortName[],buffsize)
+{
+	return GetArrayString(g_hHaleName,iHaleID,szHaleShortName,buffsize);
+}
+
 stock GetHalesLoaded()
 {
 	return GetArraySize(szName);
@@ -32,11 +32,11 @@ public Native_VSH_GetHaleID(Handle:hPlugin, iNumParams)
 
 public Native_VSH_GetHaleName(Handle:hPlugin, iNumParams)
 {
-	new String:szMenuTitle[256];
+	decl String:szHaleName[32];
 	new itemindex = GetNativeCell(1);
 	new bufsize=GetNativeCell(3);
-	GetArrayString(g_hMenuMenuTitle,itemindex,szMenuTitle,sizeof(szMenuTitle));
-	SetNativeString(2, szMenuTitle, bufsize);
+	GetArrayString(g_hHaleName,itemindex,szHaleName,sizeof(szHaleName));
+	SetNativeString(2, szHaleName, bufsize);
 }
 
 public Native_VSH_RegisterHale(Handle:hPlugin, iNumParams)
@@ -46,10 +46,8 @@ public Native_VSH_RegisterHale(Handle:hPlugin, iNumParams)
 	GetNativeString(1, STRING(szName));
 	GetNativeString(2, STRING(szShortName));
 
-	for(new i = 0; i < GetArraySize(szName); i++)
+	for(new i = 0; i < GetArraySize(g_hHaleName); i++)
 	{
-		HalesLoaded++;
-
 		GetArrayString(g_hHaleName, i, szBuffer, sizeof(szBuffer));
 		if(StrEqual(szName, szBuffer))
 		{
@@ -63,7 +61,7 @@ public Native_VSH_RegisterHale(Handle:hPlugin, iNumParams)
 	PushArrayString(g_hHaleName, szName);
 	PushArrayString(g_hHaleShortName, szShortName);
 
-	HalesLoaded++;
+	HalesLoaded = GetArraySize(g_hMenuCallerName);
 
 	return GetArraySize(g_hMenuCallerName);
 }

@@ -44,27 +44,6 @@ enum VSH_PlayerProp
 	Float:LastChangeTeamTime,
 	bool:bStatefulSpawn, //set true if spawn is a non repeated spawn. set to true on join and death, set false after spawn forward is finished.
 }
-/*
-enum VSHSpecials_id
-{
-	VSHSpecial_None = -1,
-	VSHSpecial_Hale,
-	VSHSpecial_Vagineer,
-	VSHSpecial_HHH,
-	VSHSpecial_CBS,
-	VSHSpecial_Bunny, //ohgodwhy
-	VSHSpecial_Miku
-}
-
-stock const String:SpecialNames[][] = {
-	"Hale",
-	"The Vagineer",
-	"The Horseless Headless Horsemann Jr.",
-	"The Christian Brutal Sniper",
-	"The Easter Bunny",
-	"Hatsunemiku"
-};
-*/
 
 enum VSHChat {
 	VSHChatFalse=0,
@@ -543,12 +522,12 @@ forward Action:VSHSayAllCommandCheckPost(client,String:WholeString[],String:Chat
 /**
  * You should set your Boss's Class here or anything that you want to happen
  * before the boss create's it's model.
- * iHale			client index
- * iHaleID			Hale's registered ID.
+ * iHale				client index
+ * iHaleRaceID			Hale's registered ID.
  *
  * @return		    nothing.
  */
-forward VSH_OnMakeHale(iHale,iHaleID);
+forward VSH_OnMakeHale(iHale,iHaleRaceID);
 
 
 /**
@@ -573,19 +552,19 @@ forward Action:VSH_OnMakeModelTimer(String:HaleModel[PLATFORM_MAX_PATH],&body);
 /**
  * Before Hale is created.
  *
- * @param iSpecial 	integer index of the Special.
- * @return		    Change iSpecial and return Plugin_Changed to change it. Plugin_Continue to keep the current Special.
+ * @param iHaleRaceID 	integer index of the HaleRaceID.
+ * @return		    Change iHaleRaceID and return Plugin_Changed to change it. Plugin_Continue to keep the current HaleRaceID.
  */
-forward Action:VSH_OnSpecialSelection(&VSHSpecials_id:iSpecial);
+forward Action:VSH_OnHaleRaceSelection(&iHaleRaceID);
 
 /**
  * When Hale is created.
  *
- * @param iHale 	integer index of Hale.
- * @param iHaleID 	registered hale id
- * @return		    Returning does nothing.
+ * @param iHale 		integer index of Hale.
+ * @param iHaleRaceID	registered hale race id
+ * @return				Returning does nothing.
  */
-forward VSH_OnSetEquipment(iHale, iHaleID);
+forward VSH_OnSetEquipment(iHale, iHaleRaceID);
 
 /**
  * When Hale is created.
@@ -670,8 +649,6 @@ forward OnVSH_TakeDmgAll(victim,attacker,Float:damage);
 //derrived from the game engine's posthurt event
 //FRIENDLY FIRE IS NOT FILTERED
 forward OnVSHEventPostHurt(victim,attacker,dmgamount,const String:weapon[32]);
-
-forward VSH_OnMakeModelTimer()
 
 public SharedPlugin:__pl_SaxtonHale =
 {

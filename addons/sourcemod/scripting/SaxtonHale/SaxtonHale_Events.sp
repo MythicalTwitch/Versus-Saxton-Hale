@@ -1,14 +1,19 @@
+
+// TO DO: import all events into races as needed
+// keep round start, round win for sure
+
+
 public Load_Events()
 {
 	HookEvent("teamplay_round_start", event_round_start);
 	HookEvent("teamplay_round_win", event_round_end);
 	HookEvent("player_changeclass", event_changeclass);
 	HookEvent("player_spawn", event_player_spawn);
-	HookEvent("player_death", event_player_death, EventHookMode_Pre);
+	//HookEvent("player_death", event_player_death, EventHookMode_Pre);
 	HookEvent("player_chargedeployed", event_uberdeployed);
 	HookEvent("player_hurt", event_hurt, EventHookMode_Pre);
-	HookEvent("object_destroyed", event_destroy, EventHookMode_Pre);
-	HookEvent("object_deflected", event_deflect, EventHookMode_Pre);
+	//HookEvent("object_destroyed", event_destroy, EventHookMode_Pre);
+	//HookEvent("object_deflected", event_deflect, EventHookMode_Pre);
 	HookEvent( "rocket_jump", OnHookedEvent );
 	HookEvent( "rocket_jump_landed", OnHookedEvent );
 	HookEvent( "player_death", OnHookedEvent );
@@ -38,16 +43,16 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 		Enabled2 = false;
 	}
 	Enabled = Enabled2;
-	if (CheckNextSpecial() && !Enabled) //QueuePanelH(Handle:0, MenuAction:0, 9001, 0) is HaleEnabled
+	if (CheckNextHaleRaceID() && !Enabled) //QueuePanelH(Handle:0, MenuAction:0, 9001, 0) is HaleEnabled
 		return Plugin_Continue;
 
-	// VSH_OnSpecialSelection
+	// VSH_OnHaleRaceSelection
 	new Action:act = Plugin_Continue;
-	new NewSpecial = Special;
-	Call_StartForward(OnSpecialSelection);
-	Call_PushCellRef(NewSpecial);
+	new NewHaleRaceID = HaleRaceID;
+	Call_StartForward(OnHaleRaceSelection);
+	Call_PushCellRef(NewHaleRaceID);
 	Call_Finish(act);
-	if (act == Plugin_Changed) Special = NewSpecial;
+	if (act == Plugin_Changed) HaleRaceID = NewHaleRaceID;
 
 	if (FileExists("bNextMapToHale"))
 		DeleteFile("bNextMapToHale");
@@ -61,7 +66,7 @@ public Action:event_round_start(Handle:event, const String:name[], bool:dontBroa
 		KillTimer(hHHHTeleTimer);
 		hHHHTeleTimer = INVALID_HANDLE;
 	}
-	KSpreeCount = 0;
+	//KSpreeCount = 0;
 	CheckArena();
 	GetCurrentMap(currentmap, sizeof(currentmap));
 	new bool:bBluHale;
@@ -289,6 +294,7 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 	TeamRoundCounter++;
 	if (GetEventInt(event, "team") == HaleTeam)
 	{
+	/*
 		switch (Special)
 		{
 			case VSHSpecial_Hale:
@@ -317,7 +323,7 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 				EmitSoundToAllExcept(SOUNDEXCEPT_VOICE, s, _, _, SNDLEVEL_TRAFFIC, SND_NOFLAGS, SNDVOL_NORMAL, 100, Hale, _, NULL_VECTOR, false, 0.0);
 			}
 #endif
-		}
+		}*/
 	}
 	for (new i = 1 ; i <= MaxClients; i++)
 	{
@@ -336,6 +342,11 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 		GlowTimer = 0.0;
 		if (IsPlayerAlive(Hale))
 		{
+			decl String:szHaleShortName[32],String:szBuffer[64];
+			GetHaleShortName(HaleRaceID,STRING(szHaleShortName));
+			Format(STRING(szBuffer), "vsh_%s_is_alive",szHaleShortName);
+
+			/*
 			decl String:translation[32];
 			switch (Special)
 			{
@@ -347,14 +358,14 @@ public Action:event_round_end(Handle:event, const String:name[], bool:dontBroadc
 				case VSHSpecial_HHH:        strcopy(translation, sizeof(translation), "vsh_hhh_is_alive");
 				case VSHSpecial_CBS:        strcopy(translation, sizeof(translation), "vsh_cbs_is_alive");
 				default:                    strcopy(translation, sizeof(translation), "vsh_hale_is_alive");
-			}
-			CPrintToChatAll("{olive}[VSH]{default} %t", translation, Hale, HaleHealth, HaleHealthMax);
+			}*/
+			CPrintToChatAll("{olive}[VSH]{default} %t", szBuffer, Hale, HaleHealth, HaleHealthMax);
 			SetHudTextParams(-1.0, 0.2, 10.0, 255, 255, 255, 255);
 			for (new i = 1; i <= MaxClients; i++)
 			{
 				if (IsValidClient(i) && !(GetClientButtons(i) & IN_SCORE))
 				{
-					ShowHudText(i, -1, "%T", translation, i, Hale, HaleHealth, HaleHealthMax);
+					ShowHudText(i, -1, "%T", szBuffer, i, Hale, HaleHealth, HaleHealthMax);
 				}
 			}
 		}
@@ -442,6 +453,7 @@ public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroa
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client == Hale)
 	{
+		/*
 		switch(Special)
 		{
 			case VSHSpecial_Hale:
@@ -461,7 +473,7 @@ public Action:event_changeclass(Handle:event, const String:name[], bool:dontBroa
 			case VSHSpecial_CBS:
 				if (TF2_GetPlayerClass(client) != TFClass_Sniper)
 					TF2_SetPlayerClass(client, TFClass_Sniper, _, false);
-		}
+		}*/
 		TF2_RemovePlayerDisguise(client);
 	}
 	return Plugin_Continue;
@@ -506,7 +518,7 @@ public Action:event_player_spawn(Handle:event, const String:name[], bool:dontBro
 // event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
 // event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
 // event_player_death  event_player_death  event_player_death  event_player_death  event_player_death  event_player_death
-
+/*
 public Action:event_player_death(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	decl String:s[PLATFORM_MAX_PATH];
@@ -518,6 +530,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	new deathflags = GetEventInt(event, "death_flags");
 	new customkill = GetEventInt(event, "customkill");
+
 	if (attacker == Hale && Special == VSHSpecial_Bunny && VSHRoundState == ROUNDSTATE_START_ROUND_TIMER)  SpawnManyAmmoPacks(client, EggModel, 1, 5, 120.0);
 #if defined MIKU_ON
 	if (attacker == Hale && Special == VSHSpecial_Miku) VSHSpecial_Miku_Rage = false;
@@ -766,6 +779,7 @@ public Action:event_player_death(Handle:event, const String:name[], bool:dontBro
 	}
 	return Plugin_Continue;
 }
+*/
 
 // event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed
 // event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed  event_uberdeployed
@@ -870,14 +884,14 @@ public Action:event_hurt(Handle:event, const String:name[], bool:dontBroadcast)
 // event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
 // event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
 // event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy  event_destroy
-
+/*
 public Action:event_destroy(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if (Enabled)
 	{
 		new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 		new customkill = GetEventInt(event, "customkill");
-		if (attacker == Hale) /* || (attacker == Companion)*/
+		if (attacker == Hale) // || (attacker == Companion)
 		{
 			if (Special == VSHSpecial_Hale)
 			{
@@ -893,14 +907,24 @@ public Action:event_destroy(Handle:event, const String:name[], bool:dontBroadcas
 		}
 	}
 	return Plugin_Continue;
-}
+}*/
 
-// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
-// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
-// event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect  event_deflect
+// --------------------------------------------------------------------------------------------------- event_deflect
+// ---------------------------------------------------------------------------- event_deflect
+// -------------------------------------------------  event_deflect
 
+
+// VSHSpecial_Vagineer rage:
+/*
 public Action:event_deflect(Handle:event, const String:name[], bool:dontBroadcast)
 {
+//    new deflector = GetClientOfUserId(GetEventInt(event, "userid"));    // Pyro
+//    new owner = GetClientOfUserId(GetEventInt(event, "ownerid"));       // Owner of what was deflected
+//    new weaponid = GetEventInt(event, "weaponid");                      // Pyro's weapon
+//    new projectile = GetEventInt(event, "object_entindex");             // An arrow / rocket / the player itself
+//09:13 PM - Chdata: if (weaponid != 0) // (0 means the player in ownerid was pushed)
+//09:13 PM - Chdata: That's enough to get you started
+
 	if (!Enabled) return Plugin_Continue;
 	new deflector = GetClientOfUserId(GetEventInt(event, "userid"));
 	new owner = GetClientOfUserId(GetEventInt(event, "ownerid"));
@@ -917,7 +941,7 @@ public Action:event_deflect(Handle:event, const String:name[], bool:dontBroadcas
 	new newammo = GetAmmo(deflector, 0) - 5;
 	SetAmmo(deflector, 0, newammo <= 0 ? 0 : newammo);
 	return Plugin_Continue;
-}
+}*/
 
 // event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate
 // event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate  event_jarate
